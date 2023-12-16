@@ -29,6 +29,7 @@ func openUrlInBrowser(url string) error {
 
 func getFruits(w http.ResponseWriter, r *http.Request) {
 
+    w.Header().Set("Content-Type", "text/html")
 	fmt.Fprintf(w, "<strong>%s</strong><ul>%s</ul><button data-tasks=\"empty-bag\" class=\"fruits-button\">Empty Bag</button>",
 		"Bag contents:",
 		strings.Join(func() []string {
@@ -46,6 +47,8 @@ func getFruits(w http.ResponseWriter, r *http.Request) {
 }
 
 func emptyBag(w http.ResponseWriter, r *http.Request) {
+
+    w.Header().Set("Content-Type", "text/html")
 	fmt.Fprint(w, "<button data-tasks=\"get-fruits\" class=\"fruits-button\">Get Fresh Fruits</button>")
 }
 
