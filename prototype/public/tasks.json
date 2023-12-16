@@ -1,0 +1,16 @@
+{
+    "get-fruits": {
+        "action": "/getfruits",
+        "method": "get",
+        "target": "#bag",
+        "swap": "innerHTML",
+        "trigger": "click"
+    },
+    "empty-bag": {
+        "action": "/emptybag",
+        "method": "get",
+        "target": "#bag",
+        "swap": "innerHTML",
+        "trigger": "click"
+    }
+}
