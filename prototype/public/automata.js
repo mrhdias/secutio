@@ -110,7 +110,10 @@ class Automata {
                     for (const addedNode of mutation.addedNodes) {
                         if (addedNode.childNodes.length > 0) {
                             // console.log(addedNode.parentNode.outerHTML);
-                            this.search4Tasks(addedNode.parentNode);
+                            if (addedNode.hasAttribute(this.dataAttribute) &&
+                                addedNode.getAttribute(this.dataAttribute) !== "") {
+                                this.setTask(addedNode);
+                            }
                         }
                     }
 
