@@ -93,6 +93,24 @@ class Automata {
         }
     }
 
+    findTasksRecursively(addedNode) {
+
+        if (addedNode.nodeType !== Node.TEXT_NODE &&
+            addedNode.nodeType !== Node.COMMENT_NODE) {
+
+            for (const node of addedNode.childNodes) {
+                if (node.hasChildNodes) {
+                    this.findTasksRecursively(node);
+                }
+            }
+
+            if (addedNode.hasAttribute(this.dataAttribute) &&
+                addedNode.getAttribute(this.dataAttribute) !== "") {
+                this.setTask(addedNode);
+            }
+        }
+    }
+
     init() {
 
         // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
@@ -107,13 +125,20 @@ class Automata {
         const callback = (mutations, observer) => {
             mutations.forEach(mutation => {
                 if (mutation.type === "childList") {
+
                     for (const addedNode of mutation.addedNodes) {
-                        if (addedNode.childNodes.length > 0) {
-                            // console.log(addedNode.parentNode.outerHTML);
-                            if (addedNode.hasAttribute(this.dataAttribute) &&
-                                addedNode.getAttribute(this.dataAttribute) !== "") {
-                                this.setTask(addedNode);
-                            }
+                        if (addedNode.nodeType === Node.TEXT_NODE ||
+                            addedNode.nodeType === Node.COMMENT_NODE) {
+                            continue;
+                        }
+
+                        if (addedNode.hasChildNodes) {
+                            this.findTasksRecursively(addedNode);
+                            continue;
+                        }
+                        if (addedNode.hasAttribute(this.dataAttribute) &&
+                            addedNode.getAttribute(this.dataAttribute) !== "") {
+                            this.setTask(addedNode);
                         }
                     }
 
