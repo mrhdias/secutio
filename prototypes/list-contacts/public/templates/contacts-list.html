@@ -1,0 +1,44 @@
+<table>
+    <thead>
+        <tr>
+            ${(function () {
+                let headers = [];
+                for (const header of ["&nbsp;", "Name", "Email", "Status"]) {
+                    headers.push(`<th>${header}</th>`);
+                }
+                return headers.join("");
+            }())}
+        </tr>
+    </thead>
+    <tbody>
+        ${data.map(record => `<tr>
+            <td><input type="checkbox" name="id" value="${record.id}" onchange="enableButton(this);"></td>
+            <td>${record.name}</td>
+            <td>${record.email}</td>
+            <td>${record.status}</td>
+        </tr>`).join("")}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="4">
+                <button name="switch-status" value="activate" data-tasks="switch-contact-status"
+                    disabled>Activate</button>
+                <button name="switch-status" value="deactivate" data-tasks="switch-contact-status"
+                    disabled>Deactivate</button>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+<script>
+    function enableButton(element) {
+        const statusElem = element.closest('tr').querySelector('td:last-child');
+        if (statusElem.textContent === 'Active') {
+            const button = element.closest('table').querySelector('button[value="deactivate"]');
+            button.disabled = false;
+        }
+        if (statusElem.textContent === 'Inactive') {
+            const button = element.closest('table').querySelector('button[value="activate"]');
+            button.disabled = false;
+        }
+    }
+</script>

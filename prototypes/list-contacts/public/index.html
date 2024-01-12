@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Test</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta name="author" content="Henrique Dias">
+    <link rel=stylesheet href="styles.css?2024010702">
+</head>
+
+<body>
+
+    <div id="contacts-list">
+        <button data-tasks="get-contacts-list" class="contact-button">
+            Get Contacts List
+        </button>
+    </div>
+
+    <!-- embedded templates -->
+
+    <template id="contacts-list-tpl">
+        <textarea data-codeblock>
+        <table>
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${data.map(record => `<tr>
+                    <td><input type="checkbox" name="id" value="${record.id}" onchange="enableButton(this);"></td>
+                    <td>${record.name}</td>
+                    <td>${record.email}</td>
+                    <td>${record.status}</td>
+                </tr>`).join("")}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">
+                        <button name="switch-status" value="activate"
+                            data-tasks="switch-contact-status" disabled>Activate</button>
+                        <button name="switch-status" value="deactivate"
+                            data-tasks="switch-contact-status" disabled>Deactivate</button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <script>
+            function enableButton(element) {
+                const statusElem = element.closest('tr').querySelector('td:last-child');
+                if (statusElem.textContent === 'Active') {
+                    const button = element.closest('table').querySelector('button[value="deactivate"]');
+                    button.disabled = false;
+                }
+                if (statusElem.textContent === 'Inactive') {
+                    const button = element.closest('table').querySelector('button[value="activate"]');
+                    button.disabled = false;
+                }
+            }
+        </script>
+        </textarea>
+    </template>
+
+    <script>
+        /* <![CDATA[ */
+        import("./Automata.js?2024011001").then((module) => {
+            // Do something with the module.
+            const automata = new module.Automata();
+            automata.init();
+        });
+
+        // automata.register('test', function() {
+        //    alert('test');
+        // }());
+        /* ]]> */
+    </script>
+</body>
+
+</html>

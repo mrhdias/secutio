@@ -1,0 +1,13 @@
+{
+    "get-contacts-list": {
+        "action": "/listcontacts",
+        "method": "get",
+        "trigger": "click"
+    },
+    "switch-contact-status": {
+        "action": "/statuscontact",
+        "method": "put",
+        "collect-data": "#contacts-list > table > tbody > tr > td > input[name]",
+        "trigger": "click"
+    }
+}
