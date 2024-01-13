@@ -2,7 +2,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-12 18:43:56
+    Last Modification: 2024-01-13 13:32:49
 
     Attention: This is work in progress
 
@@ -20,7 +20,8 @@ export default class Automata {
 
     constructor(parameters = {
         "attribute": "data-tasks",
-        "json_file": "tasks.json"
+        "json_file": "tasks.json",
+        "start_element": "body"
     }) {
 
         // https://developer.mozilla.org/en-US/docs/Web/API/Element#events
@@ -28,6 +29,7 @@ export default class Automata {
         // Some events to test
         this.triggers = new Set([
             'click',
+            'init', // custom
             'mouseenter',
             'mouseover',
             'mouseup',
@@ -45,6 +47,7 @@ export default class Automata {
         ]);
         this.dataAttribute = parameters["attribute"];
         this.jsonFile = parameters["json_file"];
+        this.startElement = parameters["start_element"];
         this.tasks = {};
     }
 
@@ -82,15 +85,16 @@ export default class Automata {
             }
 
             let result = { transformation: {}, data: undefined };
-            if (response.headers.has("Automata-Transformation")) {
+            if (response.headers.has("Automata-Transformation")) { // is optional and if not exits use from tasks file
                 console.log("Automata-Transformation:", response.headers.get("Automata-Transformation"));
                 const headerValue = response.headers.get("Automata-Transformation");
                 if (headerValue !== "") {
                     result.transformation = this.attrsStr2Obj(headerValue);
                 }
-            } else {
-                throw new Error('The "Automata-Transformation" header does not exist');
             }
+            // else {
+            //    throw new Error('The "Automata-Transformation" header does not exist');
+            // }
 
             if (response.headers.has("Content-Type")) {
                 // console.log("Content-Type:", response.headers.get("Content-Type"));
@@ -337,13 +341,41 @@ export default class Automata {
         return undefined;
     }
 
-    async processEvent(event, parameters) {
+    setTransformation(parameters, transformation) {
+        // check if server send the transformation and
+        // if not replace by the transformation from tasks file
 
-        event.preventDefault();
+        if (!transformation.hasOwnProperty('target')) {
+            transformation['target'] = parameters.hasOwnProperty('target') ?
+                parameters['target'] : 'this'; // default value
+        }
+
+        if (!transformation.hasOwnProperty('template')) {
+            if (parameters.hasOwnProperty('template')) {
+                transformation['template'] = parameters['template']
+            }
+        }
+
+        if (!transformation.hasOwnProperty('swap')) {
+            transformation['swap'] = parameters.hasOwnProperty('swap') ?
+                parameters['swap'] : 'innerHTML'; // default value
+        }
+
+        if (!transformation.hasOwnProperty('remove')) {
+            if (parameters.hasOwnProperty('remove')) {
+                transformation['remove'] = parameters['remove']
+            }
+        }
+
+    }
+
+    async processEvent(target, parameters) {
+
+        // event.preventDefault();
 
         let bodyData = {};
         if (parameters.trigger === 'submit') {
-            const formElem = event.target.closest('form');
+            const formElem = target.closest('form');
             if (formElem !== null &&
                 formElem.hasChildNodes()) {
                 const namedElements = formElem.querySelectorAll("input[name],select[name]");
@@ -363,8 +395,8 @@ export default class Automata {
                 return;
             }
 
-            if (event.target.name !== '') {
-                bodyData[event.target.name] = event.target.value;
+            if (target.name !== '') {
+                bodyData[target.name] = target.value;
             }
         }
         // event.preventDefault();
@@ -384,37 +416,19 @@ export default class Automata {
             return;
         }
 
-        // console.log(event.target);
+        this.setTransformation(parameters, block.transformation);
 
-        const target = function () {
-            // first priority
-            if (block.transformation.hasOwnProperty('target')) {
-                return document.querySelector(block.transformation.target);
-            }
-            if (parameters.hasOwnProperty('target')) {
-                return document.querySelector(parameters.target);
-            }
-            // if the target is not defined, use the element that triggered the event.
-            return event.target;
-        }()
-
-        if (target === null) {
+        const targetElem = (block.transformation.target === 'this') ?
+            target : document.querySelector(block.transformation.target);
+        if (targetElem === null) {
             throw new Error("Null target");
         }
 
         // if data is json
         if (typeof block.data === 'object') {
 
-            block.transformation['remove-attributes'] = function () {
-                if (block.transformation.hasOwnProperty('remove-attributes')) {
-                    return block.transformation['remove-attributes'] === "true";
-                }
-                return true; // default value
-            }();
-
             // with templates
             if (block.transformation.hasOwnProperty('template')) {
-
                 if (block.transformation.template.length < 3) {
                     throw new Error(`Short template name "${block.transformation.template}"`);
                 }
@@ -444,26 +458,17 @@ export default class Automata {
                 const fragment = this.buildFragment(block.data, innerTemplate);
                 if (fragment !== null) {
 
-                    // remove specied elements before swap content
+                    // remove specifed elements before swap content
                     if (block.transformation.hasOwnProperty('remove') &&
                         block.transformation.remove !== "") {
-                        const elements = target.querySelectorAll(block.transformation.remove);
+                        const elements = targetElem.querySelectorAll(block.transformation.remove);
                         for (const element of elements) {
                             element.remove();
                         }
                     }
 
-                    this.swapContent(fragment, target, function () {
-                        // first priority
-                        if (block.transformation.hasOwnProperty('swap')) {
-                            return block.transformation['swap'];
-                        }
-                        if (parameters.hasOwnProperty('swap')) {
-                            return block.transformation['swap'];
-                        }
-                        return 'innerHTML';
-                    }());
-                    this.findTasksRecursively(target);
+                    this.swapContent(fragment, targetElem, block.transformation.swap);
+                    this.findTasksRecursively(targetElem);
                 }
             }
 
@@ -475,8 +480,8 @@ export default class Automata {
             while (blockData.firstChild) {
                 fragment.appendChild(blockData.firstChild);
             }
-            this.swapContent(fragment, target, block.transformation.swap);
-            this.findTasksRecursively(target);
+            this.swapContent(fragment, targetElem, block.transformation.swap);
+            this.findTasksRecursively(targetElem);
 
         } else {
             throw new Error("There is no data or text for the transformation");
@@ -511,6 +516,12 @@ export default class Automata {
                 parameters["action"] = element.getAttribute(parameters['attribute-action']);
             }
 
+            // custom event
+            if (parameters.trigger === 'init') { // fiered after page loaded
+                this.processEvent(element, parameters);
+                return;
+            }
+
             // https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event
 
             const targetElem = function () {
@@ -521,15 +532,14 @@ export default class Automata {
             }();
 
             targetElem.addEventListener(parameters.trigger, (event) => {
-                this.processEvent(event, parameters);
+                event.preventDefault();
+                this.processEvent(event.target, parameters);
             });
         }
     }
 
     search4Tasks(parentNode) {
-
         const elemWithTasks = parentNode.querySelectorAll("[" + this.dataAttribute + "]");
-
         if (elemWithTasks.length > 0) {
             for (const element of elemWithTasks) {
                 if (element.dataset.tasks !== "") {
@@ -542,7 +552,7 @@ export default class Automata {
 
     init() {
 
-        const targetNode = document.getElementsByTagName('body');
+        const targetNode = document.getElementsByTagName(this.startElement);
 
         // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
         // begin mutation observer
