@@ -1,5 +1,6 @@
 # Automata
-⚠️ WARNING: This framework is still in heavy development. ⚠️
+> [!WARNING]
+> This framework is still in heavy development.
 
 Makes the difficult parts easy. It's like htmx but different!
 
@@ -45,5 +46,14 @@ tasks.json
     "swap": "outer"
   }
 }
+```
+### Embedded Templates
+Embedded templates should have a unique id property, and their content must be enclosed within a "textarea" element with the "data-codeblock" attribute.
+```html
+<template id="contacts-list-tpl">
+    <textarea data-codeblock>
+      <!-- HTML Content -->  
+    </textarea>
+</template>
 ```
 
