@@ -1,0 +1,27 @@
+{
+    "show-contact": {
+        "action": "/contact/1",
+        "method": "get",
+        "attribute-trigger": "data-task-trigger",
+        "trigger": "init",
+        "target": "#details-contact",
+        "template": "#details-contact-tpl",
+        "swap": "outer"
+    },
+    "edit-contact": {
+        "attribute-action": "data-task-action",
+        "method": "get",
+        "trigger": "click",
+        "target": "#details-contact",
+        "template": "#edit-contact-tpl",
+        "swap": "outer"
+    },
+    "save-contact": {
+        "attribute-action": "data-task-action",
+        "method": "put",
+        "trigger": "submit",
+        "target": "#details-contact",
+        "template": "#details-contact-tpl",
+        "swap": "outer"
+    }
+}

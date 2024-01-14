@@ -1,0 +1,20 @@
+/*
+ * Last Modification: 2024-01-14 19:38:17
+ */
+
+#details-contact {
+    display: flex;
+    justify-content: start;
+    justify-items: start;
+    flex-direction: column;
+    align-items: flex-start;
+    border: 1px solid #2196F3;
+    border-radius: 5px;
+    padding: 1rem!important;
+    margin: 20px;
+    width: fit-content;
+}
+
+label {
+    font-weight: bold;
+}
