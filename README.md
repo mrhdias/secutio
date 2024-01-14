@@ -41,7 +41,6 @@ tasks.json
   "click-me": {
     "action": "/clicked",
     "method": "post",
-    "attribute-trigger": "data-task-trigger",
     "trigger": "click",
     "swap": "outer"
   }
