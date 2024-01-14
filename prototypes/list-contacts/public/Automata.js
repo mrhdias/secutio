@@ -2,7 +2,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-13 13:32:49
+    Last Modification: 2024-01-14 11:53:03
 
     Attention: This is work in progress
 
@@ -153,43 +153,57 @@ export default class Automata {
     // }
 
     swapContent(clone, target, swap = 'innerHTML') {
-
+        
+        // ...clone.childNodes to remove helper div element
         // https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
         // innerHTMl is the default swap
+
+        // replaces the existing children of a Node
+        // with a specified new set of children.
         if (swap === 'innerHTML') {
-            // target.innerHTML = '';
-            target.replaceChildren(clone);
-            // target.appendChild(clone);
+            target.replaceChildren(...clone.childNodes);
             return;
         }
+
+        // replaces this Element in the children list of
+        // its parent with a set of Node or string objects
         if (swap === 'outerHTML') {
-            target.replaceWith(clone);
+            target.replaceWith(...clone.childNodes);
             return;
         }
-        if (swap === 'beforebegin') {
-            target.parentNode.insertBefore(clone, target);
+
+        // inserts a set of Node or string objects in the children
+        // list of this Element's parent, just before this Element.
+        if (swap === 'before') {
+            target.before(...clone.childNodes);
+        }
+
+        // inserts a set of Node or string objects in the children
+        // list of the Element's parent, just after the Element.
+        if (swap === 'after') {
+            target.after(...clone.childNodes);
             return;
         }
-        if (swap === 'afterbegin') {
-            target.insertBefore(clone, target.firstChild);
+
+        // inserts a set of Node objects or string
+        // objects before the first child of the Element.
+        if (swap === 'prepend') {
+            target.prepend(...clone.childNodes);
             return;
         }
-        if (swap === 'beforeend') {
-            target.appendChild(clone);
-            // target.insertAdjacentHTML(
-            //    'beforeend',
-            //    clone.firstElementChild.outerHTML
-            // );
+
+        // inserts a set of Node objects or string
+        // objects after the last child of the Element.
+        if (swap === 'append') {
+            target.append(...clone.childNodes);
             return;
         }
-        if (swap === 'afterend') {
-            target.parentNode.insertBefore(clone, target.nextSibling);
-            return;
-        }
+
         if (swap === 'delete') {
             console.log('unimplemented');
             return;
         }
+
         if (swap === 'none') {
             console.log('unimplemented');
             return;
@@ -265,11 +279,13 @@ export default class Automata {
     }
 
     findTasksRecursively(targetNode) {
+
         for (const node of targetNode.childNodes) {
             if (node.nodeType === Node.TEXT_NODE ||
                 node.nodeType === Node.COMMENT_NODE) {
                 continue;
             }
+
             if (node.hasChildNodes()) {
                 this.findTasksRecursively(node);
             }
@@ -297,33 +313,34 @@ export default class Automata {
         return input.replace(/\/\/.*|\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
     }
 
-    buildFragment(data, source) {
-        const fragment = document.createDocumentFragment();
-        const clone = document.createElement('div');
-        clone.innerHTML = eval('`' + source + '`');
 
-        // Trick to make Javascript work. Remove it and add again.
-        let txtScripts = [];
-        while (clone.firstChild) {
-            if (clone.hasChildNodes()) {
-                for (const node of clone.childNodes) {
-                    if (node.nodeName === 'SCRIPT') {
-                        txtScripts.push(node.textContent);
-                        node.remove();
-                    }
-                }
+    reScript(helper) {
+        for (const node of helper.childNodes) {
+            if (node.hasChildNodes()) {
+                this.reScript(node);
             }
-            fragment.appendChild(clone.firstChild);
+            if (node.nodeName === 'SCRIPT') {
+                const script = document.createElement('script');
+                script.type = "text/javascript";
+                script.textContent = this.minifyJavaScript(node.textContent);
+                node.replaceWith(script);
+            }
         }
+    }
 
-        for (const txtScript of txtScripts) {
-            const script = document.createElement('script');
-            script.type = "text/javascript";
-            script.textContent = this.minifyJavaScript(txtScript);
-            fragment.appendChild(script);
-        }
 
-        return fragment;
+    buildFragment(data, source) {
+        // const fragment = document.createDocumentFragment();
+        // create helper div element
+        const helper = document.createElement('div');
+        helper.innerHTML = eval('`' + source + '`');
+
+        // Trick to make Javascript work.
+        // Replace it with another clone script.
+        this.reScript(helper);
+
+        // remove the element helper div element
+        return helper;
     }
 
     async fetchTemplate(templateName) {
@@ -369,13 +386,13 @@ export default class Automata {
 
     }
 
-    async processEvent(target, parameters) {
+    async processEvent(eventTarget, parameters) {
 
         // event.preventDefault();
 
         let bodyData = {};
         if (parameters.trigger === 'submit') {
-            const formElem = target.closest('form');
+            const formElem = eventTarget.closest('form');
             if (formElem !== null &&
                 formElem.hasChildNodes()) {
                 const namedElements = formElem.querySelectorAll("input[name],select[name]");
@@ -395,11 +412,10 @@ export default class Automata {
                 return;
             }
 
-            if (target.name !== '') {
-                bodyData[target.name] = target.value;
+            if (eventTarget.name !== '') {
+                bodyData[eventTarget.name] = eventTarget.value;
             }
         }
-        // event.preventDefault();
 
         // default method
         if (parameters.hasOwnProperty('method')) {
@@ -418,10 +434,11 @@ export default class Automata {
 
         this.setTransformation(parameters, block.transformation);
 
-        const targetElem = (block.transformation.target === 'this') ?
-            target : document.querySelector(block.transformation.target);
-        if (targetElem === null) {
-            throw new Error("Null target");
+        const finalTarget = (block.transformation.target === 'this') ?
+            eventTarget : document.querySelector(block.transformation.target);
+
+        if (finalTarget === null) {
+            throw new Error(`Template "${block.transformation.target}" not exist!`);
         }
 
         // if data is json
@@ -440,6 +457,9 @@ export default class Automata {
                             return await _this.fetchTemplate(block.transformation.template.substring(1));
                         case '#':
                             const template = document.getElementById(block.transformation.template.substring(1));
+                            if (template === null) {
+                                throw new Error(`Template "${block.transformation.template}" not exist!`);
+                            }
                             // console.log('Template Node Name:', template.content.children[0].nodeName);
                             if (template.content.hasChildNodes() &&
                                 template.content.nodeType === Node.DOCUMENT_FRAGMENT_NODE &&
@@ -455,33 +475,45 @@ export default class Automata {
 
                 }(this));
 
-                const fragment = this.buildFragment(block.data, innerTemplate);
-                if (fragment !== null) {
+                const helperFragment = this.buildFragment(block.data, innerTemplate);
+                if (helperFragment !== null) {
 
                     // remove specifed elements before swap content
                     if (block.transformation.hasOwnProperty('remove') &&
                         block.transformation.remove !== "") {
-                        const elements = targetElem.querySelectorAll(block.transformation.remove);
+                        const elements = finalTarget.querySelectorAll(block.transformation.remove);
                         for (const element of elements) {
                             element.remove();
                         }
                     }
 
-                    this.swapContent(fragment, targetElem, block.transformation.swap);
-                    this.findTasksRecursively(targetElem);
+                    this.findTasksRecursively(helperFragment);
+                    this.swapContent(helperFragment, finalTarget, block.transformation.swap);
                 }
             }
 
         } else if (typeof block.data === 'string' && block.data !== "") {
 
-            const fragment = document.createDocumentFragment();
-            const blockData = document.createElement('div');
-            blockData.innerHTML = block.data;
-            while (blockData.firstChild) {
-                fragment.appendChild(blockData.firstChild);
+            const helperFragment = function (_this) {
+                const helperElem = document.createElement('div');
+                helperElem.innerHTML = block.data;
+
+                _this.reScript(helperElem);
+
+                return helperElem;
+            }(this);
+
+            // remove specifed elements before swap content
+            if (block.transformation.hasOwnProperty('remove') &&
+                block.transformation.remove !== "") {
+                const elements = finalTarget.querySelectorAll(block.transformation.remove);
+                for (const element of elements) {
+                    element.remove();
+                }
             }
-            this.swapContent(fragment, targetElem, block.transformation.swap);
-            this.findTasksRecursively(targetElem);
+
+            this.findTasksRecursively(helperFragment);
+            this.swapContent(helperFragment, finalTarget, block.transformation.swap);
 
         } else {
             throw new Error("There is no data or text for the transformation");
@@ -498,7 +530,7 @@ export default class Automata {
                 continue;
             }
 
-            // console.log("Task:", task);
+            console.log("Task:", task);
 
             const parameters = this.tasks[task];
             // the default trigger for Button is "click"
@@ -517,9 +549,9 @@ export default class Automata {
             }
 
             // custom event
-            if (parameters.trigger === 'init') { // fiered after page loaded
+            if (parameters.trigger === 'init') { // fired after page loaded
                 this.processEvent(element, parameters);
-                return;
+                continue;
             }
 
             // https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event
