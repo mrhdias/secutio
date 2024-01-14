@@ -1,8 +1,7 @@
-/* <![CDATA[ */
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-14 11:53:03
+    Last Modification: 2024-01-14 17:17:00
 
     Attention: This is work in progress
 
@@ -153,7 +152,7 @@ export default class Automata {
     // }
 
     swapContent(clone, target, swap = 'innerHTML') {
-        
+
         // ...clone.childNodes to remove helper div element
         // https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
         // innerHTMl is the default swap
@@ -527,25 +526,32 @@ export default class Automata {
 
         for (const task of elementTasks) {
             if (!this.tasks.hasOwnProperty(task)) {
-                continue;
+                throw new Error(`The task "${task}" not exist in tasks file!`);
+                // continue;
             }
 
             console.log("Task:", task);
 
             const parameters = this.tasks[task];
+
+            // replace with custom attributes
+            // the action can exist together with the attribute and
+            // is used by default when the attribute is not defined.
+            for (const key of ['action', 'method', 'trigger']) {
+                const parameter = 'attribute-'.concat(key);
+                if (parameters.hasOwnProperty(parameter) &&
+                    element.hasAttribute(parameters[parameter]) &&
+                    element.getAttribute(parameters[parameter]) !== "") {
+                    parameters[key] = element.getAttribute(parameters[parameter]);
+                }
+            }
+
             // the default trigger for Button is "click"
             if (!(parameters.hasOwnProperty('trigger') &&
                 this.triggers.has(parameters.trigger)) &&
                 (element.nodeName === 'BUTTON' ||
                     (element.nodeName === 'INPUT' && element.type === 'button'))) {
                 parameters.trigger = 'click';
-            }
-
-            // add custom action attribute
-            if (parameters.hasOwnProperty('attribute-action') &&
-                element.hasAttribute(parameters['attribute-action']) &&
-                element.getAttribute(parameters['attribute-action']) !== "") {
-                parameters["action"] = element.getAttribute(parameters['attribute-action']);
             }
 
             // custom event
@@ -630,5 +636,3 @@ export { Automata };
 
 // const automata = new Automata();
 // automata.init();
-
-/* ]]> */
