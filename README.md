@@ -3,6 +3,8 @@
 
 Makes the difficult parts easy. It's like htmx but different!
 
+You can implement the backend in any programming language since the framework is programming language agnostic.
+
 ## Quick Start
 Create an html file and add the library.
 ```html
