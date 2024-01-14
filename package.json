@@ -1,0 +1,28 @@
+{
+    "name": "automata",
+    "description": "Makes the difficult parts easy.",
+    "version": "v0.0.1-alpha",
+    "keywords": [
+        "front-end",
+        "framework",
+        "html",
+        "javascript",
+        "web"
+    ],
+    "homepage": "https://github.com/mrhdias/automata",
+    "author": "Henrique Dias",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mrhdias/automata.git"
+    },
+    "bugs": {
+        "url": "https://github.com/mrhdias/automata/issues"
+    },
+    "main": "dist/js/automata.js",
+    "unpkg": "dist/js/automata.min.js",
+    "scripts": {
+        "dist": "cp -r src/js/* dist/js/ && npm run-script uglify && gzip -9 -k -f dist/js/automata.min.js > dist/js/automata.min.js.gz && exit",
+        "uglify": "uglifyjs -m eval -o dist/automata.min.js dist/js/automata.js"
+    }
+}
