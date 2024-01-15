@@ -5,10 +5,32 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Henrique Dias">
+    <style>
+body {
+    font-family: sans-serif;
+    line-height: 2.0em;
+}
+    </style>
 </head>
 <body>
   Docs
     tasks file (tasks.json)
+    Task file example:
+    <pre>
+{
+    "get-contacts-list": {
+        "action": "/listcontacts",
+        "method": "get",
+        "trigger": "click"
+    },
+    "switch-contact-status": {
+        "action": "/statuscontact",
+        "method": "put",
+        "collect-data": "#contacts-list > table > tbody > tr > td > input[name]",
+        "trigger": "click"
+    }
+}
+    </pre>
     <ul>
         <li><strong>action</strong>: the action that is executed on the server when the event is triggered;</li>
         <li><strong>attribute-action</strong>: replaces the "action" property with the specified attribute, which should be present on the element with the 'data-tasks' attribute;</li>
