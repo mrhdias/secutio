@@ -1,7 +1,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-15 18:51:20
+    Last Modification: 2024-01-15 21:47:20
 
     Attention: This is work in progress
 
@@ -97,8 +97,7 @@ export default class Automata {
 
             if (response.headers.has("Content-Type")) {
                 // console.log("Content-Type:", response.headers.get("Content-Type"));
-
-                if (response.headers.get("Content-Type") === "application/json") {
+                if (response.headers.get("Content-Type").includes("application/json")) {
                     const json = await response.json();
                     // console.log('Response: ', json);
 
@@ -136,13 +135,20 @@ export default class Automata {
         return obj;
     }
 
-    async getDefinedTasks() {
-        // add code to get remote tasks
-        const response = await fetch(this.jsonFile, {
+    async getResource(filepath) {
+        // test if the extension is json
+        if (filepath.length <= '.json'.length || !filepath.endsWith('.json')) {
+            throw new Error(`The ${filepath} file is not valid for this operation!`);
+        }
+
+        const response = await fetch(filepath, {
             cache: "no-cache"
         });
+        if (!response.ok) {
+            throw new Error(`When fetching the file ${filepath} happen an HTTP error! status: ${response.status} ${response.statusText}`);
+        }
 
-        this.tasks = await response.json();
+        return await response.json();
     }
 
     // removeAllChildNodes(parent) {
@@ -385,7 +391,84 @@ export default class Automata {
         }
     }
 
+    async templateManager(finalTarget, properties, data) {
+        // console.log('Template Manager...');
+
+        if (properties.template.length < 3) {
+            throw new Error(`Short template name "${properties.template}"`);
+        }
+
+        const innerTemplate = await (async function (_this) {
+
+            switch (Array.from(properties.template)[0]) {
+                case '@':
+                    return await _this.fetchTemplate(properties.template.substring(1));
+                case '#':
+                    const template = document.getElementById(properties.template.substring(1));
+                    if (template === null) {
+                        throw new Error(`Template "${properties.template}" not exist!`);
+                    }
+                    // console.log('Template Node Name:', template.content.children[0].nodeName);
+                    if (template.content.hasChildNodes() &&
+                        template.content.nodeType === Node.DOCUMENT_FRAGMENT_NODE &&
+                        template.content.children[0].nodeName === 'TEXTAREA' &&
+                        template.content.children[0].hasAttribute('data-codeblock')) {
+                        // console.log('Template content:', template.content.children[0].value);
+                        return template.content.children[0].value;
+                    }
+                    throw new Error(`Invalid "${properties.template}" embedded template`);
+                default:
+                    throw new Error(`Invalid "${properties.template}" fetched template`);
+            }
+
+        }(this));
+
+        const helperFragment = this.buildFragment(data, innerTemplate);
+        if (helperFragment === null) {
+            throw new Error(`An error happened while processing the "${properties.template}" template`);
+        }
+
+        // remove specifed elements before swap content
+        if (properties.hasOwnProperty('remove') &&
+            properties.remove !== "") {
+            const elements = finalTarget.querySelectorAll(properties.remove);
+            for (const element of elements) {
+                element.remove();
+            }
+        }
+
+        this.findTasksRecursively(helperFragment);
+        this.swapContent(helperFragment, finalTarget, properties.swap);
+    }
+
     async processEvent(eventTarget, properties) {
+
+        // In events without action and method,
+        // the target can be replaced with templates.
+        if (!(properties.hasOwnProperty('action') &&
+            properties.hasOwnProperty('method'))) {
+
+            const finalTarget = (properties.target === 'this') ?
+                eventTarget : document.querySelector(properties.target);
+
+            if (finalTarget === null) {
+                throw new Error(`Template "${properties.target}" not exist!`);
+            }
+
+            if (properties.hasOwnProperty('template')) {
+                // If the "local-data" property is defined, fetch the data.
+                const jsonData = await (async function (_this) {
+                    if (properties.hasOwnProperty('file-path')) {
+                        return await _this.getResource(properties['file-path']);
+                    }
+                    return {};
+                }(this));
+                this.templateManager(finalTarget, properties, jsonData);
+            }
+
+            return;
+        }
+
 
         // event.preventDefault();
 
@@ -445,50 +528,7 @@ export default class Automata {
 
             // with templates
             if (properties.hasOwnProperty('template')) {
-                if (properties.template.length < 3) {
-                    throw new Error(`Short template name "${properties.template}"`);
-                }
-
-                const innerTemplate = await (async function (_this) {
-
-                    switch (Array.from(properties.template)[0]) {
-                        case '@':
-                            return await _this.fetchTemplate(properties.template.substring(1));
-                        case '#':
-                            const template = document.getElementById(properties.template.substring(1));
-                            if (template === null) {
-                                throw new Error(`Template "${properties.template}" not exist!`);
-                            }
-                            // console.log('Template Node Name:', template.content.children[0].nodeName);
-                            if (template.content.hasChildNodes() &&
-                                template.content.nodeType === Node.DOCUMENT_FRAGMENT_NODE &&
-                                template.content.children[0].nodeName === 'TEXTAREA' &&
-                                template.content.children[0].hasAttribute('data-codeblock')) {
-                                // console.log('Template content:', template.content.children[0].value);
-                                return template.content.children[0].value;
-                            }
-                            throw new Error(`Invalid "${properties.template}" embedded template`);
-                        default:
-                            throw new Error(`Invalid "${properties.template}" fetched template`);
-                    }
-
-                }(this));
-
-                const helperFragment = this.buildFragment(block.data, innerTemplate);
-                if (helperFragment !== null) {
-
-                    // remove specifed elements before swap content
-                    if (properties.hasOwnProperty('remove') &&
-                        properties.remove !== "") {
-                        const elements = finalTarget.querySelectorAll(properties.remove);
-                        for (const element of elements) {
-                            element.remove();
-                        }
-                    }
-
-                    this.findTasksRecursively(helperFragment);
-                    this.swapContent(helperFragment, finalTarget, properties.swap);
-                }
+                this.templateManager(finalTarget, properties, block.data);
             }
 
         } else if (typeof block.data === 'string' && block.data !== "") {
@@ -625,7 +665,8 @@ export default class Automata {
         observer.observe(targetNode[0], config);
         // end mutation observer
 
-        this.getDefinedTasks().then(() => {
+        this.getResource(this.jsonFile).then((data) => {
+            this.tasks = data;
             this.search4Tasks(targetNode[0]);
         });
     }
