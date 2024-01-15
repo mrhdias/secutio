@@ -8,5 +8,30 @@
 </head>
 <body>
   Docs
+    tasks file (tasks.json)
+    <ul>
+        <li><strong>action</strong></li>
+        <li><strong>attribute-action</strong></li>
+        <li><strong>method</strong>: GET, POST, PUT, PATCH, DELETE</li>
+        <li><strong>attribute-method</strong></li>
+        <li><strong>trigger</strong></li>
+        <li><strong>attribute-trigger</strong></li>
+        <li><strong>target</strong></li>
+        <li><strong>template</strong></li>
+        <li><strong>swap</strong>:
+            <ul>
+                inner, outer, before, after, append, delete, none
+                <li>inner: replaces the existing children of a Node with a specified new set of children (default).</li>
+                <li>outer: replaces this Element in the children list of its parent with a set of Node or string objects</li>
+                <li>before: inserts a set of node or string objects in the children list of this Element's parent, just before this Element.</li>
+                <li>after: inserts a set of node or string objects in the children list of the Element's parent, just after the Element.</li>
+                <li>prepend: inserts a set of node objects or string objects before the first child of the target element.</li>
+                <li>append: inserts a set of node objects or string objects after the target element.</li>
+                <li>delete: removes the target element from the DOM.</li>
+                <li>none: it exists only for convenience, but does not make any transformations.</li>
+            </ul>
+        </li>
+        <li><strong>file-path</strong></li>
+    </ul>
 </body>
 </html>
