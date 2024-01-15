@@ -10,15 +10,15 @@
   Docs
     tasks file (tasks.json)
     <ul>
-        <li><strong>action</strong></li>
-        <li><strong>attribute-action</strong></li>
-        <li><strong>method</strong>: GET, POST, PUT, PATCH, DELETE</li>
-        <li><strong>attribute-method</strong></li>
-        <li><strong>trigger</strong></li>
-        <li><strong>attribute-trigger</strong></li>
-        <li><strong>target</strong></li>
-        <li><strong>template</strong></li>
-        <li><strong>swap</strong>:
+        <li><strong>action</strong>: the action that is executed on the server when the event is triggered;</li>
+        <li><strong>attribute-action</strong>: replaces the "action" property with the specified attribute, which should be present on the element with the 'data-tasks' attribute;</li>
+        <li><strong>method</strong>: set a request method (GET, POST, PUT, PATCH or DELETE) to indicate the desired action to be performed for a given resource;</li>
+        <li><strong>attribute-method</strong>: replaces the "methodn" property with the specified attribute, which should be present on the element with the 'data-tasks' attribute;</li>
+        <li><strong>trigger</strong>: specifies the event that triggers the request;</li>
+        <li><strong>attribute-trigger</strong>: replaces the "trigger" property with the specified attribute, which should be present on the element with the 'data-tasks' attribute;</li>
+        <li><strong>target</strong>: uses the first document element that matches the specified CSS selector as the final destination for data association with the template;</li>
+        <li><strong>template</strong>: this property enables you to choose the template for use to associate the data. If the name starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Conversely, if it starts with "@", it signifies that it is a template to be loaded from the templates directory;</li>
+        <li><strong>swap</strong>: this property controls how content is swapped into the target element. The following "swaps" are available:
             <ul>
                 <li><span>inner</span>: replaces the target with a specified new set of children (default).</li>
                 <li><span>outer</span>: replaces the target in the children list of its parent with a set of node or string objects</li>
@@ -30,7 +30,9 @@
                 <li><span>none</span>: it exists only for convenience, but does not make any transformations.</li>
             </ul>
         </li>
+        <li><strong>collect-data</strong>: uses the data attributes given by the first element within the document that matches the specified selector as a source of data;</li>
         <li><strong>file-path</strong></li>
+        <li><strong>remove</strong>: uses a list of document elements matching the specified group of CSS selectors to be removed before inserting the template into the destination.</li>
     </ul>
 </body>
 </html>
