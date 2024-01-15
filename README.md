@@ -14,7 +14,7 @@ This library also enables the modification of only the target elements specified
 You can implement the backend in any programming language since the framework is programming language agnostic. A working example can be seen [here](examples/click-to-edit).
 
 ## Quick Start
-Create an html file and add the library.
+Create an HTML file and add the library.
 ```html
 <!doctype html>
 <html lang="en">
