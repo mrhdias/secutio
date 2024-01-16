@@ -55,15 +55,15 @@ The following properties can be used both client-side and server-side via custom
 - **target**: uses the first document element that matches the specified CSS selector as the final destination for data association with the template;
 - **template**: this property enables you to choose the template for use to associate the data. If the name starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Conversely, if it starts with "@", it signifies that it is a template to be loaded from the templates directory;
 - **remove**: uses a list of document elements matching the specified group of CSS selectors to be removed before inserting the template into the destination.
-- **swap**: this property controls how content is swapped into the target element;
-    - **inner**: replaces the target with a specified new set of children (default);
-    - **outer**: replaces the target in the children list of its parent with a set of node or string objects;
-    - **before**: inserts a set of node or string objects in the children list of target's parent, just before the target;
-    - **after**: inserts a set of node or string objects in the children list of the target's parent, just after the target;
-    - **prepend**: inserts a set of node objects or string objects before the first child of the target element;
-    - **append**: inserts a set of node objects or string objects after the target element;
-    - **delete**: removes the target element from the DOM;
-    - **none**: it exists only for convenience, but does not make any transformations.
+- **swap**: this property controls how content is swapped into the target element. The following "swaps" are available:
+    - <ins>inner</ins>: replaces the target with a specified new set of children (default);
+    - <ins>outer</ins>: replaces the target in the children list of its parent with a set of node or string objects;
+    - <ins>before</ins>: inserts a set of node or string objects in the children list of target's parent, just before the target;
+    - <ins>after</ins>: inserts a set of node or string objects in the children list of the target's parent, just after the target;
+    - <ins>prepend</ins>: inserts a set of node objects or string objects before the first child of the target element;
+    - <ins>append</ins>: inserts a set of node objects or string objects after the target element;
+    - <ins>delete</ins>: removes the target element from the DOM;
+    - <ins>none</ins>: it exists only for convenience, but does not make any transformations.
 
 **Special HTTP Header Automata-Transformation**
 
