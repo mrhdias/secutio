@@ -50,7 +50,7 @@ Description of each of the properties that can be used in tasks.
 - **collect-data**: uses the data attributes given by the first element within the document that matches the specified selector as a source of data;
 - **file-path**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
 
-The following properties can be used both client-side and server-side via custom header.
+The following properties can be used both client-side and server-side via custom HTTP header:
 
 - **target**: uses the first document element that matches the specified CSS selector as the final destination for data association with the template;
 - **template**: this property enables you to choose the template for use to associate the data. If the name starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Conversely, if it starts with "@", it signifies that it is a template to be loaded from the templates directory;
