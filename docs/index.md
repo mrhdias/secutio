@@ -65,7 +65,7 @@ The following properties can be used both client-side and server-side via custom
     - <ins>delete</ins>: removes the target element from the DOM;
     - <ins>none</ins>: it exists only for convenience, but does not make any transformations.
 
-**Special HTTP Header Automata-Transformation**
+### Special HTTP Header Automata-Transformation
 
 Custom HTTP header (Automata-Transformation) containing information about the transformation to be applied and overrides the same default properties if indicated in the tasks file.
 
@@ -76,3 +76,38 @@ HTTP/1.1 200 OK
 Automata-Transformation: target:#contacts-list;template:#contacts-list-tpl;swap:innerHTML
 Content-Type: application/json
 ```
+
+## Templates
+
+### Embedded
+
+Embedded templates should have a unique id property, and their content must be enclosed within a "textarea" element with the "data-codeblock" attribute.
+
+```html
+<template id="contacts-list-tpl">
+    <textarea data-codeblock>
+      <!-- HTML Content -->  
+    </textarea>
+</template>
+```
+
+### Loaded
+
+These templates reside in the templates directory and are loaded using the "template" property on tasks. The property must begin with the character @ followed by the name of the HTML file that contains the template.
+
+templates/example.html
+
+```html
+<!-- HTML Content -->
+```
+
+### Template Literals
+
+[Template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), formerly known as template strings. Template literals are enclosed with backtick ( &#96;) characters, enabling multi-line strings, string interpolation with embedded expressions, and special constructs known as tagged templates.
+
+```javascript
+let name = 'John Doe';
+console.log(`Hello ${name}!`);
+// returns Hello John Doe!
+```
+Template literals provide a concise and expressive way to create reusable components with HTML templates, simplifying variable insertion, supporting multiline strings, enabling expression evaluation, and enhancing overall code readability.
