@@ -5,13 +5,13 @@
 The following directory structure is just a suggestion and can be adjusted to the needs of each project.
 
 ```
-├── app
-│   ├── public
-│   │   ├── css
+├── app/
+│   ├── public/
+│   │   ├── css/
 │   │   │   ├── styles.css
-│   │   ├── js
+│   │   ├── js/
 │   │   │   ├── script.js
-│   │   ├── templates
+│   │   ├── templates/
 │   │   │   ├── tpl-example.html
 │   │   ├── tasks.json
 └── server.bin
@@ -41,18 +41,14 @@ Example of a tasks file.
 Description of each of the properties that can be used in tasks.
 
 - **action**: the action that is executed on the server when the event is triggered;
-- **attribute-action**: replaces the "action" property with the specified attribute, which should be present on the element with the 'data-tasks' attribute. This property overrides the default and allows actions to be unique.
-	Example: default action "/action/edit" and unique "/action/\<id\>/edit" for the element;
 - **method**: set a request method (GET, POST, PUT, PATCH or DELETE) to indicate the desired action to be performed for a given resource;
-- **attribute-method**: replaces the "method" property with the specified attribute, which should be present on the element with the 'data-tasks' attribute. This property override the default "method";
 - **trigger**: specifies the event that triggers the request;
-- **attribute-trigger**: replaces the "trigger" property with the specified attribute, which should be present on the element with the 'data-tasks' attribute. This property override the default "trigger";
 - **collect-data**: uses the data attributes given by the first element within the document that matches the specified selector as a source of data;
 - **file-path**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
 
 The following properties can be used both client-side and server-side via custom HTTP header:
 
-- **target**: uses the first document element that matches the specified CSS selector as the final destination for data association with the template;
+- **target**: uses the first document element that matches the specified CSS selector as the final destination for data association with the template. The string "this" indicates that the target of the replacement is the element that triggered the action;
 - **template**: this property enables you to choose the template for use to associate the data. If the name starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Conversely, if it starts with "@", it signifies that it is a template to be loaded from the templates directory;
 - **remove**: uses a list of document elements matching the specified group of CSS selectors to be removed before inserting the template into the destination.
 - **swap**: this property controls how content is swapped into the target element. The following "swaps" are available:
@@ -64,6 +60,36 @@ The following properties can be used both client-side and server-side via custom
     - <ins>append</ins>: inserts a set of node objects or string objects after the target element;
     - <ins>delete</ins>: removes the target element from the DOM;
     - <ins>none</ins>: it exists only for convenience, but does not make any transformations.
+
+#### Custom Attributes
+Custom attributes can be added to the elements where tasks are specified, allowing one to overrides the default value of one property with another.
+The attribute must always begin with the substring "attribute-" followed by the property to replace.
+This transformation is available for the following properties: action, file-path, method, remove, target, and swap.
+
+Example:
+
+tasks.json
+```json
+{
+    "load-paradises": {
+        "action": "/listparadises",
+	"attribute-action": "data-action",
+        "method": "get",
+        "trigger": "click",
+        "target": "#paradises",
+        "swap": "inner"
+    }
+}
+```
+The **attribute-action** replaces the "action" property with the specified attribute, which should be present on the element with the 'data-tasks' attribute.
+This property overrides the default and allows actions to be unique.
+
+template
+```html
+<div id="paradises"></div>
+<button data-tasks="load-paradises">List All</button>
+<button data-tasks="load-paradises" data-action="/listparadises/earth">Go To Earth</button>
+```
 
 ### Special HTTP Header Automata-Transformation
 
