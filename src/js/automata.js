@@ -1,7 +1,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-17 20:44:22
+    Last Modification: 2024-01-17 23:19:42
 
     Attention: This is work in progress
 
@@ -284,6 +284,27 @@ export default class Automata {
         }
     }
 
+    search4Tasks(parentNode) {
+        if (parentNode.hasChildNodes()) {
+            for (const node of parentNode.childNodes) {
+                // console.log('Search for tasks:', node.nodeType, node.nodeName);
+                if (node.nodeName !== 'TEMPLATE' &&
+                    node.nodeName !== 'SCRIPT' &&
+                    node.nodeType !== node.TEXT_NODE &&
+                    node.nodeType !== node.COMMENT_NODE &&
+                    node.nodeType !== node.DOCUMENT_FRAGMENT_NODE) {
+                    if (node.hasAttribute(this.dataAttribute)) {
+                        this.setTask(node);
+                    }
+                    if (node.hasChildNodes()) {
+                        this.search4Tasks(node);
+                    }
+                }
+            }
+        }
+    }
+
+    /* Code to delete
     findTasksRecursively(targetNode) {
 
         for (const node of targetNode.childNodes) {
@@ -302,6 +323,7 @@ export default class Automata {
             }
         }
     }
+    */
 
     minifyJavaScript(input) {
         // Minimizes any JavaScript code that
@@ -438,7 +460,8 @@ export default class Automata {
             }
         }
 
-        this.findTasksRecursively(helperFragment);
+        // this.findTasksRecursively(helperFragment);
+        this.search4Tasks(helperFragment);
         this.swapContent(helperFragment, finalTarget, properties.swap);
     }
 
@@ -570,7 +593,8 @@ export default class Automata {
                 }
             }
 
-            this.findTasksRecursively(helperFragment);
+            // this.findTasksRecursively(helperFragment);
+            this.search4Tasks(helperFragment);
             this.swapContent(helperFragment, finalTarget, properties.swap);
 
         } else {
@@ -591,6 +615,12 @@ export default class Automata {
             console.log("Task:", task);
 
             const properties = this.tasks[task];
+
+            if (properties.hasOwnProperty('attribute-trigger') &&
+                element.hasAttribute(properties['attribute-trigger']) &&
+                element.getAttribute(properties['attribute-trigger']) !== "") {
+                properties['trigger'] = element.getAttribute(properties['attribute-trigger']);
+            }
 
             // custom event
             if (properties.trigger === 'init') { // fired after page loaded
@@ -622,6 +652,7 @@ export default class Automata {
         }
     }
 
+    /* Code to delete
     search4Tasks(parentNode) {
         const elemWithTasks = parentNode.querySelectorAll("[" + this.dataAttribute + "]");
         if (elemWithTasks.length > 0) {
@@ -633,6 +664,7 @@ export default class Automata {
             }
         }
     }
+    */
 
     init() {
 

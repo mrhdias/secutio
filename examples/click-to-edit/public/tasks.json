@@ -14,7 +14,8 @@
         "trigger": "click",
         "target": "#details-contact",
         "template": "#edit-contact-tpl",
-        "swap": "outer"
+        "swap": "outer",
+        "remove": "#details-contact + script"
     },
     "save-contact": {
         "attribute-action": "data-task-action",

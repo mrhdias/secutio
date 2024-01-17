@@ -76,7 +76,7 @@ The following properties can be used both client-side and server-side via custom
 ### Custom Attributes
 Custom attributes can be added to the elements where tasks are specified, allowing one to overrides the default value of one property with another.
 The attribute must always begin with the substring "attribute-" followed by the property to replace.
-This transformation is available for the following properties: action, src-file, method, remove, target, and swap.
+This transformation is available for the following properties: action, src-file, method, remove, target, swap and trigger.
 
 Example:
 
@@ -93,7 +93,7 @@ tasks.json
     }
 }
 ```
-The **attribute-action** replaces the "action" property with the specified attribute, which should be present on the element with the 'data-tasks' attribute.
+The **attribute-action** replaces the "action" property with the specified attribute, which should be present on the element with the "data-tasks" attribute.
 This property overrides the default and allows actions to be unique.
 
 template
