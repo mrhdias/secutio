@@ -1,7 +1,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-17 18:53:43
+    Last Modification: 2024-01-17 20:44:22
 
     Attention: This is work in progress
 
@@ -449,11 +449,11 @@ export default class Automata {
         // is used by default when the attribute is not defined.
         for (const key of [
             'action',
-            'file-path',
             'method',
             'remove',
-            'target',
-            'swap'
+            'src-file',
+            'swap',
+            'target'
         ]) {
             const property = 'attribute-'.concat(key);
             if (properties.hasOwnProperty(property) &&
@@ -476,10 +476,10 @@ export default class Automata {
             }
 
             if (properties.hasOwnProperty('template')) {
-                // If the "local-data" property is defined, fetch the data.
+                // If the "src-file" property is defined, fetch the data.
                 const jsonData = await (async function (_this) {
-                    if (properties.hasOwnProperty('file-path')) {
-                        return await _this.getResource(properties['file-path']);
+                    if (properties.hasOwnProperty('src-file')) {
+                        return await _this.getResource(properties['src-file']);
                     }
                     return {};
                 }(this));

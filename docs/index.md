@@ -56,7 +56,7 @@ Description of each of the properties that can be used in tasks.
 - **method**: set a request method (GET, POST, PUT, PATCH or DELETE) to indicate the desired action to be performed for a given resource;
 - **trigger**: specifies the event that triggers the request;
 - **collect-data**: uses the data attributes given by the first element within the document that matches the specified selector as a source of data;
-- **file-path**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
+- **src-file**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
 
 The following properties can be used both client-side and server-side via custom HTTP header:
 
@@ -76,7 +76,7 @@ The following properties can be used both client-side and server-side via custom
 ### Custom Attributes
 Custom attributes can be added to the elements where tasks are specified, allowing one to overrides the default value of one property with another.
 The attribute must always begin with the substring "attribute-" followed by the property to replace.
-This transformation is available for the following properties: action, file-path, method, remove, target, and swap.
+This transformation is available for the following properties: action, src-file, method, remove, target, and swap.
 
 Example:
 
@@ -85,7 +85,7 @@ tasks.json
 {
     "load-paradises": {
         "action": "/listparadises",
-	"attribute-action": "data-action",
+        "attribute-action": "data-action",
         "method": "get",
         "trigger": "click",
         "target": "#paradises",
