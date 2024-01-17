@@ -1,7 +1,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-16 23:50:31
+    Last Modification: 2024-01-17 18:53:43
 
     Attention: This is work in progress
 
@@ -58,7 +58,7 @@ export default class Automata {
             // mode: 'cors',
             // origin: 'http://localhost:808'
         };
-        if (properties.method === 'put') {
+        if (['post', 'put', 'patch'].includes(properties.method)) {
             options['headers'] = {
                 "Content-Type": "application/json"
                 // "Accept": 'application/json'
@@ -138,14 +138,15 @@ export default class Automata {
     async getResource(filepath) {
         // test if the extension is json
         if (filepath.length <= '.json'.length || !filepath.endsWith('.json')) {
-            throw new Error(`The ${filepath} file is not valid for this operation!`);
+            throw new Error(`The ${filepath} file is not a valid JSON file!`);
         }
 
         const response = await fetch(filepath, {
             cache: "no-cache"
         });
         if (!response.ok) {
-            throw new Error(`When fetching the file ${filepath} happen an HTTP error! status: ${response.status} ${response.statusText}`);
+            throw new Error(`When fetching the file ${filepath} \
+                happen an HTTP error! status: ${response.status} ${response.statusText}`);
         }
 
         return await response.json();
@@ -443,6 +444,25 @@ export default class Automata {
 
     async processEvent(eventTarget, properties) {
 
+        // replace with custom attributes
+        // the action can exist together with the attribute and
+        // is used by default when the attribute is not defined.
+        for (const key of [
+            'action',
+            'file-path',
+            'method',
+            'remove',
+            'target',
+            'swap'
+        ]) {
+            const property = 'attribute-'.concat(key);
+            if (properties.hasOwnProperty(property) &&
+                eventTarget.hasAttribute(properties[property]) &&
+                eventTarget.getAttribute(properties[property]) !== "") {
+                properties[key] = eventTarget.getAttribute(properties[property]);
+            }
+        }
+
         // In events without action and method,
         // the target can be replaced with templates.
         if (!(properties.hasOwnProperty('action') &&
@@ -468,7 +488,6 @@ export default class Automata {
 
             return;
         }
-
 
         // event.preventDefault();
 
@@ -573,16 +592,10 @@ export default class Automata {
 
             const properties = this.tasks[task];
 
-            // replace with custom attributes
-            // the action can exist together with the attribute and
-            // is used by default when the attribute is not defined.
-            for (const key of ['action', 'method', 'trigger']) {
-                const property = 'attribute-'.concat(key);
-                if (properties.hasOwnProperty(property) &&
-                    element.hasAttribute(properties[property]) &&
-                    element.getAttribute(properties[property]) !== "") {
-                    properties[key] = element.getAttribute(properties[property]);
-                }
+            // custom event
+            if (properties.trigger === 'init') { // fired after page loaded
+                this.processEvent(element, properties);
+                continue;
             }
 
             // the default trigger for Button is "click"
@@ -591,12 +604,6 @@ export default class Automata {
                 (element.nodeName === 'BUTTON' ||
                     (element.nodeName === 'INPUT' && element.type === 'button'))) {
                 properties.trigger = 'click';
-            }
-
-            // custom event
-            if (properties.trigger === 'init') { // fired after page loaded
-                this.processEvent(element, properties);
-                continue;
             }
 
             // https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event
