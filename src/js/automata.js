@@ -1,7 +1,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-15 21:47:20
+    Last Modification: 2024-01-16 23:50:31
 
     Attention: This is work in progress
 
@@ -431,7 +431,7 @@ export default class Automata {
         // remove specifed elements before swap content
         if (properties.hasOwnProperty('remove') &&
             properties.remove !== "") {
-            const elements = finalTarget.querySelectorAll(properties.remove);
+            const elements = document.querySelectorAll(properties.remove);
             for (const element of elements) {
                 element.remove();
             }
@@ -545,7 +545,7 @@ export default class Automata {
             // remove specifed elements before swap content
             if (properties.hasOwnProperty('remove') &&
                 properties.remove !== "") {
-                const elements = finalTarget.querySelectorAll(properties.remove);
+                const elements = document.querySelectorAll(properties.remove);
                 for (const element of elements) {
                     element.remove();
                 }
@@ -557,7 +557,6 @@ export default class Automata {
         } else {
             throw new Error("There is no data or text for the transformation");
         }
-
     }
 
     async setTask(element) {
