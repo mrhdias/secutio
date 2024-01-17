@@ -1,5 +1,15 @@
 # Automata Documentation
 
+- [Project Directory Structure](#project-directory-structure)
+- [Tasks](#tasks)
+  - [Properties](#properties)
+  - [Custom Attributes](#custom-attributes)
+  - [Special HTTP Header Automata-Transformation](#special-http-header-automata-transformation)
+- [Templates](#templates)
+  - [Embedded](#embedded)
+  - [Loaded](#loaded)
+  - [Template Literals](#template-literals)
+
 ## Project Directory Structure
 
 The following directory structure is just a suggestion and can be adjusted to the needs of each project.
@@ -38,6 +48,8 @@ Example of a tasks file.
     }
 }
 ```
+### Properties
+
 Description of each of the properties that can be used in tasks.
 
 - **action**: the action that is executed on the server when the event is triggered;
@@ -61,7 +73,7 @@ The following properties can be used both client-side and server-side via custom
     - <ins>delete</ins>: removes the target element from the DOM;
     - <ins>none</ins>: it exists only for convenience, but does not make any transformations.
 
-#### Custom Attributes
+### Custom Attributes
 Custom attributes can be added to the elements where tasks are specified, allowing one to overrides the default value of one property with another.
 The attribute must always begin with the substring "attribute-" followed by the property to replace.
 This transformation is available for the following properties: action, file-path, method, remove, target, and swap.
