@@ -1,7 +1,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-17 23:19:42
+    Last Modification: 2024-01-19 17:27:06
 
     Attention: This is work in progress
 
@@ -18,8 +18,8 @@
 export default class Automata {
 
     constructor(parameters = {
-        "attribute": "data-tasks",
-        "json_file": "tasks.json",
+        "tasks_attribute": "data-tasks",
+        "tasks_file": "tasks.json",
         "start_element": "body"
     }) {
 
@@ -44,8 +44,8 @@ export default class Automata {
             'patch',
             'delete',
         ]);
-        this.dataAttribute = parameters["attribute"];
-        this.jsonFile = parameters["json_file"];
+        this.tasksAttribute = parameters["tasks_attribute"];
+        this.tasksFile = parameters["tasks_file"];
         this.startElement = parameters["start_element"];
         this.tasks = {};
     }
@@ -157,6 +157,86 @@ export default class Automata {
     //        parent.removeChild(parent.firstChild);
     //    }
     // }
+
+    setCustomAttributes(tasksListStr) {
+
+        const subtasks = tasksListStr.split(/ +/);
+
+        for (const subtask of subtasks) {
+
+            if (!this.tasks.hasOwnProperty(subtask)) {
+                throw new Error(`The subtask "${subtask}" not exist in tasks file!`);
+            }
+            if (!this.tasks[subtask].hasOwnProperty('selector')) {
+                continue;
+            }
+
+            const properties = this.tasks[subtask];
+
+            for (const property in properties) {
+                if (!['selector', 'remove', 'add'].includes(property)) {
+                    throw new Error(`The property "${property}" in subtask "${subtask}" is not allowed with property "selector"!`);
+                }
+            }
+
+            if (Object.prototype.toString.call(properties) !== '[object Object]') {
+                throw new Error(`The properties of subtask "${subtask}" is not a object!`);
+            }
+            if (!properties.hasOwnProperty('selector')) {
+                throw new Error(`The properties of subtask "${subtask}" not have a selector!`);
+            }
+
+            const elements = document.querySelectorAll(properties['selector']);
+            // if empty removes all selected elements
+            if (properties.hasOwnProperty('remove') &&
+                Object.keys(properties['remove']).length === 0) {
+                for (const element of elements) {
+                    element.remove();
+                }
+                continue
+            }
+
+            for (const element of elements) {
+                if (properties.hasOwnProperty('add')) {
+                    if (properties['add'].hasOwnProperty('class')) {
+                        element.classList.add(properties['add']['class']);
+                    }
+                    if (properties['add'].hasOwnProperty('style')) {
+                        if (element.hasAttribute('style')) {
+                            const styleProperties = this.attrsStr2Obj(properties['add']['style']);
+                            for (const key in styleProperties) {
+                                element.style[key] = styleProperties[key];
+                            }
+                        } else {
+                            element.setAttribute('style', properties['add']['style']);
+                        }
+                    }
+                } else if (properties.hasOwnProperty('remove')) {
+                    if (properties['remove'].hasOwnProperty('class')) {
+                        if (element.classList.contains(properties['remove']['class'])) {
+                            element.classList.remove(properties['remove']['class']);
+                        }
+                    }
+                    if (properties['remove'].hasOwnProperty('style')) {
+                        if (element.hasAttribute('style')) {
+                            // check if the style exist remove with regex
+                            // properties['remove']['style']
+                            let style = element.style;
+                            const styleProperties = properties['remove']['style'].split(/ +/);
+                            for (const p of styleProperties) {
+                                if (element.style.hasOwnProperty(p)) {
+                                    delete style[p];
+                                }
+                            }
+                            element.style = style;
+                            // console.log('Element Styles:', element.style.hasOwnProperty('color'));
+                            // element.removeAttribute('style');
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     swapContent(clone, target, swap = 'inner') {
 
@@ -293,7 +373,7 @@ export default class Automata {
                     node.nodeType !== node.TEXT_NODE &&
                     node.nodeType !== node.COMMENT_NODE &&
                     node.nodeType !== node.DOCUMENT_FRAGMENT_NODE) {
-                    if (node.hasAttribute(this.dataAttribute)) {
+                    if (node.hasAttribute(this.tasksAttribute)) {
                         this.setTask(node);
                     }
                     if (node.hasChildNodes()) {
@@ -303,27 +383,6 @@ export default class Automata {
             }
         }
     }
-
-    /* Code to delete
-    findTasksRecursively(targetNode) {
-
-        for (const node of targetNode.childNodes) {
-            if (node.nodeType === Node.TEXT_NODE ||
-                node.nodeType === Node.COMMENT_NODE) {
-                continue;
-            }
-
-            if (node.hasChildNodes()) {
-                this.findTasksRecursively(node);
-            }
-
-            if (node.hasAttribute(this.dataAttribute) &&
-                node.getAttribute(this.dataAttribute) !== "") {
-                this.setTask(node);
-            }
-        }
-    }
-    */
 
     minifyJavaScript(input) {
         // Minimizes any JavaScript code that
@@ -414,6 +473,21 @@ export default class Automata {
         }
     }
 
+    sequenceTasks(helperFragment, finalTarget, properties) {
+        if (properties.hasOwnProperty('before') &&
+            properties.before !== "") {
+            this.setCustomAttributes(properties.before)
+        }
+
+        this.search4Tasks(helperFragment);
+        this.swapContent(helperFragment, finalTarget, properties.swap);
+
+        if (properties.hasOwnProperty('after') &&
+            properties.after !== "") {
+            this.setCustomAttributes(properties.after)
+        }
+    }
+
     async templateManager(finalTarget, properties, data) {
         // console.log('Template Manager...');
 
@@ -451,18 +525,7 @@ export default class Automata {
             throw new Error(`An error happened while processing the "${properties.template}" template`);
         }
 
-        // remove specifed elements before swap content
-        if (properties.hasOwnProperty('remove') &&
-            properties.remove !== "") {
-            const elements = document.querySelectorAll(properties.remove);
-            for (const element of elements) {
-                element.remove();
-            }
-        }
-
-        // this.findTasksRecursively(helperFragment);
-        this.search4Tasks(helperFragment);
-        this.swapContent(helperFragment, finalTarget, properties.swap);
+        this.sequenceTasks(helperFragment, finalTarget, properties);
     }
 
     async processEvent(eventTarget, properties) {
@@ -473,10 +536,11 @@ export default class Automata {
         for (const key of [
             'action',
             'method',
-            'remove',
             'src-file',
             'swap',
-            'target'
+            'target',
+            'after',
+            'before'
         ]) {
             const property = 'attribute-'.concat(key);
             if (properties.hasOwnProperty(property) &&
@@ -495,7 +559,7 @@ export default class Automata {
                 eventTarget : document.querySelector(properties.target);
 
             if (finalTarget === null) {
-                throw new Error(`Template "${properties.target}" not exist!`);
+                throw new Error(`Target "${properties.target}" not exist!`);
             }
 
             if (properties.hasOwnProperty('template')) {
@@ -584,18 +648,7 @@ export default class Automata {
                 return helperElem;
             }(this);
 
-            // remove specifed elements before swap content
-            if (properties.hasOwnProperty('remove') &&
-                properties.remove !== "") {
-                const elements = document.querySelectorAll(properties.remove);
-                for (const element of elements) {
-                    element.remove();
-                }
-            }
-
-            // this.findTasksRecursively(helperFragment);
-            this.search4Tasks(helperFragment);
-            this.swapContent(helperFragment, finalTarget, properties.swap);
+            this.sequenceTasks(helperFragment, finalTarget, properties);
 
         } else {
             throw new Error("There is no data or text for the transformation");
@@ -604,6 +657,8 @@ export default class Automata {
 
     async setTask(element) {
 
+        // It is possible to process several tasks as long
+        // as the trigger for each task is different.
         const elementTasks = element.dataset.tasks.split(/ +/);
 
         for (const task of elementTasks) {
@@ -614,7 +669,9 @@ export default class Automata {
 
             console.log("Task:", task);
 
-            const properties = this.tasks[task];
+            // const properties = this.tasks[task];
+            // Leave original tasks intact
+            const properties = structuredClone(this.tasks[task]);
 
             if (properties.hasOwnProperty('attribute-trigger') &&
                 element.hasAttribute(properties['attribute-trigger']) &&
@@ -622,18 +679,40 @@ export default class Automata {
                 properties['trigger'] = element.getAttribute(properties['attribute-trigger']);
             }
 
+            if (!properties.hasOwnProperty('disabled')) {
+                properties['disabled'] = false;
+            }
+
             // custom event
             if (properties.trigger === 'init') { // fired after page loaded
-                this.processEvent(element, properties);
+                if (properties.disabled === false) {
+                    this.processEvent(element, properties);
+                }
                 continue;
             }
 
-            // the default trigger for Button is "click"
+            // set the default trigger property
             if (!(properties.hasOwnProperty('trigger') &&
-                this.triggers.has(properties.trigger)) &&
-                (element.nodeName === 'BUTTON' ||
-                    (element.nodeName === 'INPUT' && element.type === 'button'))) {
-                properties.trigger = 'click';
+                this.triggers.has(properties.trigger))) {
+
+                properties.trigger = function () {
+                    // if submit form
+                    if (element.nodeName === 'FORM') {
+                        return 'submit';
+                    }
+
+                    // if a button
+                    if (element.nodeName === 'BUTTON') {
+                        return (element.type === 'submit') ? 'submit' : 'click';
+                    }
+
+                    // input type button
+                    if (element.nodeName === 'INPUT' && element.type === 'button') {
+                        return 'click';
+                    }
+
+                    throw new Error(`No trigger defined for "${task}"!`);
+                }();
             }
 
             // https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event
@@ -647,24 +726,12 @@ export default class Automata {
 
             targetElem.addEventListener(properties.trigger, (event) => {
                 event.preventDefault();
-                this.processEvent(event.target, properties);
+                if (properties.disabled === false) {
+                    this.processEvent(event.target, properties);
+                }
             });
         }
     }
-
-    /* Code to delete
-    search4Tasks(parentNode) {
-        const elemWithTasks = parentNode.querySelectorAll("[" + this.dataAttribute + "]");
-        if (elemWithTasks.length > 0) {
-            for (const element of elemWithTasks) {
-                if (element.dataset.tasks !== "") {
-                    // console.log(element.dataset.tasks);
-                    this.setTask(element);
-                }
-            }
-        }
-    }
-    */
 
     init() {
 
@@ -703,7 +770,7 @@ export default class Automata {
         observer.observe(targetNode[0], config);
         // end mutation observer
 
-        this.getResource(this.jsonFile).then((data) => {
+        this.getResource(this.tasksFile).then((data) => {
             this.tasks = data;
             this.search4Tasks(targetNode[0]);
         });
