@@ -1,7 +1,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-19 18:25:19
+    Last Modification: 2024-01-19 20:47:55
 
     Attention: This is work in progress
 
@@ -197,21 +197,12 @@ export default class Automata {
             }
 
             for (const element of elements) {
-                if (properties.hasOwnProperty('add')) {
-                    if (properties['add'].hasOwnProperty('class')) {
-                        element.classList.add(properties['add']['class']);
+                // first remove anything from element
+                if (properties.hasOwnProperty('remove')) {
+                    if (properties['remove'].hasOwnProperty('attribute')) {
+                        // if the attribute is class or style remove and continue
+                        console.log('unimplemented');
                     }
-                    if (properties['add'].hasOwnProperty('style')) {
-                        if (element.hasAttribute('style')) {
-                            const styleProperties = this.attrsStr2Obj(properties['add']['style']);
-                            for (const key in styleProperties) {
-                                element.style[key] = styleProperties[key];
-                            }
-                        } else {
-                            element.setAttribute('style', properties['add']['style']);
-                        }
-                    }
-                } else if (properties.hasOwnProperty('remove')) {
                     if (properties['remove'].hasOwnProperty('class')) {
                         if (element.classList.contains(properties['remove']['class'])) {
                             element.classList.remove(properties['remove']['class']);
@@ -231,6 +222,26 @@ export default class Automata {
                             element.style = style;
                             // console.log('Element Styles:', element.style.hasOwnProperty('color'));
                             // element.removeAttribute('style');
+                        }
+                    }
+                }
+
+                // and then add anything
+                if (properties.hasOwnProperty('add')) {
+                    if (properties['add'].hasOwnProperty('attribute')) {
+                        console.log('unimplemented');
+                    }
+                    if (properties['add'].hasOwnProperty('class')) {
+                        element.classList.add(properties['add']['class']);
+                    }
+                    if (properties['add'].hasOwnProperty('style')) {
+                        if (element.hasAttribute('style')) {
+                            const styleProperties = this.attrsStr2Obj(properties['add']['style']);
+                            for (const key in styleProperties) {
+                                element.style[key] = styleProperties[key];
+                            }
+                        } else {
+                            element.setAttribute('style', properties['add']['style']);
                         }
                     }
                 }
