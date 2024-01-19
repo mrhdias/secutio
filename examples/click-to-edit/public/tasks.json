@@ -15,7 +15,7 @@
         "target": "#details-contact",
         "template": "#edit-contact-tpl",
         "swap": "outer",
-        "remove": "#details-contact + script"
+        "before": "remove-script"
     },
     "save-contact": {
         "attribute-action": "data-task-action",
@@ -24,5 +24,9 @@
         "target": "#details-contact",
         "template": "#details-contact-tpl",
         "swap": "outer"
+    },
+    "remove-script": {
+        "selector": "#details-contact + script",
+        "remove": {}
     }
 }
