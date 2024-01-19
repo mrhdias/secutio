@@ -6,7 +6,7 @@
   - [Custom Attributes](#custom-attributes)
   - [Special HTTP Header Automata-Transformation](#special-http-header-automata-transformation)
 - [Subasks](#subtasks)
-  - Properties
+  - [Properties](#properties-1)
 - [Templates](#templates)
   - [Embedded](#embedded)
   - [Loaded](#loaded)
