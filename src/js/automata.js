@@ -1,7 +1,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-19 17:27:06
+    Last Modification: 2024-01-19 18:25:19
 
     Attention: This is work in progress
 
@@ -158,7 +158,7 @@ export default class Automata {
     //    }
     // }
 
-    setCustomAttributes(tasksListStr) {
+    runSubtasks(tasksListStr) {
 
         const subtasks = tasksListStr.split(/ +/);
 
@@ -476,7 +476,7 @@ export default class Automata {
     sequenceTasks(helperFragment, finalTarget, properties) {
         if (properties.hasOwnProperty('before') &&
             properties.before !== "") {
-            this.setCustomAttributes(properties.before)
+            this.runSubtasks(properties.before)
         }
 
         this.search4Tasks(helperFragment);
@@ -484,7 +484,7 @@ export default class Automata {
 
         if (properties.hasOwnProperty('after') &&
             properties.after !== "") {
-            this.setCustomAttributes(properties.after)
+            this.runSubtasks(properties.after)
         }
     }
 
