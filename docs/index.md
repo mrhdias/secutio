@@ -5,6 +5,8 @@
   - [Properties](#properties)
   - [Custom Attributes](#custom-attributes)
   - [Special HTTP Header Automata-Transformation](#special-http-header-automata-transformation)
+- [Subasks](#subtasks)
+  - Properties
 - [Templates](#templates)
   - [Embedded](#embedded)
   - [Loaded](#loaded)
@@ -50,8 +52,7 @@ Example of a tasks file.
 ```
 ### Properties
 
-Description of each of the properties that can be used in tasks.
-
+Description of each of the properties that can be used in tasks:
 - **action**: the action that is executed on the server when the event is triggered;
 - **method**: set a request method (GET, POST, PUT, PATCH or DELETE) to indicate the desired action to be performed for a given resource;
 - **trigger**: specifies the event that triggers the request;
@@ -59,10 +60,10 @@ Description of each of the properties that can be used in tasks.
 - **src-file**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
 
 The following properties can be used both client-side and server-side via custom HTTP header:
-
 - **target**: uses the first document element that matches the specified CSS selector as the final destination for data association with the template. The string "this" indicates that the target of the replacement is the element that triggered the action;
 - **template**: this property enables you to choose the template for use to associate the data. If the name starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Conversely, if it starts with "@", it signifies that it is a template to be loaded from the templates directory;
-- **remove**: uses a list of document elements matching the specified group of CSS selectors to be removed before inserting the template into the destination.
+- **before**: List of subtasks with the CSS "selector" property to be executed before swapping the new content at the target;
+- **after**: List of subtasks with the CSS "selector" property to be executed after swapping the new content in the target;
 - **swap**: this property controls how content is swapped into the target element. The following "swaps" are available:
     - <ins>inner</ins>: replaces the target with a specified new set of children (default);
     - <ins>outer</ins>: replaces the target in the children list of its parent with a set of node or string objects;
@@ -76,7 +77,7 @@ The following properties can be used both client-side and server-side via custom
 ### Custom Attributes
 Custom attributes can be added to the elements where tasks are specified, allowing one to overrides the default value of one property with another.
 The attribute must always begin with the substring "attribute-" followed by the property to replace.
-This transformation is available for the following properties: action, src-file, method, remove, target, swap and trigger.
+This transformation is available for the following properties: action, src-file, method, remove, target, swap, before, after and trigger.
 
 Example:
 
@@ -114,8 +115,40 @@ HTTP/1.1 200 OK
 Automata-Transformation: target:#contacts-list;template:#contacts-list-tpl;swap:innerHTML
 Content-Type: application/json
 ```
+## Subtasks
+
+These special tasks are executed **before** or **after** the task with the event that triggered the action and must have the "selector" property.
+
+Example of a subtask:
+
+tasks.json
+```json
+{
+    "active-paradise": {
+        "selector": ".paradises > .earth",
+        "add": {
+            "class": "active",
+            "style": "color: #0d6efd;"
+        }
+    }
+}
+```
+### Properties
+
+Description of each of the properties allowed in the subtasks:
+- **selector**
+- **add**:
+  - <ins>attribute</ins>
+  - <ins>class</ins>
+  - <ins>style</ins>
+- **remove**: Uses the list of document elements that match the specified CSS "selector" to remove them before/after inserting the content into the target. If the property is empty "{}", remove the element itself.
+  - <ins>attribute</ins>
+  - <ins>class</ins>
+  - <ins>style</ins>
 
 ## Templates
+
+These templates can be used to generate HTML content on the client side and can be embedded into the HTML page or loaded. This has nothing to do with the templating engines used on the server side to render pages before sending them to the client.
 
 ### Embedded
 
