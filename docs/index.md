@@ -53,26 +53,26 @@ Example of a tasks file.
 ### Properties
 
 Description of each of the properties that can be used in tasks:
-- **action**: the action that is executed on the server when the event is triggered;
-- **method**: set a request method (GET, POST, PUT, PATCH or DELETE) to indicate the desired action to be performed for a given resource;
-- **trigger**: specifies the event that triggers the request;
-- **collect-data**: uses the data attributes given by the first element within the document that matches the specified selector as a source of data;
+- **action**: The action that is executed on the server when the event is triggered;
+- **method**: Set a request method (GET, POST, PUT, PATCH or DELETE) to indicate the desired action to be performed for a given resource;
+- **trigger**: Specifies the event that triggers the request;
+- **collect-data**: Uses the data attributes given by the first element within the document that matches the specified selector as a source of data;
 - **src-file**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
 
 The following properties can be used both client-side and server-side via custom HTTP header:
-- **target**: uses the first document element that matches the specified CSS selector as the final destination for data association with the template. The string "this" indicates that the target of the replacement is the element that triggered the action;
-- **template**: this property enables you to choose the template for use to associate the data. If the name starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Conversely, if it starts with "@", it signifies that it is a template to be loaded from the templates directory;
+- **target**: Uses the first document element that matches the specified CSS selector as the final destination for data association with the template. The string "this" indicates that the target of the replacement is the element that triggered the action;
+- **template**: This property enables you to choose the template for use to associate the data. If the name starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Conversely, if it starts with "@", it signifies that it is a template to be loaded from the templates directory;
 - **before**: List of subtasks with the CSS "selector" property to be executed before swapping the new content at the target;
 - **after**: List of subtasks with the CSS "selector" property to be executed after swapping the new content in the target;
-- **swap**: this property controls how content is swapped into the target element. The following "swaps" are available:
-    - <ins>inner</ins>: replaces the target with a specified new set of children (default);
-    - <ins>outer</ins>: replaces the target in the children list of its parent with a set of node or string objects;
-    - <ins>before</ins>: inserts a set of node or string objects in the children list of target's parent, just before the target;
-    - <ins>after</ins>: inserts a set of node or string objects in the children list of the target's parent, just after the target;
-    - <ins>prepend</ins>: inserts a set of node objects or string objects before the first child of the target element;
-    - <ins>append</ins>: inserts a set of node objects or string objects after the target element;
-    - <ins>delete</ins>: removes the target element from the DOM;
-    - <ins>none</ins>: it exists only for convenience, but does not make any transformations.
+- **swap**: This property controls how content is swapped into the target element. The following "swaps" are available:
+    - <ins>inner</ins>: Replaces the target with a specified new set of children (default);
+    - <ins>outer</ins>: Replaces the target in the children list of its parent with a set of node or string objects;
+    - <ins>before</ins>: Inserts a set of node or string objects in the children list of target's parent, just before the target;
+    - <ins>after</ins>: Inserts a set of node or string objects in the children list of the target's parent, just after the target;
+    - <ins>prepend</ins>: Inserts a set of node objects or string objects before the first child of the target element;
+    - <ins>append</ins>: Inserts a set of node objects or string objects after the target element;
+    - <ins>delete</ins>: Removes the target element from the DOM;
+    - <ins>none</ins>: It exists only for convenience, but does not make any transformations.
 
 ### Custom Attributes
 Custom attributes can be added to the elements where tasks are specified, allowing one to overrides the default value of one property with another.
@@ -136,12 +136,12 @@ tasks.json
 ### Properties
 
 Description of each of the properties allowed in the subtasks:
-- **selector**
-- **add**:
+- **selector**: Returns a list of elements that match the specified group of selectors. The "remove" and "add" properties are applied to this list of elements;
+- **remove**: Uses the list of document elements that match the specified CSS "selector" to remove attributes or properties of them before/after inserting the content into the target. If the property is empty "{}", remove the element itself. If the "remove" and "add" property is present in the subtask, the first one to be executed is "remove".
   - <ins>attribute</ins>
   - <ins>class</ins>
   - <ins>style</ins>
-- **remove**: Uses the list of document elements that match the specified CSS "selector" to remove them before/after inserting the content into the target. If the property is empty "{}", remove the element itself.
+- **add**: Uses the list of document elements that match the specified CSS "selector" to add attributes or modify them before/after inserting the content into the target.
   - <ins>attribute</ins>
   - <ins>class</ins>
   - <ins>style</ins>
