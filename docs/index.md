@@ -147,6 +147,8 @@ Description of each of the properties allowed in the subtasks:
   - <ins>class</ins>: String with class names separated by space;
   - <ins>style</ins>: String in the form "property; value; property n; value;..."
 
+In the "class" and "style" properties, which are already attributes, the value is a string and in the attributes it is a list in "remove" and an "object" in "add".
+
 ## Templates
 
 These templates can be used to generate HTML content on the client side and can be embedded into the HTML page or loaded. This has nothing to do with the templating engines used on the server side to render pages before sending them to the client.
