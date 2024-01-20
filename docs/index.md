@@ -186,7 +186,10 @@ Template literals provide a concise and expressive way to create reusable compon
 
 ## Todo List
 
-- [ ] In addition to the "add" and "remove" properties in subtasks, also add the "replace" property for attributes, classes and styles. 
-- [ ] Creates a property on tasks to store data locally on the client side.
+- [ ] In addition to the "add" and "remove" properties in subtasks, also add the "replace" property for attributes, classes and styles;
+- [ ] Creates a property on tasks to store data locally on the client side;
+- [ ] Add more examples;
+- [ ] Add more information to documentation;
+- [ ] Add custom HTML components.
 
 
