@@ -11,6 +11,7 @@
   - [Embedded](#embedded)
   - [Loaded](#loaded)
   - [Template Literals](#template-literals)
+- [Todo List](#todo-list)
 
 ## Project Directory Structure
 
@@ -138,13 +139,13 @@ tasks.json
 Description of each of the properties allowed in the subtasks:
 - **selector**: Returns a list of elements that match the specified group of selectors. The "remove" and "add" properties are applied to this list of elements;
 - **remove**: Uses the list of document elements that match the specified CSS "selector" to remove attributes or properties of them before/after inserting the content into the target. If the property is empty "{}", remove the element itself. If the "remove" and "add" property is present in the subtask, the first one to be executed is "remove".
-  - <ins>attribute</ins>
-  - <ins>class</ins>
-  - <ins>style</ins>
+  - <ins>attributes</ins>: List (array) of attributes to remove on each selected element;
+  - <ins>class</ins>: String with class names separated by space;
+  - <ins>style</ins>: String with property names separated by space;
 - **add**: Uses the list of document elements that match the specified CSS "selector" to add attributes or modify them before/after inserting the content into the target.
-  - <ins>attribute</ins>
-  - <ins>class</ins>
-  - <ins>style</ins>
+  - <ins>attributes</ins>: Object with attributes in the form (attribute/value);
+  - <ins>class</ins>: String with class names separated by space;
+  - <ins>style</ins>: String in the form "property; value; property n; value;..."
 
 ## Templates
 
@@ -182,3 +183,10 @@ console.log(`Hello ${name}!`);
 // returns Hello John Doe!
 ```
 Template literals provide a concise and expressive way to create reusable components with HTML templates, simplifying variable insertion, supporting multiline strings, enabling expression evaluation, and enhancing overall code readability.
+
+## Todo List
+
+- [ ] In addition to the "add" and "remove" properties in subtasks, also add the "replace" property for attributes, classes and styles. 
+- [ ] Creates a property on tasks to store data locally on the client side.
+
+
