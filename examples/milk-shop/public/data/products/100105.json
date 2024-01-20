@@ -1,0 +1,15 @@
+{
+    "id": "5",
+    "name": "Peach Yogurt",
+    "description": "Praesent fringilla risus id semper aliquam. Nunc ut diam sed dolor posuere dignissim vel non sapien. Cras mollis mi a elit vestibulum, mollis fermentum nunc lobortis.",
+    "sku": "100105",
+    "stock_quantity": "17",
+    "regular_price": "7.50",
+    "sale_price": "5.00",
+    "categories": ["Yogurts", "Sed Vel"],
+    "image": {
+        "src": "assets/images/products/101005.jpg",
+        "alt": "Peach Yogurt"
+    },
+    "currency_symbol": "€"
+}

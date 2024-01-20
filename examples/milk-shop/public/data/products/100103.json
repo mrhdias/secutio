@@ -1,0 +1,15 @@
+{
+    "id": "3",
+    "name": "Lorem Ipsum",
+    "description": "Nullam ultricies vel nunc a fermentum. Mauris laoreet bibendum lectus eu molestie. Pellentesque lobortis fringilla urna in scelerisque.",
+    "sku": "100103",
+    "stock_quantity": "6",
+    "regular_price": "15.00",
+    "sale_price": "11.00",
+    "categories": ["Fusce Pretium", "Sed Vel"],
+    "image": {
+        "src": "assets/images/products/101003.jpg",
+        "alt": "Lorem Ipsum"
+    },
+    "currency_symbol": "€"
+}

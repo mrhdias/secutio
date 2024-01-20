@@ -1,0 +1,41 @@
+[
+    {
+        "id": "1",
+        "name": "Phasellus Vitae",
+        "short_description": "Donec sem augue, gravida vel sapien sit amet, maximus condimentum tellus.",
+        "sku": "100101",
+        "regular_price": "12.02",
+        "sale_price": "10.00",
+        "image": {
+            "src": "assets/images/products/101001.jpg",
+            "alt": "Phasellus Vitae"
+        },
+        "currency_symbol": "€"
+    },
+    {
+        "id": "2",
+        "name": "Etiam Mollis",
+        "short_description": "Quisque ac purus convallis, accumsan nisi viverra, lacinia purus.",
+        "sku": "100102",
+        "regular_price": "14.10",
+        "sale_price": "12.00",
+        "image": {
+            "src": "assets/images/products/101002.jpg",
+            "alt": "Etiam Mollis"
+        },
+        "currency_symbol": "€"
+    },
+    {
+        "id": "3",
+        "name": "Lorem Ipsum",
+        "short_description": "Duis ultrices tortor quis mollis pellentesque. Vestibulum ornare nec elit eu pharetra.",
+        "sku": "100103",
+        "regular_price": "15.00",
+        "sale_price": "11.00",
+        "image": {
+            "src": "assets/images/products/101003.jpg",
+            "alt": "Lorem Ipsum"
+        },
+        "currency_symbol": "€"
+    }
+]

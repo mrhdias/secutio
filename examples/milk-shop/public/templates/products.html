@@ -1,0 +1,18 @@
+<div id="products-list" class="container text-center" style="margin-top:50px;margin-bottom:50px">
+    <div class="card-group" style="gap: 20px;">
+        ${data.map(record => `<div class="col">
+            <div class="card" style="width: 18rem; margin: 0 auto;">
+                <img data-tasks="show-product-dialog" data-src-file="data/products/${record.sku}.json"
+                    src="${record.image.src}" class="card-img-top" alt="${record.image.alt}">
+                <div class="card-body">
+                    <h5 data-tasks="show-product-dialog" data-src-file="data/products/${record.sku}.json"
+                        class="card-title">${record.name}</h5>
+                    <p class="card-text">${record.short_description}</p>
+                    <h5><span class="regular-price">${record.currency_symbol}${record.regular_price}</span>
+                        ${record.currency_symbol}${record.sale_price}</h5>
+                    <a href="#" class="btn btn-primary">Add To Cart</a>
+                </div>
+            </div>
+        </div>`).join("")}
+    </div>
+</div>

@@ -1,0 +1,15 @@
+{
+    "id": "4",
+    "name": "Strawberry Yogurt",
+    "description": "Mauris commodo turpis aliquet massa consectetur, et condimentum augue feugiat. Nulla dignissim efficitur mi porttitor consequat.",
+    "sku": "100104",
+    "stock_quantity": "35",
+    "regular_price": "7.50",
+    "sale_price": "5.00",
+    "categories": ["Yogurts", "Sed Vel"],
+    "image": {
+        "src": "assets/images/products/101004.jpg",
+        "alt": "Strawberry Yogurt"
+    },
+    "currency_symbol": "€"
+}

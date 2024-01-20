@@ -1,0 +1,15 @@
+{
+    "id": "6",
+    "name": "Blueberry Yogurt",
+    "description": "Proin elit quam, ornare a magna finibus, bibendum tempor magna. Quisque consequat blandit sem. Donec accumsan arcu nibh. Cras facilisis ligula et dui consectetur gravida.",
+    "sku": "100106",
+    "stock_quantity": "22",
+    "regular_price": "7.50",
+    "sale_price": "5.00",
+    "categories": ["Yogurts", "Sed Vel"],
+    "image": {
+        "src": "assets/images/products/101006.jpg",
+        "alt": "Blueberry Yogurt"
+    },
+    "currency_symbol": "€"
+}

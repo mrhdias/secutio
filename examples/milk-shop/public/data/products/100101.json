@@ -1,0 +1,15 @@
+{
+    "id": "1",
+    "name": "Phasellus Vitae",
+    "description": "Aliquam eu ex non diam ornare iaculis in eu sem. Etiam tincidunt vel eros sit amet tincidunt. Praesent id facilisis est, nec pharetra mauris.",
+    "sku": "100101",
+    "stock_quantity": "21",
+    "regular_price": "12.02",
+    "sale_price": "10.00",
+    "categories": ["Finibus Magna", "Maecenas Vitae"],
+    "image": {
+        "src": "assets/images/products/101001.jpg",
+        "alt": "Phasellus Vitae"
+    },
+    "currency_symbol": "€"
+}

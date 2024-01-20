@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" class="h-100">
+
+<head>
+    <title>Milk Shop</title>
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta name="author" content="Henrique Dias">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/styles.css?2024011401">
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header id="header" data-tasks="add-top-menu"></header>
+
+    <main id="product-showcase" class="flex-shrink-0" data-tasks="show-products"></main>
+
+    <footer id="footer" data-tasks="add-footer" class="footer mt-auto py-2 bg-body-tertiary"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script>
+        import("https://cdn.jsdelivr.net/gh/mrhdias/automata@masterza/dist/js/automata.min.js").then((module) => {
+            // Do something with the module.
+            const automata = new module.Automata();
+            automata.init();
+        });
+    </script>
+</body>
+
+</html>

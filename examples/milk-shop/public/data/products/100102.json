@@ -1,0 +1,15 @@
+{
+    "id": "2",
+    "name": "Etiam Mollis",
+    "description": "Quisque pulvinar magna neque, at euismod erat dapibus non. Phasellus cursus enim nec nibh ultricies pulvinar. Quisque vitae erat massa.",
+    "sku": "100102",
+    "stock_quantity": "15",
+    "regular_price": "14.10",
+    "sale_price": "12.00",
+    "categories": ["Maecenas Vitae", "Pellentesque"],
+    "image": {
+        "src": "assets/images/products/101002.jpg",
+        "alt": "Etiam Mollis"
+    },
+    "currency_symbol": "€"
+}

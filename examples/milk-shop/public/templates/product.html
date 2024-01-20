@@ -1,0 +1,54 @@
+<dialog id="product" style="text-align: right;">
+  <div class="card mb-3" style="max-width: 540px;text-align: initial;">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img src="${data.image.src}" class="img-fluid rounded-start" alt="${data.image.alt}">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">${data.name}</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">
+            <small><strong>SKU:</strong> ${data.sku} <strong>Stock:</strong> ${data.stock_quantity}</small>
+          </h6>
+          <p class="card-text">${data.description}</p>
+          <p class="card-text">${data.categories.map(category => `<span
+              class="badge text-bg-primary">${category}</span>`).join(" ")}</p>
+          <p class="card-text">
+            <sup class="text-body-secondary regular-price">${data.currency_symbol}${data.regular_price}</sup>
+            <span>${data.currency_symbol}${data.sale_price}</span>
+          </p>
+          <p class="card-text">
+          <form class="row">
+            <div class="col-auto">
+              <label class="visually-hidden" for="quantity-input">Username</label>
+              <div class="input-group">
+                <div class="input-group-text">Quantity:</div>
+                <input type="number" class="form-control" id="quantity-input" placeholder="0" name="quantity" min="1"
+                  max="100" value="1" style="width: 80px;">
+                <button type="button" id="add-to-cart" class="btn btn-primary" autofocus><svg style="fill: #fff;"
+                    xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                    <path
+                      d="M440-600v-120H320v-80h120v-120h80v120h120v80H520v120h-80ZM280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM40-800v-80h131l170 360h280l156-280h91L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68.5-39t-1.5-79l54-98-144-304H40Z" />
+                  </svg></button>
+              </div>
+            </div>
+          </form>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-secondary">Close</button>
+</dialog>
+<script>
+
+  if (typeof dialog === 'undefined' || dialog === null) {
+    const dialog = document.querySelector("dialog#product");
+    dialog.showModal();
+    const closeButton = document.querySelector("dialog#product button.btn-secondary");
+    closeButton.addEventListener("click", () => {
+      dialog.close();
+    });
+  }
+
+</script>

@@ -1,0 +1,41 @@
+[
+    {
+        "id": "4",
+        "name": "Strawberry Yogurt",
+        "short_description": "Mauris commodo turpis aliquet massa consectetur, et condimentum augue feugiat.",
+        "sku": "100104",
+        "regular_price": "7.50",
+        "sale_price": "5.00",
+        "image": {
+            "src": "assets/images/products/101004.jpg",
+            "alt": "Strawberry Yogurt"
+        },
+        "currency_symbol": "€"
+    },
+    {
+        "id": "5",
+        "name": "Peach Yogurt",
+        "short_description": "Nunc ut diam sed dolor posuere dignissim vel non sapien.",
+        "sku": "100105",
+        "regular_price": "7.50",
+        "sale_price": "5.00",
+        "image": {
+            "src": "assets/images/products/101005.jpg",
+            "alt": "Peach Yogurt"
+        },
+        "currency_symbol": "€"
+    },
+    {
+        "id": "6",
+        "name": "Blueberry Yogurt",
+        "short_description": "Proin elit quam, ornare a magna finibus, bibendum tempor magna.",
+        "sku": "100106",
+        "regular_price": "7.50",
+        "sale_price": "5.00",
+        "image": {
+            "src": "assets/images/products/101006.jpg",
+            "alt": "Blueberry Yogurt"
+        },
+        "currency_symbol": "€"
+    }
+]

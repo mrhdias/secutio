@@ -1,0 +1,62 @@
+{
+    "add-top-menu": {
+        "trigger": "init",
+        "src-file": "data/categories.json",
+        "target": "#header",
+        "template": "@top-menu",
+        "swap": "inner"
+    },
+    "show-products": {
+        "trigger": "init",
+        "attribute-trigger": "data-trigger",
+        "src-file": "data/feed-promotions.json",
+        "attribute-src-file": "data-src-file",
+        "target": "#product-showcase",
+        "template": "@products",
+        "swap": "inner",
+        "before": "clean-active",
+        "after": "active-promotions",
+        "attribute-after": "data-after"
+    },
+    "add-footer": {
+        "trigger": "init",
+        "target": "#footer",
+        "template": "@footer"
+    },
+    "search": {
+        "disabled": true
+    },
+    "clean-active": {
+        "selector": ".navbar a.active",
+        "remove": {
+            "class": "active",
+            "style": "color"
+        }
+    },
+    "active-promotions": {
+        "selector": ".navbar .navbar-nav:first-child > .nav-item:nth-child(3) > .nav-link",
+        "add": {
+            "class": "active",
+            "style": "color: #0d6efd;"
+        }
+    },
+    "active-categories": {
+        "selector": ".navbar .navbar-nav:first-child > .nav-item:nth-child(2) > .nav-link",
+        "add": {
+            "class": "active",
+            "style": "color: #0d6efd;"
+        }
+    },
+    "show-product-dialog": {
+        "trigger": "click",
+        "attribute-src-file": "data-src-file",
+        "target": "#product-showcase",
+        "template": "@product",
+        "swap": "after",
+        "before": "remove-dialog"
+    },
+    "remove-dialog": {
+        "selector": "dialog + script, dialog",
+        "remove": {}
+    }
+}
