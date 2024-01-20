@@ -1,7 +1,7 @@
 /*
     Automata.js
     Author: Henrique Dias
-    Last Modification: 2024-01-19 18:25:19
+    Last Modification: 2024-01-20 18:38:57
 
     Attention: This is work in progress
 
@@ -197,40 +197,78 @@ export default class Automata {
             }
 
             for (const element of elements) {
-                if (properties.hasOwnProperty('add')) {
-                    if (properties['add'].hasOwnProperty('class')) {
-                        element.classList.add(properties['add']['class']);
-                    }
-                    if (properties['add'].hasOwnProperty('style')) {
-                        if (element.hasAttribute('style')) {
-                            const styleProperties = this.attrsStr2Obj(properties['add']['style']);
-                            for (const key in styleProperties) {
-                                element.style[key] = styleProperties[key];
+                // first remove anything from element
+                if (properties.hasOwnProperty('remove')) {
+                    // remove attributes from a list
+                    if (properties['remove'].hasOwnProperty('attributes')) {
+                        if (!Array.isArray(properties['remove']['attributes'])) {
+                            throw new Error(`The property "remove/attributes" of subtask "${subtask}" is not an array!`);
+                        }
+
+                        for (const attribute of properties['remove']['attributes']) {
+                            if (element.hasAttribute(attribute)) {
+                                element.removeAttribute(attribute);
+                                if (attribute === 'class' || attribute === 'style') {
+                                    return true;
+                                }
                             }
-                        } else {
-                            element.setAttribute('style', properties['add']['style']);
                         }
                     }
-                } else if (properties.hasOwnProperty('remove')) {
-                    if (properties['remove'].hasOwnProperty('class')) {
+
+                    if (element.hasAttribute('class') && properties['remove'].hasOwnProperty('class')) {
                         if (element.classList.contains(properties['remove']['class'])) {
                             element.classList.remove(properties['remove']['class']);
                         }
+                        if (element.getAttribute('class') === '') {
+                            element.removeAttribute('class');
+                        }
                     }
-                    if (properties['remove'].hasOwnProperty('style')) {
-                        if (element.hasAttribute('style')) {
-                            // check if the style exist remove with regex
-                            // properties['remove']['style']
-                            let style = element.style;
-                            const styleProperties = properties['remove']['style'].split(/ +/);
-                            for (const p of styleProperties) {
-                                if (element.style.hasOwnProperty(p)) {
-                                    delete style[p];
-                                }
+
+                    if (element.hasAttribute('style') && properties['remove'].hasOwnProperty('style')) {
+                        // check if the style exist remove with regex
+                        // properties['remove']['style']
+                        let style = element.style;
+                        const styleProperties = properties['remove']['style'].split(/ +/);
+                        for (const p of styleProperties) {
+                            if (element.style.hasOwnProperty(p)) {
+                                delete style[p];
                             }
-                            element.style = style;
-                            // console.log('Element Styles:', element.style.hasOwnProperty('color'));
-                            // element.removeAttribute('style');
+                        }
+                        element.style = style;
+                        // console.log('Element Styles:', element.style.hasOwnProperty('color'));
+                        // element.removeAttribute('style');
+                        if (element.getAttribute('style') === '') {
+                            element.removeAttribute('style');
+                        }
+                    }
+                }
+
+                // and then add anything
+                // I have to think about whether a replacement is needed
+                if (properties.hasOwnProperty('add')) {
+                    if (properties['add'].hasOwnProperty('attributes')) {
+                        if (Object.prototype.toString.call(properties['add']['attributes']) !== '[object Object]') {
+                            throw new Error(`The properties "add/attributes" of subtask "${subtask}" is not a object!`);
+                        }
+                        for (const [attribute, value] of Object.entries(properties['add']['attributes'])) {
+                            if (!element.hasAttribute(attribute)) {
+                                element.setAttribute(attribute, value);
+                            }
+                        }
+                    }
+
+                    if (properties['add'].hasOwnProperty('class')) {
+                        element.classList.add(properties['add']['class']);
+                    }
+
+                    if (properties['add'].hasOwnProperty('style')) {
+                        if (element.hasAttribute('style')) {
+                            const styleProperties = this.attrsStr2Obj(properties['add']['style']);
+                            for (const [key, value] of Object.entries(styleProperties)) {
+                                element.style[key] = value;
+                            }
+                        } else {
+                            element.setAttribute('style', properties['add']['style']);
                         }
                     }
                 }
