@@ -32,7 +32,7 @@ The following directory structure is just a suggestion and can be adjusted to th
 
 ## Tasks
 
-Tasks are a set of properties that can be applied to each HTML element by adding the "data-tasks" attribute. Properties are specified in a JSON file with ".json" extension. The default file name is tasks.json.
+Tasks are a set of properties that can be applied to each HTML element by adding the "data-tasks" attribute. Properties are specified in a JSON file with a ".json" extension. The default file name is "tasks.json". More than one task can be defined per element as long as they correspond to different events (click, mouseover, submit, etc).
 
 Example of a tasks file.
 
@@ -52,8 +52,7 @@ Example of a tasks file.
 }
 ```
 ### Properties
-
-Description of each of the properties that can be used in tasks:
+The following properties can be used in the "data-tasks" attribute:
 - **action**: The action that is executed on the server when the event is triggered;
 - **method**: Set a request method (GET, POST, PUT, PATCH or DELETE) to indicate the desired action to be performed for a given resource;
 - **trigger**: Specifies the event that triggers the request;
@@ -77,9 +76,7 @@ The following properties can be used both client-side and server-side via custom
     - <ins>none</ins>: It exists only for convenience, but does not make any transformations.
 
 ### Custom Attributes
-Custom attributes can be added to the elements where tasks are specified, allowing one to overrides the default value of one property with another.
-The attribute must always begin with the substring "attribute-" followed by the property to replace.
-This transformation is available for the following properties: action, src-file, method, remove, target, swap, before, after and trigger.
+Custom attributes can be added to the elements where "tasks" are specified, allowing one to override the default value of one property with another. The property in the "tasks" file that defines the attribute must always begin with the substring 'attribute-' followed by the attribute with property to replace. This transformation is available for the following properties: action, src-file, method, remove, target, swap, before, after, and trigger.
 
 Example:
 
