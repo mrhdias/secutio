@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-01-28 19:19:43
+    Last Modification: 2024-01-28 21:17:01
 
     Attention: This is work in progress
 
@@ -459,7 +459,7 @@ export default class Secutio {
     }
 
 
-    buildFragment(data, source) {
+    buildFragment(input, data, source) {
         // const fragment = document.createDocumentFragment();
         // create helper div element
         const helper = document.createElement('div');
@@ -526,7 +526,23 @@ export default class Secutio {
         }
     }
 
-    async templateManager(event, properties, data) {
+    thisElement(element, dataSelector, data) {
+        // The element must have the name and value attribute.
+        const selectores = dataSelector.split(/\, */);
+        let remainer = [];
+        for (const selector of selectores) {
+            if (selector === 'this') {
+                if (element.name !== "") {
+                    data[element.name] = element.value;
+                }
+                continue;
+            }
+            remainer.push(selector)
+        }
+        return remainer.join(',');
+    }
+
+    async templateManager(event, properties, input, data) {
         // console.log('Template Manager...');
 
         if (properties.template.length < 3) {
@@ -558,7 +574,7 @@ export default class Secutio {
 
         }(this));
 
-        const helperFragment = this.buildFragment(data, innerTemplate);
+        const helperFragment = this.buildFragment(input, data, innerTemplate);
         if (helperFragment === null) {
             throw new Error(`An error happened while processing the "${properties.template}" template`);
         }
@@ -601,6 +617,20 @@ export default class Secutio {
             }
 
             if (properties.hasOwnProperty('template')) {
+
+                // Exposes the input data (name=value) selected by the
+                // "collect-data" to be available in the templates like "data".
+                let inputData = {}
+                if (properties.hasOwnProperty('collect-data')) {
+                    const selector = this.thisElement(event.target, properties['collect-data'], inputData);
+                    if (selector.length > 0) {
+                        const collectFromElems = document.querySelectorAll(selector);
+                        for (const collectFromElem of collectFromElems) {
+                            this.collectBodyData(collectFromElem, inputData);
+                        }
+                    }
+                }
+
                 // If the "src-file" property is defined, fetch the data.
                 const jsonData = await (async function (_this) {
                     if (properties.hasOwnProperty('src-file')) {
@@ -608,7 +638,7 @@ export default class Secutio {
                     }
                     return {};
                 }(this));
-                this.templateManager(event, properties, jsonData);
+                this.templateManager(event, properties, inputData, jsonData);
             }
 
             return;
@@ -672,7 +702,7 @@ export default class Secutio {
 
             // with templates
             if (properties.hasOwnProperty('template')) {
-                this.templateManager(event, properties, block.data);
+                this.templateManager(event, properties, {}, block.data);
             }
 
         } else if (typeof block.data === 'string' && block.data !== "") {
