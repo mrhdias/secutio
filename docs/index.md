@@ -1,6 +1,6 @@
 # Secutio Documentation
 
-Table of Contents:
+**Table of Contents:**
 <!-- no toc -->
 - [Project Directory Structure](#project-directory-structure)
 - [Tasks](#tasks)
