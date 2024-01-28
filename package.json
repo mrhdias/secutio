@@ -1,5 +1,5 @@
 {
-    "name": "automata",
+    "name": "secutio",
     "description": "Makes the difficult parts easy.",
     "version": "v0.0.1-alpha",
     "keywords": [
@@ -9,20 +9,20 @@
         "javascript",
         "web"
     ],
-    "homepage": "https://github.com/mrhdias/automata",
+    "homepage": "https://github.com/mrhdias/secutio",
     "author": "Henrique Dias",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/mrhdias/automata.git"
+        "url": "git+https://github.com/mrhdias/secutio.git"
     },
     "bugs": {
-        "url": "https://github.com/mrhdias/automata/issues"
+        "url": "https://github.com/mrhdias/secutio/issues"
     },
-    "main": "dist/js/automata.js",
-    "unpkg": "dist/js/automata.min.js",
+    "main": "dist/js/secutio.js",
+    "unpkg": "dist/js/secutio.min.js",
     "scripts": {
-        "dist": "cp -r src/js/* dist/js/ && npm run-script uglify && gzip -9 -k -f dist/js/automata.min.js > dist/js/automata.min.js.gz && exit",
-        "uglify": "uglifyjs -m eval -o dist/automata.min.js dist/js/automata.js"
+        "dist": "cp -r src/js/* dist/js/ && npm run-script uglify && gzip -9 -k -f dist/js/secutio.min.js > dist/js/secutio.min.js.gz && exit",
+        "uglify": "uglifyjs -m eval -o dist/secutio.min.js dist/js/secutio.js"
     }
 }
