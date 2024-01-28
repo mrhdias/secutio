@@ -1,5 +1,5 @@
 /*
-    Automata.js
+    Secutio.js
     Author: Henrique Dias
     Last Modification: 2024-01-20 18:38:57
 
@@ -15,7 +15,7 @@
  */
 
 'use strict';
-export default class Automata {
+export default class Secutio {
 
     constructor(parameters = {
         "tasks_attribute": "data-tasks",
@@ -84,15 +84,15 @@ export default class Automata {
             }
 
             let result = { transformation: {}, data: undefined };
-            if (response.headers.has("Automata-Transformation")) { // is optional and if not exits use from tasks file
-                console.log("Automata-Transformation:", response.headers.get("Automata-Transformation"));
-                const headerValue = response.headers.get("Automata-Transformation");
+            if (response.headers.has("Secutio-Transformation")) { // is optional and if not exits use from tasks file
+                console.log("Secutio-Transformation:", response.headers.get("Secutio-Transformation"));
+                const headerValue = response.headers.get("Secutio-Transformation");
                 if (headerValue !== "") {
                     result.transformation = this.attrsStr2Obj(headerValue);
                 }
             }
             // else {
-            //    throw new Error('The "Automata-Transformation" header does not exist');
+            //    throw new Error('The "Secutio-Transformation" header does not exist');
             // }
 
             if (response.headers.has("Content-Type")) {
@@ -816,7 +816,7 @@ export default class Automata {
 
 }
 
-export { Automata };
+export { Secutio };
 
-// const automata = new Automata();
-// automata.init();
+// const secutio = new Secutio();
+// secutio.init();

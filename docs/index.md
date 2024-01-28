@@ -1,17 +1,18 @@
-# Automata Documentation
+# Secutio Documentation
 
-- [Project Directory Structure](#project-directory-structure)
-- [Tasks](#tasks)
-  - [Properties](#properties)
-  - [Custom Attributes](#custom-attributes)
-  - [Special HTTP Header Automata-Transformation](#special-http-header-automata-transformation)
-- [Subasks](#subtasks)
-  - [Properties](#properties-1)
-- [Templates](#templates)
-  - [Embedded](#embedded)
-  - [Loaded](#loaded)
-  - [Template Literals](#template-literals)
-- [Todo List](#todo-list)
+- [Secutio Documentation](#secutio-documentation)
+  - [Project Directory Structure](#project-directory-structure)
+  - [Tasks](#tasks)
+    - [Properties](#properties)
+    - [Custom Attributes](#custom-attributes)
+    - [Special HTTP Header Secutio-Transformation](#special-http-header-secutio-transformation)
+  - [Subtasks](#subtasks)
+    - [Properties](#properties-1)
+  - [Templates](#templates)
+    - [Embedded](#embedded)
+    - [Loaded](#loaded)
+    - [Template Literals](#template-literals)
+  - [Todo List](#todo-list)
 
 ## Project Directory Structure
 
@@ -103,15 +104,15 @@ template
 <button data-tasks="load-paradises" data-action="/listparadises/earth">Go To Earth</button>
 ```
 
-### Special HTTP Header Automata-Transformation
+### Special HTTP Header Secutio-Transformation
 
-Custom HTTP header (Automata-Transformation) containing information about the transformation to be applied and overrides the same default properties if indicated in the tasks file.
+Custom HTTP header (Secutio-Transformation) containing information about the transformation to be applied and overrides the same default properties if indicated in the tasks file.
 
 An example is provided below.
 
 ```http
 HTTP/1.1 200 OK
-Automata-Transformation: target:#contacts-list;template:#contacts-list-tpl;swap:innerHTML
+Secutio-Transformation: target:#contacts-list;template:#contacts-list-tpl;swap:innerHTML
 Content-Type: application/json
 ```
 ## Subtasks
