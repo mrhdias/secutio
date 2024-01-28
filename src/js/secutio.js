@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-01-20 18:38:57
+    Last Modification: 2024-01-28 19:19:43
 
     Attention: This is work in progress
 
@@ -511,14 +511,14 @@ export default class Secutio {
         }
     }
 
-    sequenceTasks(helperFragment, finalTarget, properties) {
+    sequenceTasks(helperFragment, event, properties) {
         if (properties.hasOwnProperty('before') &&
             properties.before !== "") {
             this.runSubtasks(properties.before)
         }
 
         this.search4Tasks(helperFragment);
-        this.swapContent(helperFragment, finalTarget, properties.swap);
+        this.swapContent(helperFragment, event.target, properties.swap);
 
         if (properties.hasOwnProperty('after') &&
             properties.after !== "") {
@@ -526,7 +526,7 @@ export default class Secutio {
         }
     }
 
-    async templateManager(finalTarget, properties, data) {
+    async templateManager(event, properties, data) {
         // console.log('Template Manager...');
 
         if (properties.template.length < 3) {
@@ -563,10 +563,10 @@ export default class Secutio {
             throw new Error(`An error happened while processing the "${properties.template}" template`);
         }
 
-        this.sequenceTasks(helperFragment, finalTarget, properties);
+        this.sequenceTasks(helperFragment, event, properties);
     }
 
-    async processEvent(eventTarget, properties) {
+    async processEvent(event, properties) {
 
         // replace with custom attributes
         // the action can exist together with the attribute and
@@ -582,9 +582,9 @@ export default class Secutio {
         ]) {
             const property = 'attribute-'.concat(key);
             if (properties.hasOwnProperty(property) &&
-                eventTarget.hasAttribute(properties[property]) &&
-                eventTarget.getAttribute(properties[property]) !== "") {
-                properties[key] = eventTarget.getAttribute(properties[property]);
+                event.target.hasAttribute(properties[property]) &&
+                event.target.getAttribute(properties[property]) !== "") {
+                properties[key] = event.target.getAttribute(properties[property]);
             }
         }
 
@@ -593,11 +593,11 @@ export default class Secutio {
         if (!(properties.hasOwnProperty('action') &&
             properties.hasOwnProperty('method'))) {
 
-            const finalTarget = (properties.target === 'this') ?
-                eventTarget : document.querySelector(properties.target);
-
-            if (finalTarget === null) {
-                throw new Error(`Target "${properties.target}" not exist!`);
+            if (properties.target === 'this') {
+                event.target = document.querySelector(properties.target);
+                if (event.target === null) {
+                    throw new Error(`Target "${properties.target}" not exist!`);
+                }
             }
 
             if (properties.hasOwnProperty('template')) {
@@ -608,7 +608,7 @@ export default class Secutio {
                     }
                     return {};
                 }(this));
-                this.templateManager(finalTarget, properties, jsonData);
+                this.templateManager(event, properties, jsonData);
             }
 
             return;
@@ -618,7 +618,7 @@ export default class Secutio {
 
         let bodyData = {};
         if (properties.trigger === 'submit') {
-            const formElem = eventTarget.closest('form');
+            const formElem = event.target.closest('form');
             if (formElem !== null &&
                 formElem.hasChildNodes()) {
                 const namedElements = formElem.querySelectorAll("input[name],select[name]");
@@ -638,8 +638,8 @@ export default class Secutio {
                 return;
             }
 
-            if (eventTarget.name !== '') {
-                bodyData[eventTarget.name] = eventTarget.value;
+            if (event.target.name !== '') {
+                bodyData[event.target.name] = event.target.value;
             }
         }
 
@@ -660,11 +660,11 @@ export default class Secutio {
 
         this.setTransformation(properties, block.transformation);
 
-        const finalTarget = (properties.target === 'this') ?
-            eventTarget : document.querySelector(properties.target);
-
-        if (finalTarget === null) {
-            throw new Error(`Template "${properties.target}" not exist!`);
+        if (properties.target !== 'this') {
+            event.target = document.querySelector(properties.target);
+            if (event.target === null) {
+                throw new Error(`Template "${properties.target}" not exist!`);
+            }
         }
 
         // if data is json
@@ -672,7 +672,7 @@ export default class Secutio {
 
             // with templates
             if (properties.hasOwnProperty('template')) {
-                this.templateManager(finalTarget, properties, block.data);
+                this.templateManager(event, properties, block.data);
             }
 
         } else if (typeof block.data === 'string' && block.data !== "") {
@@ -686,7 +686,7 @@ export default class Secutio {
                 return helperElem;
             }(this);
 
-            this.sequenceTasks(helperFragment, finalTarget, properties);
+            this.sequenceTasks(helperFragment, event, properties);
 
         } else {
             throw new Error("There is no data or text for the transformation");
@@ -724,7 +724,23 @@ export default class Secutio {
             // custom event
             if (properties.trigger === 'init') { // fired after page loaded
                 if (properties.disabled === false) {
-                    this.processEvent(element, properties);
+                    // Create 'init' event
+                    const event = new CustomEvent('init', {
+                        bubbles: true,
+                        cancelable: true,
+                    });
+                    Object.defineProperty(event, "target", {
+                        get() {
+                            // console.log("get!");
+                            return element;
+                        },
+                        set(p) {
+                            // console.log("set!");
+                            return this.p = p;
+                        }
+                    });
+
+                    this.processEvent(event, properties);
                 }
                 continue;
             }
@@ -765,7 +781,7 @@ export default class Secutio {
             targetElem.addEventListener(properties.trigger, (event) => {
                 event.preventDefault();
                 if (properties.disabled === false) {
-                    this.processEvent(event.target, properties);
+                    this.processEvent(event, properties);
                 }
             });
         }
