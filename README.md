@@ -1,6 +1,8 @@
-# Automata
+# Secutio
 > [!WARNING]
 > This framework is still in heavy development.
+
+The project's name was changed from "automata" to "secutio" due to the existence of other projects related to Finite State Machines already using the name "automata". "Secutio" is a Latin term that translates to "sequence" or "following." I believe "Secutio" is an excellent name for this project, as it specifically emphasizes the execution of tasks in a sequential order.
 
 Makes the difficult parts easy. It's like htmx but different!
 
@@ -24,10 +26,10 @@ Create an HTML file and add the library.
 <body>
   <button data-tasks="click-me">Click Me</button>
   <script>
-    import("https://cdn.jsdelivr.net/gh/mrhdias/automata@master/dist/js/automata.min.js").then((module) => {
+    import("https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js").then((module) => {
       // Do something with the module.
-      const automata = new module.Automata();
-      automata.init();
+      const secutio = new module.Secutio();
+      secutio.init();
     });
   </script>
 </body>
