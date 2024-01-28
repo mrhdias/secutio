@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-01-28 21:17:01
+    Last Modification: 2024-01-28 21:59:57
 
     Attention: This is work in progress
 
@@ -157,6 +157,27 @@ export default class Secutio {
     //        parent.removeChild(parent.firstChild);
     //    }
     // }
+
+    runNextTask(event, task) {
+
+        if (!this.tasks.hasOwnProperty(task)) {
+            throw new Error(`The next task "${task}" not exist in tasks file!`);
+        }
+
+        const properties = this.tasks[task];
+
+        if (!properties.hasOwnProperty('disabled')) {
+            properties['disabled'] = false;
+        }
+
+        if (properties.hasOwnProperty('trigger')) {
+            throw new Error(`The trigger property from "${task}" is not allowed in next task!`);
+        }
+
+        if (properties.disabled === false) {
+            this.processEvent(event.target, properties);
+        }
+    }
 
     runSubtasks(tasksListStr) {
 
@@ -524,6 +545,13 @@ export default class Secutio {
             properties.after !== "") {
             this.runSubtasks(properties.after)
         }
+
+        // Executes another task in the same event after swap the content.
+        if (properties.hasOwnProperty('next') &&
+            properties.next !== "") {
+
+            this.runNextTask(event.target, properties.next);
+        }
     }
 
     thisElement(element, dataSelector, data) {
@@ -594,7 +622,8 @@ export default class Secutio {
             'swap',
             'target',
             'after',
-            'before'
+            'before',
+            'next'
         ]) {
             const property = 'attribute-'.concat(key);
             if (properties.hasOwnProperty(property) &&
