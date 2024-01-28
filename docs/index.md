@@ -1,18 +1,19 @@
 # Secutio Documentation
 
-- [Secutio Documentation](#secutio-documentation)
-  - [Project Directory Structure](#project-directory-structure)
-  - [Tasks](#tasks)
-    - [Properties](#properties)
-    - [Custom Attributes](#custom-attributes)
-    - [Special HTTP Header Secutio-Transformation](#special-http-header-secutio-transformation)
-  - [Subtasks](#subtasks)
-    - [Properties](#properties-1)
-  - [Templates](#templates)
-    - [Embedded](#embedded)
-    - [Loaded](#loaded)
-    - [Template Literals](#template-literals)
-  - [Todo List](#todo-list)
+Table of Contents:
+<!-- no toc -->
+- [Project Directory Structure](#project-directory-structure)
+- [Tasks](#tasks)
+  - [Properties](#properties)
+  - [Custom Attributes](#custom-attributes)
+  - [Special HTTP Header Secutio-Transformation](#special-http-header-secutio-transformation)
+- [Subtasks](#subtasks)
+  - [Properties](#properties-1)
+- [Templates](#templates)
+  - [Embedded](#embedded)
+  - [Loaded](#loaded)
+  - [Template Literals](#template-literals)
+- [Todo List](#todo-list)
 
 ## Project Directory Structure
 
