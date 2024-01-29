@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-01-28 21:59:57
+    Last Modification: 2024-01-29 18:45:47
 
     Attention: This is work in progress
 
@@ -29,6 +29,7 @@ export default class Secutio {
         this.triggers = new Set([
             'click',
             'init', // custom
+            'keydown',
             'mouseenter',
             'mouseover',
             'mouseup',
@@ -48,6 +49,7 @@ export default class Secutio {
         this.tasksFile = parameters["tasks_file"];
         this.startElement = parameters["start_element"];
         this.tasks = {};
+        this.custom_functions = {};
     }
 
     fetchOptions(properties, data) {
@@ -158,7 +160,7 @@ export default class Secutio {
     //    }
     // }
 
-    runNextTask(event, task) {
+    runNextTask(target, task) {
 
         if (!this.tasks.hasOwnProperty(task)) {
             throw new Error(`The next task "${task}" not exist in tasks file!`);
@@ -175,7 +177,7 @@ export default class Secutio {
         }
 
         if (properties.disabled === false) {
-            this.processEvent(event.target, properties);
+            this.setTemplateData(target, properties, undefined);
         }
     }
 
@@ -380,7 +382,7 @@ export default class Secutio {
 
         if (element.hasChildNodes()) {
             if (element.hasAttribute('name')) {
-                if (element.hasAttribute('name') && !element.hasAttribute('value')) {
+                if (!element.hasAttribute('value')) {
                     data[element.name] = [];
                     key = element.name;
                 }
@@ -481,6 +483,7 @@ export default class Secutio {
 
 
     buildFragment(input, data, source) {
+
         // const fragment = document.createDocumentFragment();
         // create helper div element
         const helper = document.createElement('div');
@@ -532,14 +535,14 @@ export default class Secutio {
         }
     }
 
-    sequenceTasks(helperFragment, event, properties) {
+    sequenceTasks(helperFragment, target, properties) {
         if (properties.hasOwnProperty('before') &&
             properties.before !== "") {
             this.runSubtasks(properties.before)
         }
 
         this.search4Tasks(helperFragment);
-        this.swapContent(helperFragment, event.target, properties.swap);
+        this.swapContent(helperFragment, target, properties.swap);
 
         if (properties.hasOwnProperty('after') &&
             properties.after !== "") {
@@ -549,8 +552,7 @@ export default class Secutio {
         // Executes another task in the same event after swap the content.
         if (properties.hasOwnProperty('next') &&
             properties.next !== "") {
-
-            this.runNextTask(event.target, properties.next);
+            this.runNextTask(target, properties.next);
         }
     }
 
@@ -560,8 +562,8 @@ export default class Secutio {
         let remainer = [];
         for (const selector of selectores) {
             if (selector === 'this') {
-                if (element.name !== "") {
-                    data[element.name] = element.value;
+                if (element.hasAttribute('name') && element.name !== "") {
+                    data[element.name] = element.hasAttribute('value') ? element.value : "";
                 }
                 continue;
             }
@@ -570,7 +572,7 @@ export default class Secutio {
         return remainer.join(',');
     }
 
-    async templateManager(event, properties, input, data) {
+    async templateManager(target, properties, input, data) {
         // console.log('Template Manager...');
 
         if (properties.template.length < 3) {
@@ -607,7 +609,65 @@ export default class Secutio {
             throw new Error(`An error happened while processing the "${properties.template}" template`);
         }
 
-        this.sequenceTasks(helperFragment, event, properties);
+        this.sequenceTasks(helperFragment, target, properties);
+    }
+
+    setFinalTarget(eventTarget, propertyTarget) {
+        if (propertyTarget === 'this') {
+            return eventTarget;
+        }
+        const target = document.querySelector(propertyTarget)
+        if (target === null) {
+            throw new Error(`Target "${propertyTarget}" not exist!`);
+        }
+        return target;
+    }
+
+    async setTemplateData(eventTarget, properties, event) {
+
+        // Exposes the input data (name=value) selected by the
+        // "collect-data" to be available in the templates like "data".
+        let inputData = {}
+        if (properties.hasOwnProperty('collect-data')) {
+            const selector = this.thisElement(eventTarget, properties['collect-data'], inputData);
+            if (selector.length > 0) {
+                const collectFromElems = document.querySelectorAll(selector);
+                for (const collectFromElem of collectFromElems) {
+                    this.collectBodyData(collectFromElem, inputData);
+                }
+            }
+        }
+
+        // If the "src-file" property is defined, fetch the data.
+        const jsonData = await (async function (_this) {
+            if (properties.hasOwnProperty('src-file')) {
+                return await _this.getResource(properties['src-file']);
+            }
+            return {};
+        }(this));
+
+
+        if (properties.hasOwnProperty('function')) {
+            if (!this.custom_functions.hasOwnProperty(properties['function'])) {
+                throw new Error(`The registered function "${properties.function}" not exist!`);
+            }
+            // if (event === undefined) {
+            //     console.log('function with undefined event...');
+            //     this.custom_functions[properties['function']](inputData, jsonData);
+            // } else {
+            //     console.log('function with event...');
+            //     this.custom_functions[properties['function']](event, inputData, jsonData);
+            // }
+            this.custom_functions[properties['function']](event, inputData, jsonData);
+        }
+
+        // If the task has a template and target
+        if (properties.hasOwnProperty('template') &&
+            properties.hasOwnProperty('target') &&
+            properties.target != '') {
+            this.templateManager(this.setFinalTarget(eventTarget, properties.target),
+                properties, inputData, jsonData);
+        }
     }
 
     async processEvent(event, properties) {
@@ -637,39 +697,7 @@ export default class Secutio {
         // the target can be replaced with templates.
         if (!(properties.hasOwnProperty('action') &&
             properties.hasOwnProperty('method'))) {
-
-            if (properties.target === 'this') {
-                event.target = document.querySelector(properties.target);
-                if (event.target === null) {
-                    throw new Error(`Target "${properties.target}" not exist!`);
-                }
-            }
-
-            if (properties.hasOwnProperty('template')) {
-
-                // Exposes the input data (name=value) selected by the
-                // "collect-data" to be available in the templates like "data".
-                let inputData = {}
-                if (properties.hasOwnProperty('collect-data')) {
-                    const selector = this.thisElement(event.target, properties['collect-data'], inputData);
-                    if (selector.length > 0) {
-                        const collectFromElems = document.querySelectorAll(selector);
-                        for (const collectFromElem of collectFromElems) {
-                            this.collectBodyData(collectFromElem, inputData);
-                        }
-                    }
-                }
-
-                // If the "src-file" property is defined, fetch the data.
-                const jsonData = await (async function (_this) {
-                    if (properties.hasOwnProperty('src-file')) {
-                        return await _this.getResource(properties['src-file']);
-                    }
-                    return {};
-                }(this));
-                this.templateManager(event, properties, inputData, jsonData);
-            }
-
+            this.setTemplateData(event.target, properties, event);
             return;
         }
 
@@ -719,19 +747,14 @@ export default class Secutio {
 
         this.setTransformation(properties, block.transformation);
 
-        if (properties.target !== 'this') {
-            event.target = document.querySelector(properties.target);
-            if (event.target === null) {
-                throw new Error(`Template "${properties.target}" not exist!`);
-            }
-        }
+        const finalTarget = this.setFinalTarget(event.target, properties.target);
 
         // if data is json
         if (typeof block.data === 'object') {
 
             // with templates
             if (properties.hasOwnProperty('template')) {
-                this.templateManager(event, properties, {}, block.data);
+                this.templateManager(finalTarget, properties, {}, block.data);
             }
 
         } else if (typeof block.data === 'string' && block.data !== "") {
@@ -745,7 +768,7 @@ export default class Secutio {
                 return helperElem;
             }(this);
 
-            this.sequenceTasks(helperFragment, event, properties);
+            this.sequenceTasks(helperFragment, finalTarget, properties);
 
         } else {
             throw new Error("There is no data or text for the transformation");
@@ -844,6 +867,10 @@ export default class Secutio {
                 }
             });
         }
+    }
+
+    function_register(name, func) {
+        this.custom_functions[name] = func;
     }
 
     init() {
