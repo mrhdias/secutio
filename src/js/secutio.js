@@ -806,23 +806,21 @@ export default class Secutio {
             // custom event
             if (properties.trigger === 'init') { // fired after page loaded
                 if (properties.disabled === false) {
+                    // https://developer.mozilla.org/en-US/docs/Web/Events/Creating_and_triggering_events
                     // Create 'init' event
                     const event = new CustomEvent('init', {
                         bubbles: true,
                         cancelable: true,
                     });
-                    Object.defineProperty(event, "target", {
-                        get() {
-                            // console.log("get!");
-                            return element;
-                        },
-                        set(p) {
-                            // console.log("set!");
-                            return this.p = p;
+
+                    let _this = this;
+                    element.addEventListener('init', function (e) {
+                        e.preventDefault();
+                        if (properties.disabled === false) {
+                            _this.processEvent(e, properties);
                         }
                     });
-
-                    this.processEvent(event, properties);
+                    element.dispatchEvent(event);
                 }
                 continue;
             }
