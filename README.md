@@ -11,17 +11,18 @@ The objective of this project is to simplify the development of web applications
 
 This library facilitates the association of actions (referred to as tasks here) with any HTML element, much like the way we associate actions with form submissions. Templates, whether embedded in HTML (using the template element) or served from a directory, are also supported. The practical association of data with templates is achieved using [JavaScript Template Literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals).
 
-This library also enables the modification of only the target elements specified in the tasks without the need to reload the entire page.
+This library also enables you to modify only the target HTML elements specified in the "tasks" without needing to reload the entire page.
 
 You can implement the backend in any programming language since the framework is programming language agnostic. A working example can be seen [here](examples/click-to-edit).
 
 ## Quick Start
-Create an HTML file and add the library.
+Create an HTML file and include the path to the "tasktable" and the library. The "script" HTML element with the path must have the "data-tasktable" attribute, and the "type" attribute must be set to "application/json".
 ```html
 <!doctype html>
 <html lang="en">
 <head>
   <title>Test</title>
+  <script data-tasktable type="application/json" src="tasks.json"></script>
 </head>
 <body>
   <button data-tasks="click-me">Click Me</button>
@@ -35,7 +36,7 @@ Create an HTML file and add the library.
 </body>
 </html>
 ```
-Create a file with the tasks in the directory where the HTML file is located.
+Now, create a file with the tasks at the specified path mentioned in the HTML file.
 
 tasks.json
 ```json

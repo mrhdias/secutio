@@ -34,7 +34,7 @@ The following directory structure is just a suggestion and can be adjusted to th
 
 ## Tasks
 
-Tasks are a set of properties that can be applied to each HTML element by adding the "data-tasks" attribute. Properties are specified in a JSON file with a ".json" extension. The default file name is "tasks.json". More than one task can be defined per element as long as they correspond to different events (click, mouseover, submit, etc).
+Tasks are a set of properties that can be applied to each HTML element by adding the "data-tasks" attribute. Properties are specified in a JSON file with a ".json" extension. The JSON file is loaded from the path specified in "src" of "script" HTML element with the "data-tasktable" attribute and the "type" attribute must be set to "application/json". More than one task can be defined per element as long as they correspond to different events (click, mouseover, submit, etc).
 
 Example of a tasks file.
 

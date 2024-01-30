@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-01-29 18:45:47
+    Last Modification: 2024-01-30 19:09:00
 
     Attention: This is work in progress
 
@@ -19,7 +19,6 @@ export default class Secutio {
 
     constructor(parameters = {
         "tasks_attribute": "data-tasks",
-        "tasks_file": "tasks.json",
         "start_element": "body"
     }) {
 
@@ -46,7 +45,6 @@ export default class Secutio {
             'delete',
         ]);
         this.tasksAttribute = parameters["tasks_attribute"];
-        this.tasksFile = parameters["tasks_file"];
         this.startElement = parameters["start_element"];
         this.tasks = {};
         this.custom_functions = {};
@@ -137,7 +135,7 @@ export default class Secutio {
         return obj;
     }
 
-    async getResource(filepath) {
+    async getResource(filepath, skip404 = false) {
         // test if the extension is json
         if (filepath.length <= '.json'.length || !filepath.endsWith('.json')) {
             throw new Error(`The ${filepath} file is not a valid JSON file!`);
@@ -147,6 +145,9 @@ export default class Secutio {
             cache: "no-cache"
         });
         if (!response.ok) {
+            if (response.status === 404 && skip404) {
+                return {};
+            }
             throw new Error(`When fetching the file ${filepath} \
                 happen an HTTP error! status: ${response.status} ${response.statusText}`);
         }
@@ -425,7 +426,7 @@ export default class Secutio {
         }
     }
 
-    search4Tasks(parentNode) {
+    search4ElemTasks(parentNode) {
         if (parentNode.hasChildNodes()) {
             for (const node of parentNode.childNodes) {
                 // console.log('Search for tasks:', node.nodeType, node.nodeName);
@@ -438,7 +439,7 @@ export default class Secutio {
                         this.setTask(node);
                     }
                     if (node.hasChildNodes()) {
-                        this.search4Tasks(node);
+                        this.search4ElemTasks(node);
                     }
                 }
             }
@@ -541,7 +542,7 @@ export default class Secutio {
             this.runSubtasks(properties.before)
         }
 
-        this.search4Tasks(helperFragment);
+        this.search4ElemTasks(helperFragment);
         this.swapContent(helperFragment, target, properties.swap);
 
         if (properties.hasOwnProperty('after') &&
@@ -867,6 +868,27 @@ export default class Secutio {
         }
     }
 
+    async getDataTasks() {
+        const inlineTasks = document.querySelectorAll('script[data-tasktable]');
+        for (const taskElem of inlineTasks) {
+            if (taskElem.type.toLowerCase() !== 'application/json') {
+                throw new Error(`Wrong mime-type "${taskElem.type}" for element tasks!`);
+            }
+            if (taskElem.hasAttribute('src') && taskElem.src !== "") {
+                // get tasks from JSON file
+                const jsonData = await(async function (_this) {
+                    return await _this.getResource(taskElem.src);
+                }(this));
+                Object.assign(this.tasks, jsonData);
+                continue;
+            }
+
+            // get inline task
+            const jsonData = JSON.parse(taskElem.text);
+            Object.assign(this.tasks, jsonData);
+        }
+    }
+
     function_register(name, func) {
         this.custom_functions[name] = func;
     }
@@ -908,9 +930,11 @@ export default class Secutio {
         observer.observe(targetNode[0], config);
         // end mutation observer
 
-        this.getResource(this.tasksFile).then((data) => {
-            this.tasks = data;
-            this.search4Tasks(targetNode[0]);
+        this.getDataTasks().then(() => {
+            // console.log(this.tasks);
+            if (Object.keys(this.tasks).length >= 0) {
+                this.search4ElemTasks(targetNode[0]);
+            }
         });
     }
 
