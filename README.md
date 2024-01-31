@@ -16,16 +16,35 @@ This library also enables you to modify only the target HTML elements specified 
 You can implement the backend in any programming language since the framework is programming language agnostic. A working example can be seen [here](examples/click-to-edit).
 
 ## Quick Start
-Create an HTML file and include the path to the "tasktable" and the library. The "script" HTML element with the path must have the "data-tasktable" attribute, and the "type" attribute must be set to "application/json".
+Create an HTML file and include the library path at the end of the "body" tag. Define tasks to be performed using the "script" element and add the "data-tasktable" attribute. Also, include the "type" attribute, which must be set to "application/json". Tasks can alternatively be defined in a JSON file; both modes are supported simultaneously, similar to styles.
+
+Example:
+```html
+<script data-tasktable type="application/json" src="tasks.json"></script>
+```
+Here is a working example that retrieves a joke and can be viewed on [CodePen](https://codepen.io/hdias/pen/mdoXPow):
 ```html
 <!doctype html>
 <html lang="en">
 <head>
   <title>Test</title>
-  <script data-tasktable type="application/json" src="tasks.json"></script>
 </head>
 <body>
-  <button data-tasks="click-me">Click Me</button>
+  <button data-tasks="get-joke">Click Me</button>
+  <p id="output"></p>
+
+  <script data-tasktable type="application/json">
+    {
+      "get-joke": {
+        "action": "https://v2.jokeapi.dev/joke/Any?format=txt&safe-mode",
+        "method": "get",
+        "trigger": "click",
+        "target": "#output",
+        "swap": "inner"
+      }
+    }
+  </script>
+
   <script>
     import("https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js").then((module) => {
       // Do something with the module.
@@ -33,19 +52,19 @@ Create an HTML file and include the path to the "tasktable" and the library. The
       secutio.init();
     });
   </script>
+
 </body>
 </html>
 ```
-Now, create a file with the tasks at the specified path mentioned in the HTML file.
-
-tasks.json
+Here is an example of a JSON file (tasks.json) containing the tasks mentioned below in the HTML script tag:
 ```json
 {
-  "click-me": {
-    "action": "/clicked",
-    "method": "post",
-    "trigger": "click",
-    "swap": "outer"
+  "get-joke": {
+  "action": "https://v2.jokeapi.dev/joke/Any?format=txt&safe-mode",
+  "method": "get",
+  "trigger": "click",
+    "target": "#output",
+    "swap": "inner"
   }
 }
 ```
