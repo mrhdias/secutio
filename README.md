@@ -1,6 +1,7 @@
 # Secutio
 > [!WARNING]
 > This framework is still in heavy development.
+> [Purge the cache](https://www.jsdelivr.com/tools/purge) the cache to ensure the acquisition of the latest updated version.
 
 The project's name was changed from "automata" to "secutio" due to the existence of other projects related to Finite State Machines already using the name "automata". "Secutio" is a Latin term that translates to "sequence" or "following." I believe "Secutio" is an excellent name for this project, as it specifically emphasizes the execution of tasks in a sequential order.
 
