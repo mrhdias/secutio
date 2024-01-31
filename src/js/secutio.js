@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-01-30 19:09:00
+    Last Modification: 2024-01-31 20:18:07
 
     Attention: This is work in progress
 
@@ -537,10 +537,6 @@ export default class Secutio {
     }
 
     sequenceTasks(helperFragment, target, properties) {
-        if (properties.hasOwnProperty('before') &&
-            properties.before !== "") {
-            this.runSubtasks(properties.before)
-        }
 
         this.search4ElemTasks(helperFragment);
         this.swapContent(helperFragment, target, properties.swap);
@@ -692,6 +688,12 @@ export default class Secutio {
                 event.target.getAttribute(properties[property]) !== "") {
                 properties[key] = event.target.getAttribute(properties[property]);
             }
+        }
+
+        // execute subtasks "before" as soon as possible!
+        if (properties.hasOwnProperty('before') &&
+            properties.before !== "") {
+            this.runSubtasks(properties.before)
         }
 
         // In events without action and method,
@@ -876,7 +878,7 @@ export default class Secutio {
             }
             if (taskElem.hasAttribute('src') && taskElem.src !== "") {
                 // get tasks from JSON file
-                const jsonData = await(async function (_this) {
+                const jsonData = await (async function (_this) {
                     return await _this.getResource(taskElem.src);
                 }(this));
                 Object.assign(this.tasks, jsonData);
