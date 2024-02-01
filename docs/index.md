@@ -58,9 +58,11 @@ The following properties can be used in the "data-tasks" attribute:
 - **action**: The action that is executed on the server when the event is triggered;
 - **method**: Set a request method (GET, POST, PUT, PATCH or DELETE) to indicate the desired action to be performed for a given resource;
 - **trigger**: Specifies the event that triggers the request;
+- **then**: List of subtasks with the CSS "selector" property to be executed after the trigger has been performed (useful for displaying loaders);
 - **collect-data**: Uses the data attributes given by the first element within the document that matches the specified selector as a source of data;
 - **src-file**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
-- **disabled**: This property disable the task execution if set to "true".
+- **disabled**: This property disable the task execution if set to "true";
+- **error**: Sets a new task that replaces the original if an error occurs during the request.
 
 The following properties can be used both client-side and server-side via custom HTTP header:
 - **target**: Uses the first document element that matches the specified CSS selector as the final destination for data association with the template. The string "this" indicates that the target of the replacement is the element that triggered the action;

@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-01-31 20:18:07
+    Last Modification: 2024-02-01 18:07:32
 
     Attention: This is work in progress
 
@@ -51,9 +51,12 @@ export default class Secutio {
     }
 
     fetchOptions(properties, data) {
+        // https://developer.mozilla.org/en-US/docs/Web/API/fetch
         let options = {
             method: properties.method,
             cache: "no-cache",
+            signal: AbortSignal.timeout(1000 *
+                (properties.hasOwnProperty('timeout') ? parseInt(properties.timeout, 10) : 300))
             // credentials: 'include',
             // mode: 'cors',
             // origin: 'http://localhost:808'
@@ -74,6 +77,7 @@ export default class Secutio {
 
     async makeRequest(properties, data = {}) {
         // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
 
         console.log('Body Data:', data, properties.action);
 
@@ -83,7 +87,7 @@ export default class Secutio {
                 throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
             }
 
-            let result = { transformation: {}, data: undefined };
+            let result = { transformation: {}, data: undefined, error: false };
             if (response.headers.has("Secutio-Transformation")) { // is optional and if not exits use from tasks file
                 console.log("Secutio-Transformation:", response.headers.get("Secutio-Transformation"));
                 const headerValue = response.headers.get("Secutio-Transformation");
@@ -111,9 +115,15 @@ export default class Secutio {
             return result;
 
         } catch (error) {
-            console.error(error);
+            // console.error(error);
+            if (properties.hasOwnProperty('error')) {
+                return {
+                    transformation: {},
+                    data: `${error.name}: ${error.message}`,
+                    error: true
+                };
+            }
         }
-
     }
 
     attrsStr2Obj(data) {
@@ -154,12 +164,6 @@ export default class Secutio {
 
         return await response.json();
     }
-
-    // removeAllChildNodes(parent) {
-    //    while (parent.firstChild) {
-    //        parent.removeChild(parent.firstChild);
-    //    }
-    // }
 
     runNextTask(target, task) {
 
@@ -515,28 +519,26 @@ export default class Secutio {
         // Check if server send the transformation and
         // if not replace by the transformation from tasks file.
 
-        if (transformation.hasOwnProperty('target')) {
-            properties['target'] = transformation['target'];
-        } else if (!properties.hasOwnProperty('target')) {
-            properties['target'] = 'this'; // default target
-        }
-
-        if (transformation.hasOwnProperty('template')) {
-            properties['template'] = transformation['template'];
-        }
-
-        if (transformation.hasOwnProperty('swap')) {
-            properties['swap'] = transformation['swap'];
-        } else if (!properties.hasOwnProperty('swap')) {
-            properties['swap'] = 'inner'; // default swap
-        }
-
-        if (transformation.hasOwnProperty('remove')) {
-            properties['remove'] = transformation['remove'];
+        for (const [property, defaultValue] of Object.entries({
+            'target': 'this',
+            'template': '',
+            'swap': 'inner', // default swap
+            'after': '',
+            'before': ''
+        })) {
+            if (transformation.hasOwnProperty(property)) {
+                properties[property] = transformation[property];
+            } else if (defaultValue !== '' && !properties.hasOwnProperty(property)) {
+                properties[property] = defaultValue;
+            }
         }
     }
 
     sequenceTasks(helperFragment, target, properties) {
+        if (properties.hasOwnProperty('before') &&
+            properties.before !== "") {
+            this.runSubtasks(properties.before)
+        }
 
         this.search4ElemTasks(helperFragment);
         this.swapContent(helperFragment, target, properties.swap);
@@ -678,9 +680,11 @@ export default class Secutio {
             'src-file',
             'swap',
             'target',
+            'then',
             'after',
             'before',
-            'next'
+            'next',
+            'error'
         ]) {
             const property = 'attribute-'.concat(key);
             if (properties.hasOwnProperty(property) &&
@@ -690,10 +694,11 @@ export default class Secutio {
             }
         }
 
-        // execute subtasks "before" as soon as possible!
-        if (properties.hasOwnProperty('before') &&
-            properties.before !== "") {
-            this.runSubtasks(properties.before)
+        // Execute subtasks "then" as soon as possible!
+        // Useful for example to show a loader.
+        if (properties.hasOwnProperty('then') &&
+            properties.then !== "") {
+            this.runSubtasks(properties.then)
         }
 
         // In events without action and method,
@@ -746,6 +751,15 @@ export default class Secutio {
         const block = await this.makeRequest(properties, bodyData);
         if (block === undefined) {
             return;
+        }
+
+        // If an error happens replaces the current task
+        // with the error task, if it exists.
+        if (properties.hasOwnProperty('error') && block.error) {
+            properties = this.tasks[properties['error']];
+            if (properties.hasOwnProperty('message')) {
+                block.data = properties['message'];
+            }
         }
 
         this.setTransformation(properties, block.transformation);
