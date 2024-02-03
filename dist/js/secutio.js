@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-01 19:44:00
+    Last Modification: 2024-02-03 22:31:40
 
     Attention: This is work in progress
 
@@ -350,6 +350,7 @@ export default class Secutio {
         }
 
         // Removes the target element from the DOM.
+        // move to another location
         if (swap === 'delete') {
             target.remove();
             return;
@@ -357,6 +358,7 @@ export default class Secutio {
 
         // It exists only for convenience, but does
         // not make any transformations.
+        // move to another location
         if (swap === 'none') {
             return;
         }
@@ -667,6 +669,18 @@ export default class Secutio {
             this.templateManager(this.setFinalTarget(eventTarget, properties.target),
                 properties, inputData, jsonData);
         }
+
+        if (properties.hasOwnProperty('swap')) {
+            // Removes the target element from the DOM.
+            if (properties.swap === 'delete') {
+                eventTarget.remove();
+            }
+            // It exists only for convenience, but does
+            // not make any transformations.
+            if (swap === 'none') {
+                return;
+            }
+        }
     }
 
     async processEvent(event, properties) {
@@ -674,23 +688,18 @@ export default class Secutio {
         // replace with custom attributes
         // the action can exist together with the attribute and
         // is used by default when the attribute is not defined.
-        for (const key of [
-            'action',
-            'method',
-            'src-file',
-            'swap',
-            'target',
-            'then',
-            'after',
-            'before',
-            'next',
-            'error'
-        ]) {
+        // properties:
+        // action, method, src-file, swap, target, then, after, before, next, error
+
+        for (const key of Object.keys(properties)) {
+            if (key.startsWith('attribute-')) {
+                continue;
+            }
             const property = 'attribute-'.concat(key);
             if (properties.hasOwnProperty(property) &&
-                event.target.hasAttribute(properties[property]) &&
-                event.target.getAttribute(properties[property]) !== "") {
-                properties[key] = event.target.getAttribute(properties[property]);
+                event.currentTarget.hasAttribute(properties[property]) &&
+                event.currentTarget.getAttribute(properties[property]) !== "") {
+                properties[key] = event.currentTarget.getAttribute(properties[property]);
             }
         }
 
@@ -705,7 +714,7 @@ export default class Secutio {
         // the target can be replaced with templates.
         if (!(properties.hasOwnProperty('action') &&
             properties.hasOwnProperty('method'))) {
-            this.setTemplateData(event.target, properties, event);
+            this.setTemplateData(event.currentTarget, properties, event);
             return;
         }
 
@@ -713,7 +722,7 @@ export default class Secutio {
 
         let bodyData = {};
         if (properties.trigger === 'submit') {
-            const formElem = event.target.closest('form');
+            const formElem = event.currentTarget.closest('form');
             if (formElem !== null &&
                 formElem.hasChildNodes()) {
                 const namedElements = formElem.querySelectorAll("input[name],select[name]");
@@ -733,8 +742,8 @@ export default class Secutio {
                 return;
             }
 
-            if (event.target.name !== '') {
-                bodyData[event.target.name] = event.target.value;
+            if (event.currentTarget.name !== '') {
+                bodyData[event.currentTarget.name] = event.currentTarget.value;
             }
         }
 
@@ -764,7 +773,7 @@ export default class Secutio {
 
         this.setTransformation(properties, block.transformation);
 
-        const finalTarget = this.setFinalTarget(event.target, properties.target);
+        const finalTarget = this.setFinalTarget(event.currentTarget, properties.target);
 
         // if data is json
         if (typeof block.data === 'object') {
