@@ -677,7 +677,7 @@ export default class Secutio {
             }
             // It exists only for convenience, but does
             // not make any transformations.
-            if (swap === 'none') {
+            if (properties.swap === 'none') {
                 return;
             }
         }
