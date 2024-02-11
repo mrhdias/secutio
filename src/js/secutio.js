@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-11 21:40:37
+    Last Modification: 2024-02-11 23:15:34
     Attention: This is work in progress
 
     References:
@@ -572,14 +572,14 @@ export default class Secutio {
         return remainer.join(',');
     }
 
-    async templateManager(target, properties, input, data) {
+    async templateManager(properties, input, data) {
         // console.log('Template Manager...');
 
         if (properties.template.length < 3) {
             throw new Error(`Short template name "${properties.template}"`);
         }
 
-        const innerTemplate = await (async function (_this) {
+        const innerTemplate = await (async (_this) => {
 
             switch (Array.from(properties.template)[0]) {
                 case '@':
@@ -602,14 +602,14 @@ export default class Secutio {
                     throw new Error(`Invalid "${properties.template}" fetched template`);
             }
 
-        }(this));
+        })(this);
 
         const helperFragment = this.buildFragment(input, data, innerTemplate);
         if (helperFragment === null) {
             throw new Error(`An error happened while processing the "${properties.template}" template`);
         }
 
-        this.sequenceTasks(helperFragment, target, properties);
+        return helperFragment;
     }
 
     setFinalTarget(eventTarget, propertyTarget) {
@@ -665,8 +665,10 @@ export default class Secutio {
         if (properties.hasOwnProperty('template') &&
             properties.hasOwnProperty('target') &&
             properties.target != '') {
-            this.templateManager(this.setFinalTarget(eventTarget, properties.target),
-                properties, inputData, jsonData);
+
+            const helperFragment = await this.templateManager(properties, inputData, jsonData);
+            this.sequenceTasks(this.setFinalTarget(eventTarget, properties.target),
+                helperFragment, properties);
         }
 
         if (properties.hasOwnProperty('swap')) {
@@ -735,7 +737,8 @@ export default class Secutio {
 
             // with templates
             if (properties.hasOwnProperty('template')) {
-                this.templateManager(finalTarget, properties, {}, block.data);
+                const currentTarget = await this.templateManager(properties, {}, block.data);
+                this.sequenceTasks(finalTarget, helperFragment, properties);
             }
 
             return;
@@ -753,6 +756,7 @@ export default class Secutio {
                 return helperElem;
             }(this);
 
+            // please test this!
             this.sequenceTasks(helperFragment, finalTarget, properties);
 
             return;
