@@ -1,8 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-11 18:57:03
-
+    Last Modification: 2024-02-11 21:40:37
     Attention: This is work in progress
 
     References:
@@ -769,16 +768,13 @@ export default class Secutio {
         // is used by default when the attribute is not defined.
         // properties:
         // action, method, src-file, swap, target, then, after, before, next, error
-
         for (const key of Object.keys(properties)) {
-            if (key.startsWith('attribute-')) {
+            if (!key.startsWith('attribute-')) {
                 continue;
             }
-            const property = 'attribute-'.concat(key);
-            if (properties.hasOwnProperty(property) &&
-                event.currentTarget.hasAttribute(properties[property]) &&
-                event.currentTarget.getAttribute(properties[property]) !== "") {
-                properties[key] = event.currentTarget.getAttribute(properties[property]);
+            const property = key.substring('attribute-'.length);
+            if (property.length > 1 && event.currentTarget.hasAttribute(properties[key])) {
+                properties[property] = event.currentTarget.getAttribute(properties[key]);
             }
         }
 
@@ -794,6 +790,7 @@ export default class Secutio {
             if (properties.action === '') {
                 throw new Error('Empty action');
             }
+
             // default method
             if (properties.hasOwnProperty('method')) {
                 properties.method = properties.method.toLowerCase();
