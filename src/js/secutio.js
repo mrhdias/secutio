@@ -904,7 +904,7 @@ export default class Secutio {
             //    return element;
             // }();
 
-            targetElem.addEventListener(properties.trigger, (event) => {
+            element.addEventListener(properties.trigger, (event) => {
                 event.preventDefault();
                 if (properties.disabled === false) {
                     try {
