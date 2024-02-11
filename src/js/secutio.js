@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-03 22:31:40
+    Last Modification: 2024-02-11 18:57:03
 
     Attention: This is work in progress
 
@@ -683,6 +683,85 @@ export default class Secutio {
         }
     }
 
+    async prepareRequest(currentTarget, properties) {
+
+        let bodyData = {};
+
+        if (properties.trigger === 'submit') {
+            const formElem = currentTarget.closest('form');
+            if (formElem !== null &&
+                formElem.hasChildNodes()) {
+                const namedElements = formElem.querySelectorAll("input[name],select[name]");
+                for (const namedElement of namedElements) {
+                    this.collectBodyData(namedElement, bodyData);
+                }
+            }
+        } else if (properties.hasOwnProperty('collect-data')) {
+            const collectFromElems = document.querySelectorAll(properties['collect-data']);
+            for (const collectFromElem of collectFromElems) {
+                this.collectBodyData(collectFromElem, bodyData);
+            }
+
+            // Check if body data is empty
+            if (["post", "put"].includes(properties['method']) &&
+                Object.keys(bodyData).length === 0) {
+                return;
+            }
+
+            if (currentTarget.name !== '') {
+                bodyData[currentTarget.name] = currentTarget.value;
+            }
+        }
+
+        const block = await this.makeRequest(properties, bodyData);
+        if (block === undefined) {
+            return;
+        }
+
+        // If an error happens replaces the current task
+        // with the error task, if it exists.
+        if (properties.hasOwnProperty('error') && block.error) {
+            properties = this.tasks[properties['error']];
+            if (properties.hasOwnProperty('message')) {
+                block.data = properties['message'];
+            }
+        }
+
+        this.setTransformation(properties, block.transformation);
+
+        const finalTarget = this.setFinalTarget(currentTarget, properties.target);
+
+        // if data is json
+        if (typeof block.data === 'object') {
+
+            // with templates
+            if (properties.hasOwnProperty('template')) {
+                this.templateManager(finalTarget, properties, {}, block.data);
+            }
+
+            return;
+        }
+
+        // if html fragment is returned
+        if (typeof block.data === 'string' && block.data !== "") {
+
+            const helperFragment = function (_this) {
+                const helperElem = document.createElement('div');
+                helperElem.innerHTML = block.data;
+
+                _this.reScript(helperElem);
+
+                return helperElem;
+            }(this);
+
+            this.sequenceTasks(helperFragment, finalTarget, properties);
+
+            return;
+        }
+
+        throw new Error("There is no data or text for the transformation");
+    }
+
     async processEvent(event, properties) {
 
         // replace with custom attributes
@@ -707,98 +786,50 @@ export default class Secutio {
         // Useful for example to show a loader.
         if (properties.hasOwnProperty('then') &&
             properties.then !== "") {
-            this.runSubtasks(properties.then)
+            this.runSubtasks(properties.then);
         }
 
-        // In events without action and method,
-        // the target can be replaced with templates.
-        if (!(properties.hasOwnProperty('action') &&
-            properties.hasOwnProperty('method'))) {
-            this.setTemplateData(event.currentTarget, properties, event);
-            return;
-        }
-
-        // event.preventDefault();
-
-        let bodyData = {};
-        if (properties.trigger === 'submit') {
-            const formElem = event.currentTarget.closest('form');
-            if (formElem !== null &&
-                formElem.hasChildNodes()) {
-                const namedElements = formElem.querySelectorAll("input[name],select[name]");
-                for (const namedElement of namedElements) {
-                    this.collectBodyData(namedElement, bodyData);
+        // get data from server
+        if (properties.hasOwnProperty('action')) {
+            if (properties.action === '') {
+                throw new Error('Empty action');
+            }
+            // default method
+            if (properties.hasOwnProperty('method')) {
+                properties.method = properties.method.toLowerCase();
+                if (!this.methods.has(properties.method)) {
+                    throw new Error(`Unknown HTTP method: ${properties.method}`);
                 }
-            }
-        } else if (properties.hasOwnProperty('collect-data')) {
-            const collectFromElems = document.querySelectorAll(properties['collect-data']);
-            for (const collectFromElem of collectFromElems) {
-                this.collectBodyData(collectFromElem, bodyData);
+            } else {
+                properties['method'] = 'get';
             }
 
-            // Check if body data is empty
-            if (["post", "put"].includes(properties['method']) &&
-                Object.keys(bodyData).length === 0) {
-                return;
-            }
-
-            if (event.currentTarget.name !== '') {
-                bodyData[event.currentTarget.name] = event.currentTarget.value;
-            }
-        }
-
-        // default method
-        if (properties.hasOwnProperty('method')) {
-            properties.method = properties.method.toLowerCase();
-            if (!this.methods.has(properties.method)) {
-                throw new Error(`Unknown HTTP method: ${properties.method}`);
-            }
+            this.prepareRequest(event.currentTarget, properties);
         } else {
-            properties['method'] = 'get';
+            // In events without action, the target can be replaced with templates.
+            this.setTemplateData(event.currentTarget, properties, event);
+        }
+    }
+
+    setDefaultTrigger(element) {
+        // set the default trigger property
+
+        // if submit form
+        if (element.nodeName === 'FORM') {
+            return 'submit';
         }
 
-        const block = await this.makeRequest(properties, bodyData);
-        if (block === undefined) {
-            return;
+        // if a button
+        if (element.nodeName === 'BUTTON') {
+            return (element.type === 'submit') ? 'submit' : 'click';
         }
 
-        // If an error happens replaces the current task
-        // with the error task, if it exists.
-        if (properties.hasOwnProperty('error') && block.error) {
-            properties = this.tasks[properties['error']];
-            if (properties.hasOwnProperty('message')) {
-                block.data = properties['message'];
-            }
+        // input type button
+        if (element.nodeName === 'INPUT' && element.type === 'button') {
+            return 'click';
         }
 
-        this.setTransformation(properties, block.transformation);
-
-        const finalTarget = this.setFinalTarget(event.currentTarget, properties.target);
-
-        // if data is json
-        if (typeof block.data === 'object') {
-
-            // with templates
-            if (properties.hasOwnProperty('template')) {
-                this.templateManager(finalTarget, properties, {}, block.data);
-            }
-
-        } else if (typeof block.data === 'string' && block.data !== "") {
-
-            const helperFragment = function (_this) {
-                const helperElem = document.createElement('div');
-                helperElem.innerHTML = block.data;
-
-                _this.reScript(helperElem);
-
-                return helperElem;
-            }(this);
-
-            this.sequenceTasks(helperFragment, finalTarget, properties);
-
-        } else {
-            throw new Error("There is no data or text for the transformation");
-        }
+        return null;
     }
 
     async setTask(element) {
@@ -830,21 +861,25 @@ export default class Secutio {
             }
 
             // custom event
-            if (properties.trigger === 'init') { // fired after page loaded
+            if (properties.trigger === 'init') { // fired after fragment loaded
                 if (properties.disabled === false) {
                     // https://developer.mozilla.org/en-US/docs/Web/Events/Creating_and_triggering_events
                     // Create 'init' event
-                    const event = new CustomEvent('init', {
-                        bubbles: true,
-                        cancelable: true,
-                    });
-
-                    let _this = this;
-                    element.addEventListener('init', function (e) {
+                    element.addEventListener('init', (e) => {
                         e.preventDefault();
                         if (properties.disabled === false) {
-                            _this.processEvent(e, properties);
+                            try {
+                                this.processEvent(e, properties);
+                            } catch (error) {
+                                console.log(`Error for "${task}": ${error}`);
+                            }
                         }
+                    });
+                    // After the addEventListener to associate the target
+                    // and currentTarget, if not it is null.
+                    const event = new CustomEvent('init', {
+                        bubbles: true,
+                        cancelable: true
                     });
                     element.dispatchEvent(event);
                 }
@@ -854,40 +889,29 @@ export default class Secutio {
             // set the default trigger property
             if (!(properties.hasOwnProperty('trigger') &&
                 this.triggers.has(properties.trigger))) {
-
-                properties.trigger = function () {
-                    // if submit form
-                    if (element.nodeName === 'FORM') {
-                        return 'submit';
-                    }
-
-                    // if a button
-                    if (element.nodeName === 'BUTTON') {
-                        return (element.type === 'submit') ? 'submit' : 'click';
-                    }
-
-                    // input type button
-                    if (element.nodeName === 'INPUT' && element.type === 'button') {
-                        return 'click';
-                    }
-
+                properties.trigger = this.setDefaultTrigger(element);
+                if (properties.trigger === null) {
                     throw new Error(`No trigger defined for "${task}"!`);
-                }();
+                }
             }
 
             // https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event
 
-            const targetElem = function () {
-                if (properties.trigger === 'scroll' || properties.trigger === 'scrollend') {
-                    return document;
-                }
-                return element;
-            }();
+            // const targetElem = function () {
+            //    if (properties.trigger === 'scroll' || properties.trigger === 'scrollend') {
+            //        return document;
+            //    }
+            //    return element;
+            // }();
 
             targetElem.addEventListener(properties.trigger, (event) => {
                 event.preventDefault();
                 if (properties.disabled === false) {
-                    this.processEvent(event, properties);
+                    try {
+                        this.processEvent(event, properties);
+                    } catch (error) {
+                        console.log(`Error for "${task}": ${error}`);
+                    }
                 }
             });
         }
