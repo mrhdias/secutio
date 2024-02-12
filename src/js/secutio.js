@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-12 18:47:59
+    Last Modification: 2024-02-12 21:14:18
     Attention: This is work in progress
 
     References:
@@ -1013,10 +1013,10 @@ export default class Secutio {
         observer.observe(targetNode[0], config);
         // end mutation observer
 
-        this.getDataTasks().then(() => {
+        this.getDataTasks().then(async () => {
             // console.log(this.tasks);
             if (Object.keys(this.tasks).length >= 0) {
-                this.search4ElemTasks(targetNode[0]);
+                await this.search4ElemTasks(targetNode[0]);
             }
         });
     }
