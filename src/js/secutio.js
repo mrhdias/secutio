@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-11 23:15:34
+    Last Modification: 2024-02-12 18:47:59
     Attention: This is work in progress
 
     References:
@@ -164,7 +164,7 @@ export default class Secutio {
         return await response.json();
     }
 
-    runNextTask(target, task) {
+    async runNextTask(event, task) {
 
         if (!this.tasks.hasOwnProperty(task)) {
             throw new Error(`The next task "${task}" not exist in tasks file!`);
@@ -181,7 +181,7 @@ export default class Secutio {
         }
 
         if (properties.disabled === false) {
-            this.setTemplateData(target, properties, undefined);
+            await this.setTemplateData(event, properties);
         }
     }
 
@@ -431,7 +431,7 @@ export default class Secutio {
         }
     }
 
-    search4ElemTasks(parentNode) {
+    async search4ElemTasks(parentNode) {
         if (parentNode.hasChildNodes()) {
             for (const node of parentNode.childNodes) {
                 // console.log('Search for tasks:', node.nodeType, node.nodeName);
@@ -441,10 +441,10 @@ export default class Secutio {
                     node.nodeType !== node.COMMENT_NODE &&
                     node.nodeType !== node.DOCUMENT_FRAGMENT_NODE) {
                     if (node.hasAttribute(this.tasksAttribute)) {
-                        this.setTask(node);
+                        await this.setTask(node);
                     }
                     if (node.hasChildNodes()) {
-                        this.search4ElemTasks(node);
+                        await this.search4ElemTasks(node);
                     }
                 }
             }
@@ -535,13 +535,27 @@ export default class Secutio {
         }
     }
 
-    sequenceTasks(helperFragment, target, properties) {
+    setFinalTarget(eventTarget, propertyTarget) {
+        if (propertyTarget === 'this') {
+            return eventTarget;
+        }
+        const target = document.querySelector(propertyTarget)
+        if (target === null) {
+            throw new Error(`Target "${propertyTarget}" not exist!`);
+        }
+        return target;
+    }
+
+    async sequenceTasks(helperFragment, event, properties) {
+
+        const target = this.setFinalTarget(event.currentTarget, properties.target);
+
         if (properties.hasOwnProperty('before') &&
             properties.before !== "") {
             this.runSubtasks(properties.before)
         }
 
-        this.search4ElemTasks(helperFragment);
+        await this.search4ElemTasks(helperFragment);
         this.swapContent(helperFragment, target, properties.swap);
 
         if (properties.hasOwnProperty('after') &&
@@ -552,7 +566,7 @@ export default class Secutio {
         // Executes another task in the same event after swap the content.
         if (properties.hasOwnProperty('next') &&
             properties.next !== "") {
-            this.runNextTask(target, properties.next);
+            this.runNextTask(event, properties.next);
         }
     }
 
@@ -612,24 +626,14 @@ export default class Secutio {
         return helperFragment;
     }
 
-    setFinalTarget(eventTarget, propertyTarget) {
-        if (propertyTarget === 'this') {
-            return eventTarget;
-        }
-        const target = document.querySelector(propertyTarget)
-        if (target === null) {
-            throw new Error(`Target "${propertyTarget}" not exist!`);
-        }
-        return target;
-    }
-
-    async setTemplateData(eventTarget, properties, event) {
+    async setTemplateData(event, properties) {
 
         // Exposes the input data (name=value) selected by the
         // "collect-data" to be available in the templates like "data".
         let inputData = {}
         if (properties.hasOwnProperty('collect-data')) {
-            const selector = this.thisElement(eventTarget, properties['collect-data'], inputData);
+            const selector = this.thisElement(event.currentTarget,
+                properties['collect-data'], inputData);
             if (selector.length > 0) {
                 const collectFromElems = document.querySelectorAll(selector);
                 for (const collectFromElem of collectFromElems) {
@@ -639,12 +643,12 @@ export default class Secutio {
         }
 
         // If the "src-file" property is defined, fetch the data.
-        const jsonData = await (async function (_this) {
+        const jsonData = await (async (_this) => {
             if (properties.hasOwnProperty('src-file')) {
                 return await _this.getResource(properties['src-file']);
             }
             return {};
-        }(this));
+        })(this);
 
 
         if (properties.hasOwnProperty('function')) {
@@ -667,14 +671,13 @@ export default class Secutio {
             properties.target != '') {
 
             const helperFragment = await this.templateManager(properties, inputData, jsonData);
-            this.sequenceTasks(this.setFinalTarget(eventTarget, properties.target),
-                helperFragment, properties);
+            await this.sequenceTasks(helperFragment, event, properties);
         }
 
         if (properties.hasOwnProperty('swap')) {
             // Removes the target element from the DOM.
             if (properties.swap === 'delete') {
-                eventTarget.remove();
+                event.currentTarget.remove();
             }
             // It exists only for convenience, but does
             // not make any transformations.
@@ -684,12 +687,45 @@ export default class Secutio {
         }
     }
 
-    async prepareRequest(currentTarget, properties) {
+    async processReqData(data, properties) {
+        // if data is json
+        if (typeof data === 'object') {
+            console.log('json data from server...');
+
+            // with templates
+            if (properties.hasOwnProperty('template')) {
+                const helperFragment = await this.templateManager(properties, {}, data);
+                return helperFragment;
+            }
+
+            throw new Error("There is no json data for the transformation");
+        }
+
+        // if html fragment is returned
+        if (typeof data === 'string' && data !== "") {
+            console.log('raw data from server...');
+
+            const helperFragment = ((_this) => {
+                const helperElem = document.createElement('div');
+                helperElem.innerHTML = data;
+
+                _this.reScript(helperElem);
+
+                return helperElem;
+            })(this);
+
+            return helperFragment;
+        }
+
+        throw new Error("There is no data for the transformation");
+    }
+
+    async prepareRequest(event, properties) {
 
         let bodyData = {};
 
         if (properties.trigger === 'submit') {
-            const formElem = currentTarget.closest('form');
+            const formElem = event.currentTarget.closest('form');
             if (formElem !== null &&
                 formElem.hasChildNodes()) {
                 const namedElements = formElem.querySelectorAll("input[name],select[name]");
@@ -709,11 +745,12 @@ export default class Secutio {
                 return;
             }
 
-            if (currentTarget.name !== '') {
-                bodyData[currentTarget.name] = currentTarget.value;
+            if (event.currentTarget.name !== '') {
+                bodyData[event.currentTarget.name] = event.currentTarget.value;
             }
         }
 
+        // send data to the server and wait for the response
         const block = await this.makeRequest(properties, bodyData);
         if (block === undefined) {
             return;
@@ -730,39 +767,28 @@ export default class Secutio {
 
         this.setTransformation(properties, block.transformation);
 
-        const finalTarget = this.setFinalTarget(currentTarget, properties.target);
+        const helperFragment = await this.processReqData(block.data, properties);
+        await this.sequenceTasks(helperFragment, event, properties);
+    }
 
-        // if data is json
-        if (typeof block.data === 'object') {
+    // https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
+    webSocketConnection(event, properties) {
+        // Create WebSocket connection.
 
-            // with templates
-            if (properties.hasOwnProperty('template')) {
-                const currentTarget = await this.templateManager(properties, {}, block.data);
-                this.sequenceTasks(finalTarget, helperFragment, properties);
-            }
+        const socket = new WebSocket(properties.connect);
 
-            return;
-        }
+        // Connection opened
+        socket.addEventListener("open", async (e) => {
+            console.log('unimplemented!');
+            socket.send("Hello Server!");
+        });
 
-        // if html fragment is returned
-        if (typeof block.data === 'string' && block.data !== "") {
+        // Listen for messages
+        socket.addEventListener("message", async (e) => {
 
-            const helperFragment = function (_this) {
-                const helperElem = document.createElement('div');
-                helperElem.innerHTML = block.data;
-
-                _this.reScript(helperElem);
-
-                return helperElem;
-            }(this);
-
-            // please test this!
-            this.sequenceTasks(helperFragment, finalTarget, properties);
-
-            return;
-        }
-
-        throw new Error("There is no data or text for the transformation");
+            const helperFragment = await this.processReqData(e.data, properties);
+            await this.sequenceTasks(helperFragment, event, properties);
+        });
     }
 
     async processEvent(event, properties) {
@@ -789,8 +815,15 @@ export default class Secutio {
             this.runSubtasks(properties.then);
         }
 
-        // get data from server
-        if (properties.hasOwnProperty('action')) {
+        if (properties.hasOwnProperty('connect')) {
+            // get data from websocket connection
+            if (properties.connect === '') {
+                throw new Error('Empty connection');
+            }
+            this.webSocketConnection(event, properties);
+
+        } else if (properties.hasOwnProperty('action')) {
+            // get data from server
             if (properties.action === '') {
                 throw new Error('Empty action');
             }
@@ -805,10 +838,10 @@ export default class Secutio {
                 properties['method'] = 'get';
             }
 
-            this.prepareRequest(event.currentTarget, properties);
+            await this.prepareRequest(event, properties);
         } else {
             // In events without action, the target can be replaced with templates.
-            this.setTemplateData(event.currentTarget, properties, event);
+            await this.setTemplateData(event, properties);
         }
     }
 
@@ -866,11 +899,11 @@ export default class Secutio {
                 if (properties.disabled === false) {
                     // https://developer.mozilla.org/en-US/docs/Web/Events/Creating_and_triggering_events
                     // Create 'init' event
-                    element.addEventListener('init', (e) => {
+                    element.addEventListener('init', async (e) => {
                         e.preventDefault();
                         if (properties.disabled === false) {
                             try {
-                                this.processEvent(e, properties);
+                                await this.processEvent(e, properties);
                             } catch (error) {
                                 console.log(`Error for "${task}": ${error}`);
                             }
@@ -905,11 +938,11 @@ export default class Secutio {
             //    return element;
             // }();
 
-            element.addEventListener(properties.trigger, (event) => {
+            element.addEventListener(properties.trigger, async (event) => {
                 event.preventDefault();
                 if (properties.disabled === false) {
                     try {
-                        this.processEvent(event, properties);
+                        await this.processEvent(event, properties);
                     } catch (error) {
                         console.log(`Error for "${task}": ${error}`);
                     }
@@ -926,9 +959,9 @@ export default class Secutio {
             }
             if (taskElem.hasAttribute('src') && taskElem.src !== "") {
                 // get tasks from JSON file
-                const jsonData = await (async function (_this) {
+                const jsonData = await (async (_this) => {
                     return await _this.getResource(taskElem.src);
-                }(this));
+                })(this);
                 Object.assign(this.tasks, jsonData);
                 continue;
             }
