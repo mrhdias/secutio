@@ -61,9 +61,9 @@ Here is an example of a JSON file (tasks.json) containing the tasks mentioned be
 ```json
 {
   "get-joke": {
-  "action": "https://v2.jokeapi.dev/joke/Any?format=txt&safe-mode",
-  "method": "get",
-  "trigger": "click",
+    "action": "https://v2.jokeapi.dev/joke/Any?format=txt&safe-mode",
+    "method": "get",
+    "trigger": "click",
     "target": "#output",
     "swap": "inner"
   }
