@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-12 21:14:18
+    Last Modification: 2024-02-16 19:30:46
     Attention: This is work in progress
 
     References:
@@ -164,6 +164,69 @@ export default class Secutio {
         return await response.json();
     }
 
+    swapContent(clone, target, swap) {
+        if (clone === null) {
+            if (swap === 'delete') {
+                target.remove();
+                return;
+            }
+
+            // It exists only for convenience, but does
+            // not make any transformations.
+            // move to another location
+            if (swap === 'none') {
+                return;
+            }
+
+            return;
+        }
+
+        // ...clone.childNodes to remove helper div element
+
+        // Replaces the existing children of a Node
+        // with a specified new set of children.
+        if (swap === 'inner') { // default swap option
+            target.replaceChildren(...clone.childNodes);
+            return;
+        }
+
+        // Replaces this Element in the children list of
+        // its parent with a set of Node or string objects
+        if (swap === 'outer') {
+            target.replaceWith(...clone.childNodes);
+            return;
+        }
+
+        // Inserts a set of Node or string objects in the children
+        // list of this Element's parent, just before this Element.
+        if (swap === 'before') {
+            target.before(...clone.childNodes);
+        }
+
+        // Inserts a set of Node or string objects in the children
+        // list of the Element's parent, just after the Element.
+        if (swap === 'after') {
+            target.after(...clone.childNodes);
+            return;
+        }
+
+        // Inserts a set of Node objects or string
+        // objects before the first child of the Element.
+        if (swap === 'prepend') {
+            target.prepend(...clone.childNodes);
+            return;
+        }
+
+        // Inserts a set of Node objects or string
+        // objects after the last child of the Element.
+        if (swap === 'append') {
+            target.append(...clone.childNodes);
+            return;
+        }
+
+        throw new Error(`swap "${swap}" attribute not supported`);
+    }
+
     async runNextTask(event, task) {
 
         if (!this.tasks.hasOwnProperty(task)) {
@@ -301,68 +364,6 @@ export default class Secutio {
                 }
             }
         }
-    }
-
-    swapContent(clone, target, swap = 'inner') {
-
-        // ...clone.childNodes to remove helper div element
-
-        // Replaces the existing children of a Node
-        // with a specified new set of children.
-        if (swap === 'inner') { // default swap option
-            target.replaceChildren(...clone.childNodes);
-            return;
-        }
-
-        // Replaces this Element in the children list of
-        // its parent with a set of Node or string objects
-        if (swap === 'outer') {
-            target.replaceWith(...clone.childNodes);
-            return;
-        }
-
-        // Inserts a set of Node or string objects in the children
-        // list of this Element's parent, just before this Element.
-        if (swap === 'before') {
-            target.before(...clone.childNodes);
-        }
-
-        // Inserts a set of Node or string objects in the children
-        // list of the Element's parent, just after the Element.
-        if (swap === 'after') {
-            target.after(...clone.childNodes);
-            return;
-        }
-
-        // Inserts a set of Node objects or string
-        // objects before the first child of the Element.
-        if (swap === 'prepend') {
-            target.prepend(...clone.childNodes);
-            return;
-        }
-
-        // Inserts a set of Node objects or string
-        // objects after the last child of the Element.
-        if (swap === 'append') {
-            target.append(...clone.childNodes);
-            return;
-        }
-
-        // Removes the target element from the DOM.
-        // move to another location
-        if (swap === 'delete') {
-            target.remove();
-            return;
-        }
-
-        // It exists only for convenience, but does
-        // not make any transformations.
-        // move to another location
-        if (swap === 'none') {
-            return;
-        }
-
-        throw new Error(`swap "${swap}" attribute not supported`);
     }
 
     addKeyValue(data, name, value, makeArray = false) {
@@ -535,20 +536,13 @@ export default class Secutio {
         }
     }
 
-    setFinalTarget(eventTarget, propertyTarget) {
-        if (propertyTarget === 'this') {
-            return eventTarget;
-        }
-        const target = document.querySelector(propertyTarget)
+    async sequenceTasks(helperFragment, event, properties) {
+
+        const target = (properties.target === 'this') ?
+            event.currentTarget : document.querySelector(properties.target);
         if (target === null) {
             throw new Error(`Target "${propertyTarget}" not exist!`);
         }
-        return target;
-    }
-
-    async sequenceTasks(helperFragment, event, properties) {
-
-        const target = this.setFinalTarget(event.currentTarget, properties.target);
 
         if (properties.hasOwnProperty('before') &&
             properties.before !== "") {
@@ -556,17 +550,12 @@ export default class Secutio {
         }
 
         await this.search4ElemTasks(helperFragment);
-        this.swapContent(helperFragment, target, properties.swap);
+        this.swapContent(helperFragment, target,
+            properties.hasOwnProperty('swap') ? properties.swap : 'inner');
 
         if (properties.hasOwnProperty('after') &&
             properties.after !== "") {
             this.runSubtasks(properties.after)
-        }
-
-        // Executes another task in the same event after swap the content.
-        if (properties.hasOwnProperty('next') &&
-            properties.next !== "") {
-            this.runNextTask(event, properties.next);
         }
     }
 
@@ -655,13 +644,6 @@ export default class Secutio {
             if (!this.custom_functions.hasOwnProperty(properties['function'])) {
                 throw new Error(`The registered function "${properties.function}" not exist!`);
             }
-            // if (event === undefined) {
-            //     console.log('function with undefined event...');
-            //     this.custom_functions[properties['function']](inputData, jsonData);
-            // } else {
-            //     console.log('function with event...');
-            //     this.custom_functions[properties['function']](event, inputData, jsonData);
-            // }
             this.custom_functions[properties['function']](event, inputData, jsonData);
         }
 
@@ -674,16 +656,11 @@ export default class Secutio {
             await this.sequenceTasks(helperFragment, event, properties);
         }
 
-        if (properties.hasOwnProperty('swap')) {
-            // Removes the target element from the DOM.
-            if (properties.swap === 'delete') {
-                event.currentTarget.remove();
-            }
-            // It exists only for convenience, but does
-            // not make any transformations.
-            if (properties.swap === 'none') {
-                return;
-            }
+        const target = (properties.target === 'this') ?
+            event.currentTarget : document.querySelector(properties.target);
+        if (target !== null) {
+            this.swapContent(null, target,
+                properties.hasOwnProperty('swap') ? properties.swap : 'inner');
         }
     }
 
@@ -842,6 +819,12 @@ export default class Secutio {
         } else {
             // In events without action, the target can be replaced with templates.
             await this.setTemplateData(event, properties);
+        }
+
+        // Executes another task in the same event after swap the content.
+        if (properties.hasOwnProperty('next') &&
+            properties.next !== "") {
+            await this.runNextTask(event, properties.next);
         }
     }
 
