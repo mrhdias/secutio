@@ -6,24 +6,24 @@
 from flask import Flask, jsonify, request
 
 contacts = [
-	{
-		"id":        "1",
-		"firstname": "Lorem",
-		"lastname":  "Ipsum",
-		"email":     "lorem.ipsum@example.com",
-	},
-	{
-		"id":        "2",
-		"firstname": "Mauris",
-		"lastname":  "Quis",
-		"email":     "mauris.quis@example.com",
-	},
-	{
-		"id":        "3",
-		"firstname": "Donec Purus",
-		"lastname":  "Purus",
-		"email":     "donec.purus@example.com",
-	}
+    {
+        "id":        "1",
+        "firstname": "Lorem",
+        "lastname":  "Ipsum",
+        "email":     "lorem.ipsum@example.com",
+    },
+    {
+        "id":        "2",
+        "firstname": "Mauris",
+        "lastname":  "Quis",
+        "email":     "mauris.quis@example.com",
+    },
+    {
+        "id":        "3",
+        "firstname": "Donec Purus",
+        "lastname":  "Purus",
+        "email":     "donec.purus@example.com",
+    }
 ]
 
 app = Flask(__name__,
