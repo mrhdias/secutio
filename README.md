@@ -70,12 +70,10 @@ Here is an example of a JSON file (tasks.json) containing the tasks mentioned be
 }
 ```
 ### Embedded Templates
-Embedded templates should have a unique id property, and their content must be enclosed within a "textarea" element with the "data-codeblock" attribute.
+Embedded templates should have a unique id property, and their content must be enclosed within the tag "template".
 ```html
 <template id="contacts-list-tpl">
-    <textarea data-codeblock>
-      <!-- HTML Content -->  
-    </textarea>
+  <!-- HTML Content -->
 </template>
 ```
 

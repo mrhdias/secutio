@@ -40,17 +40,17 @@ Example of a tasks file.
 
 ```json
 {
-    "get-contacts-list": {
-        "action": "/listcontacts",
-        "method": "get",
-        "trigger": "click"
-    },
-    "switch-contact-status": {
-        "action": "/statuscontact",
-        "method": "put",
-        "collect-data": "#contacts-list > table > tbody > tr > td > input[name]",
-        "trigger": "click"
-    }
+  "get-contacts-list": {
+    "action": "/listcontacts",
+    "method": "get",
+    "trigger": "click"
+  },
+  "switch-contact-status": {
+    "action": "/statuscontact",
+    "method": "put",
+    "collect-data": "#contacts-list > table > tbody > tr > td > input[name]",
+    "trigger": "click"
+  }
 }
 ```
 ### Properties
@@ -70,14 +70,14 @@ The following properties can be used both client-side and server-side via custom
 - **before**: List of subtasks with the CSS "selector" property to be executed before swapping the new content at the target;
 - **after**: List of subtasks with the CSS "selector" property to be executed after swapping the new content in the target;
 - **swap**: This property controls how content is swapped into the target element. The following "swaps" are available:
-    - <ins>inner</ins>: Replaces the target with a specified new set of children (default);
-    - <ins>outer</ins>: Replaces the target in the children list of its parent with a set of node or string objects;
-    - <ins>before</ins>: Inserts a set of node or string objects in the children list of target's parent, just before the target;
-    - <ins>after</ins>: Inserts a set of node or string objects in the children list of the target's parent, just after the target;
-    - <ins>prepend</ins>: Inserts a set of node objects or string objects before the first child of the target element;
-    - <ins>append</ins>: Inserts a set of node objects or string objects after the target element;
-    - <ins>delete</ins>: Removes the target element from the DOM;
-    - <ins>none</ins>: It exists only for convenience, but does not make any transformations.
+  - <ins>inner</ins>: Replaces the target with a specified new set of children (default);
+  - <ins>outer</ins>: Replaces the target in the children list of its parent with a set of node or string objects;
+  - <ins>before</ins>: Inserts a set of node or string objects in the children list of target's parent, just before the target;
+  - <ins>after</ins>: Inserts a set of node or string objects in the children list of the target's parent, just after the target;
+  - <ins>prepend</ins>: Inserts a set of node objects or string objects before the first child of the target element;
+  - <ins>append</ins>: Inserts a set of node objects or string objects after the target element;
+  - <ins>delete</ins>: Removes the target element from the DOM;
+  - <ins>none</ins>: It exists only for convenience, but does not make any transformations.
 
 ### Custom Attributes
 Custom attributes can be added to the elements where "tasks" are specified, allowing one to override the default value of one property with another. The property in the "tasks" file that defines the attribute must always begin with the substring 'attribute-' followed by the attribute with property to replace. This transformation is available for the following properties: action, src-file, method, remove, target, swap, before, after, and trigger.
@@ -87,14 +87,14 @@ Example:
 tasks.json
 ```json
 {
-    "load-paradises": {
-        "action": "/listparadises",
-        "attribute-action": "data-action",
-        "method": "get",
-        "trigger": "click",
-        "target": "#paradises",
-        "swap": "inner"
-    }
+  "load-paradises": {
+    "action": "/listparadises",
+    "attribute-action": "data-action",
+    "method": "get",
+    "trigger": "click",
+    "target": "#paradises",
+    "swap": "inner"
+  }
 }
 ```
 The **attribute-action** replaces the "action" property with the specified attribute, which should be present on the element with the "data-tasks" attribute.
@@ -127,13 +127,13 @@ Example of a subtask:
 tasks.json
 ```json
 {
-    "active-paradise": {
-        "selector": ".paradises > .earth",
-        "add": {
-            "class": "active",
-            "style": "color: #0d6efd;"
-        }
+  "active-paradise": {
+    "selector": ".paradises > .earth",
+    "add": {
+      "class": "active",
+      "style": "color: #0d6efd;"
     }
+  }
 }
 ```
 ### Properties
@@ -161,13 +161,11 @@ There are two special variables that can be used in templates:
 
 ### Embedded
 
-Embedded templates should have a unique id property, and their content must be enclosed within a "textarea" element with the "data-codeblock" attribute.
+Embedded templates should have a unique id property, and their content must be enclosed within the tag "template".
 
 ```html
 <template id="contacts-list-tpl">
-    <textarea data-codeblock>
-      <!-- HTML Content -->  
-    </textarea>
+  <!-- HTML Content -->
 </template>
 ```
 
