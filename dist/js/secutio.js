@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-16 19:30:46
+    Last Modification: 2024-02-17 18:03:01
     Attention: This is work in progress
 
     References:
@@ -491,11 +491,13 @@ export default class Secutio {
 
     buildFragment(input, data, source) {
 
-        // const fragment = document.createDocumentFragment();
-        // create helper div element
         const helper = document.createElement('div');
-        helper.innerHTML = eval('`' + source + '`');
-
+        try {
+            // console.log('Source:', source);
+            helper.insertAdjacentHTML('afterbegin', eval('`' + source + '`'));
+        } catch (error) {
+            console.error(error);
+        }
         this.reScript(helper);
 
         // remove the element helper div element
@@ -593,13 +595,18 @@ export default class Secutio {
                         throw new Error(`Template "${properties.template}" not exist!`);
                     }
                     // console.log('Template Node Name:', template.content.children[0].nodeName);
+
                     if (template.content.hasChildNodes() &&
                         template.content.nodeType === Node.DOCUMENT_FRAGMENT_NODE &&
-                        template.content.children[0].nodeName === 'TEXTAREA' &&
-                        template.content.children[0].hasAttribute('data-codeblock')) {
-                        // console.log('Template content:', template.content.children[0].value);
-                        return template.content.children[0].value;
+                        template.content.hasChildNodes) {
+
+                        // decode the &lt; p&gt; strings back into real HTML
+                        const txt = document.createElement('textarea');
+                        txt.insertAdjacentHTML('afterbegin', template.innerHTML);
+
+                        return txt.value;
                     }
+
                     throw new Error(`Invalid "${properties.template}" embedded template`);
                 default:
                     throw new Error(`Invalid "${properties.template}" fetched template`);
