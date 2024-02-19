@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-17 18:03:01
+    Last Modification: 2024-02-19 21:51:00
     Attention: This is work in progress
 
     References:
@@ -25,6 +25,7 @@ export default class Secutio {
         // https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event
         // Some events to test
         this.triggers = new Set([
+            'change',
             'click',
             'init', // custom
             'keydown',
@@ -227,28 +228,33 @@ export default class Secutio {
         throw new Error(`swap "${swap}" attribute not supported`);
     }
 
-    async runNextTask(event, task) {
+    async runNextTask(event, tasksListStr) {
 
-        if (!this.tasks.hasOwnProperty(task)) {
-            throw new Error(`The next task "${task}" not exist in tasks file!`);
-        }
+        const tasks = tasksListStr.split(/ +/);
 
-        const properties = this.tasks[task];
+        for (const task of tasks) {
 
-        if (!properties.hasOwnProperty('disabled')) {
-            properties['disabled'] = false;
-        }
+            if (!this.tasks.hasOwnProperty(task)) {
+                throw new Error(`The next task "${task}" not exist in tasks file!`);
+            }
 
-        if (properties.hasOwnProperty('trigger')) {
-            throw new Error(`The trigger property from "${task}" is not allowed in next task!`);
-        }
+            const properties = this.tasks[task];
 
-        if (properties.disabled === false) {
-            await this.setTemplateData(event, properties);
+            if (!properties.hasOwnProperty('disabled')) {
+                properties['disabled'] = false;
+            }
+
+            if (properties.hasOwnProperty('trigger')) {
+                throw new Error(`The trigger property from "${task}" is not allowed in next task!`);
+            }
+
+            if (properties.disabled === false) {
+                await this.setTemplateData(event, properties);
+            }
         }
     }
 
-    runSubtasks(tasksListStr) {
+    runSubtasks(currentTarget, tasksListStr) {
 
         const subtasks = tasksListStr.split(/ +/);
 
@@ -257,14 +263,15 @@ export default class Secutio {
             if (!this.tasks.hasOwnProperty(subtask)) {
                 throw new Error(`The subtask "${subtask}" not exist in tasks file!`);
             }
-            if (!this.tasks[subtask].hasOwnProperty('selector')) {
-                continue;
-            }
 
             const properties = this.tasks[subtask];
 
+            if (!properties.hasOwnProperty('selector')) {
+                properties['traverse'] = 'target';
+            }
+
             for (const property in properties) {
-                if (!['selector', 'remove', 'add'].includes(property)) {
+                if (!['traverse', 'selector', 'remove', 'add'].includes(property)) {
                     throw new Error(`The property "${property}" in subtask "${subtask}" is not allowed with property "selector"!`);
                 }
             }
@@ -272,11 +279,23 @@ export default class Secutio {
             if (Object.prototype.toString.call(properties) !== '[object Object]') {
                 throw new Error(`The properties of subtask "${subtask}" is not a object!`);
             }
-            if (!properties.hasOwnProperty('selector')) {
-                throw new Error(`The properties of subtask "${subtask}" not have a selector!`);
-            }
 
-            const elements = document.querySelectorAll(properties['selector']);
+            const elements = (() => {
+                if (properties.hasOwnProperty('traverse')) {
+                    if (properties.traverse === 'target') {
+                        return [currentTarget];
+                    }
+                    if (properties.traverse === 'closest' &&
+                        properties['selector'] !== '') {
+                        return currentTarget.closest(properties['selector']);
+                    }
+                }
+                if (properties['selector'] !== '') {
+                    return document.querySelectorAll(properties['selector']);
+                }
+                throw new Error(`The properties of subtask "${subtask}" has a empty selector!`);
+            })();
+
             // if empty removes all selected elements
             if (properties.hasOwnProperty('remove') &&
                 Object.keys(properties['remove']).length === 0) {
@@ -548,7 +567,7 @@ export default class Secutio {
 
         if (properties.hasOwnProperty('before') &&
             properties.before !== "") {
-            this.runSubtasks(properties.before)
+            this.runSubtasks(event.currentTarget, properties.before)
         }
 
         await this.search4ElemTasks(helperFragment);
@@ -557,7 +576,7 @@ export default class Secutio {
 
         if (properties.hasOwnProperty('after') &&
             properties.after !== "") {
-            this.runSubtasks(properties.after)
+            this.runSubtasks(event.currentTarget, properties.after)
         }
     }
 
@@ -796,7 +815,7 @@ export default class Secutio {
         // Useful for example to show a loader.
         if (properties.hasOwnProperty('then') &&
             properties.then !== "") {
-            this.runSubtasks(properties.then);
+            this.runSubtasks(event.currentTarget, properties.then);
         }
 
         if (properties.hasOwnProperty('connect')) {
@@ -883,6 +902,9 @@ export default class Secutio {
             if (!properties.hasOwnProperty('disabled')) {
                 properties['disabled'] = false;
             }
+            if (!properties.hasOwnProperty('prevent')) {
+                properties['prevent'] = true;
+            }
 
             // custom event
             if (properties.trigger === 'init') { // fired after fragment loaded
@@ -890,7 +912,9 @@ export default class Secutio {
                     // https://developer.mozilla.org/en-US/docs/Web/Events/Creating_and_triggering_events
                     // Create 'init' event
                     element.addEventListener('init', async (e) => {
-                        e.preventDefault();
+                        if (properties.prevent) {
+                            e.preventDefault();
+                        }
                         if (properties.disabled === false) {
                             try {
                                 await this.processEvent(e, properties);
@@ -929,7 +953,9 @@ export default class Secutio {
             // }();
 
             element.addEventListener(properties.trigger, async (event) => {
-                event.preventDefault();
+                if (properties.prevent) {
+                    event.preventDefault();
+                }
                 if (properties.disabled === false) {
                     try {
                         await this.processEvent(event, properties);
