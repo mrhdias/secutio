@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-19 21:51:00
+    Last Modification: 2024-02-23 22:02:36
     Attention: This is work in progress
 
     References:
@@ -27,12 +27,14 @@ export default class Secutio {
         this.triggers = new Set([
             'change',
             'click',
+            'focus',
             'init', // custom
             'keydown',
             'mouseenter',
             'mouseover',
             'mouseup',
             'mouseleave',
+            'mousemove',
             'scroll',
             'scrollend',
             'submit'
@@ -61,6 +63,16 @@ export default class Secutio {
             // mode: 'cors',
             // origin: 'http://localhost:808'
         };
+
+        if (properties.method === 'post' &&
+            Object.prototype.toString.call(data) === '[object FormData]') {
+            // options['headers'] = {
+            //    'Content-Type': 'multipart/form-data'
+            // };
+            options['body'] = data;
+            return options;
+        }
+
         if (['post', 'put', 'patch'].includes(properties.method)) {
             options['headers'] = {
                 "Content-Type": "application/json"
@@ -75,7 +87,7 @@ export default class Secutio {
         return options;
     }
 
-    async makeRequest(properties, data = {}) {
+    async makeRequest(properties, data) {
         // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
 
@@ -202,6 +214,7 @@ export default class Secutio {
         // list of this Element's parent, just before this Element.
         if (swap === 'before') {
             target.before(...clone.childNodes);
+            return;
         }
 
         // Inserts a set of Node or string objects in the children
@@ -249,7 +262,12 @@ export default class Secutio {
             }
 
             if (properties.disabled === false) {
-                await this.setTemplateData(event, properties);
+                if (!properties.hasOwnProperty('wait')) {
+                    properties.wait = 0;
+                }
+                setTimeout(async () => {
+                    await this.setTemplateData(event, properties);
+                }, properties.wait);
             }
         }
     }
@@ -723,33 +741,43 @@ export default class Secutio {
         throw new Error("There is no data for the transformation");
     }
 
+    serialize(data) {
+        let obj = {};
+        for (const [key, value] of data) {
+            if (obj[key] !== undefined) {
+                if (!Array.isArray(obj[key])) {
+                    obj[key] = [obj[key]];
+                }
+                obj[key].push(value);
+            } else {
+                obj[key] = value;
+            }
+        }
+        return obj;
+    }
+
     async prepareRequest(event, properties) {
 
-        let bodyData = {};
+        let bodyData = undefined;
 
-        if (properties.trigger === 'submit') {
-            const formElem = event.currentTarget.closest('form');
-            if (formElem !== null &&
-                formElem.hasChildNodes()) {
-                const namedElements = formElem.querySelectorAll("input[name],select[name]");
-                for (const namedElement of namedElements) {
-                    this.collectBodyData(namedElement, bodyData);
+        if (properties.hasOwnProperty('function')) {
+            if (!this.custom_functions.hasOwnProperty(properties['function'])) {
+                throw new Error(`The registered function "${properties.function}" not exist!`);
+            }
+            bodyData = this.custom_functions[properties['function']](event);
+            if (bodyData === undefined) {
+                if (properties.hasOwnProperty('next')) {
+                    delete properties.next;
                 }
-            }
-        } else if (properties.hasOwnProperty('collect-data')) {
-            const collectFromElems = document.querySelectorAll(properties['collect-data']);
-            for (const collectFromElem of collectFromElems) {
-                this.collectBodyData(collectFromElem, bodyData);
-            }
-
-            // Check if body data is empty
-            if (["post", "put"].includes(properties['method']) &&
-                Object.keys(bodyData).length === 0) {
                 return;
             }
-
-            if (event.currentTarget.name !== '') {
-                bodyData[event.currentTarget.name] = event.currentTarget.value;
+        } else if (properties.hasOwnProperty('trigger') &&
+            properties.trigger === 'submit') {
+            const form = event.currentTarget.closest('form');
+            if (form !== null) {
+                // https://developer.mozilla.org/en-US/docs/Web/API/FormData
+                const data = new FormData(form);
+                bodyData = (properties.method === 'post') ? data : this.serialize(data);
             }
         }
 
