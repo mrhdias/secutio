@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-25 22:48:16
+    Last Modification: 2024-02-26 22:48:04
     Attention: This is work in progress
 
     References:
@@ -621,7 +621,7 @@ export default class Secutio {
     async processReqData(event, properties) {
 
         // if a template is returned
-        if (event.hasOwnProperty('template')) {
+        if ('template' in event) {
             const helperFragment = this.buildFragment(event);
             if (helperFragment === null) {
                 throw new Error('An error happened while processing the "remote" template from server');
@@ -629,7 +629,7 @@ export default class Secutio {
             return helperFragment;
         }
 
-        if (!event.hasOwnProperty('data')) {
+        if (!('data' in event)) {
             throw new Error("There is no any data for the transformation");
         }
 
