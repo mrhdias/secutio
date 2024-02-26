@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-23 22:02:36
+    Last Modification: 2024-02-25 22:48:16
     Attention: This is work in progress
 
     References:
@@ -403,72 +403,6 @@ export default class Secutio {
         }
     }
 
-    addKeyValue(data, name, value, makeArray = false) {
-        if (data.hasOwnProperty(name)) {
-            if (Array.isArray(data[name])) {
-                data[name].push(value);
-            } else {
-                const tmp = data[name];
-                data[name] = [];
-                data[name].push(tmp, value);
-            }
-        } else {
-            if (makeArray) {
-                data[name] = [];
-                data[name].push(value);
-            } else {
-                data[name] = value;
-            }
-        }
-    }
-
-    collectBodyData(element, data, key = '') {
-
-        if (element.hasChildNodes()) {
-            if (element.hasAttribute('name')) {
-                if (!element.hasAttribute('value')) {
-                    data[element.name] = [];
-                    key = element.name;
-                }
-            }
-            for (const node of element.childNodes) {
-                if (node.nodeType !== Node.TEXT_NODE) {
-                    this.collectBodyData(node, data, key);
-                }
-            }
-        }
-
-        if (element.nodeType !== Node.TEXT_NODE) {
-            if (element.hasAttribute('value')) {
-
-                if (element.hasAttribute('name')) {
-                    if (element.hasAttribute('type') &&
-                        element.type.toLowerCase() === 'radio') {
-                        if (element.checked) {
-                            this.addKeyValue(data, element.name, element.value);
-                        }
-                    } else if (element.type.toLowerCase() === 'checkbox') {
-                        if (element.checked) {
-                            this.addKeyValue(data, element.name, element.value, true);
-                        }
-                    } else {
-                        this.addKeyValue(data, element.name, element.value);
-                    }
-                } else {
-
-                    if (element.nodeName === 'OPTION' &&
-                        element.selected) {
-                        const selectElem = element.closest('select');
-                        if (selectElem.hasChildNodes()) {
-                            this.addKeyValue(data, selectElem.name, element.value, true);
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-
     async search4ElemTasks(parentNode) {
         if (parentNode.hasChildNodes()) {
             for (const node of parentNode.childNodes) {
@@ -525,13 +459,19 @@ export default class Secutio {
         }
     }
 
-
-    buildFragment(input, data, source) {
+    buildFragment(event) {
 
         const helper = document.createElement('div');
         try {
-            // console.log('Source:', source);
-            helper.insertAdjacentHTML('afterbegin', eval('`' + source + '`'));
+            // console.log('Source:', event.template);
+            // The data from the registered functions is passed
+            // to templates in event property data (event.data).
+            if (!event.hasOwnProperty('template')) {
+                throw new Error(`The template not exist`);
+            }
+            const data = event.data;
+            helper.insertAdjacentHTML('afterbegin', eval('`' + event.template + '`'));
+            delete (event.template);
         } catch (error) {
             console.error(error);
         }
@@ -565,7 +505,8 @@ export default class Secutio {
             'template': '',
             'swap': 'inner', // default swap
             'after': '',
-            'before': ''
+            'before': '',
+            'is-template': false
         })) {
             if (transformation.hasOwnProperty(property)) {
                 properties[property] = transformation[property];
@@ -598,30 +539,14 @@ export default class Secutio {
         }
     }
 
-    thisElement(element, dataSelector, data) {
-        // The element must have the name and value attribute.
-        const selectores = dataSelector.split(/\, */);
-        let remainer = [];
-        for (const selector of selectores) {
-            if (selector === 'this') {
-                if (element.hasAttribute('name') && element.name !== "") {
-                    data[element.name] = element.hasAttribute('value') ? element.value : "";
-                }
-                continue;
-            }
-            remainer.push(selector)
-        }
-        return remainer.join(',');
-    }
-
-    async templateManager(properties, input, data) {
+    async templateManager(properties, event) {
         // console.log('Template Manager...');
 
         if (properties.template.length < 3) {
             throw new Error(`Short template name "${properties.template}"`);
         }
 
-        const innerTemplate = await (async (_this) => {
+        event.template = await (async (_this) => {
 
             switch (Array.from(properties.template)[0]) {
                 case '@':
@@ -651,7 +576,7 @@ export default class Secutio {
 
         })(this);
 
-        const helperFragment = this.buildFragment(input, data, innerTemplate);
+        const helperFragment = this.buildFragment(event);
         if (helperFragment === null) {
             throw new Error(`An error happened while processing the "${properties.template}" template`);
         }
@@ -661,34 +586,19 @@ export default class Secutio {
 
     async setTemplateData(event, properties) {
 
-        // Exposes the input data (name=value) selected by the
-        // "collect-data" to be available in the templates like "data".
-        let inputData = {}
-        if (properties.hasOwnProperty('collect-data')) {
-            const selector = this.thisElement(event.currentTarget,
-                properties['collect-data'], inputData);
-            if (selector.length > 0) {
-                const collectFromElems = document.querySelectorAll(selector);
-                for (const collectFromElem of collectFromElems) {
-                    this.collectBodyData(collectFromElem, inputData);
-                }
-            }
-        }
-
         // If the "src-file" property is defined, fetch the data.
-        const jsonData = await (async (_this) => {
+        event.data = await (async (_this) => {
             if (properties.hasOwnProperty('src-file')) {
                 return await _this.getResource(properties['src-file']);
             }
             return {};
         })(this);
 
-
         if (properties.hasOwnProperty('function')) {
             if (!this.custom_functions.hasOwnProperty(properties['function'])) {
                 throw new Error(`The registered function "${properties.function}" not exist!`);
             }
-            this.custom_functions[properties['function']](event, inputData, jsonData);
+            this.custom_functions[properties['function']](event);
         }
 
         // If the task has a template and target
@@ -696,7 +606,7 @@ export default class Secutio {
             properties.hasOwnProperty('target') &&
             properties.target != '') {
 
-            const helperFragment = await this.templateManager(properties, inputData, jsonData);
+            const helperFragment = await this.templateManager(properties, event);
             await this.sequenceTasks(helperFragment, event, properties);
         }
 
@@ -708,14 +618,28 @@ export default class Secutio {
         }
     }
 
-    async processReqData(data, properties) {
+    async processReqData(event, properties) {
+
+        // if a template is returned
+        if (event.hasOwnProperty('template')) {
+            const helperFragment = this.buildFragment(event);
+            if (helperFragment === null) {
+                throw new Error('An error happened while processing the "remote" template from server');
+            }
+            return helperFragment;
+        }
+
+        if (!event.hasOwnProperty('data')) {
+            throw new Error("There is no any data for the transformation");
+        }
+
         // if data is json
-        if (typeof data === 'object') {
+        if (typeof event.data === 'object') {
             console.log('json data from server...');
 
             // with templates
             if (properties.hasOwnProperty('template')) {
-                const helperFragment = await this.templateManager(properties, {}, data);
+                const helperFragment = await this.templateManager(properties, event);
                 return helperFragment;
             }
 
@@ -723,12 +647,12 @@ export default class Secutio {
         }
 
         // if html fragment is returned
-        if (typeof data === 'string' && data !== "") {
+        if (typeof event.data === 'string' && event.data !== "") {
             console.log('raw data from server...');
 
             const helperFragment = ((_this) => {
                 const helperElem = document.createElement('div');
-                helperElem.innerHTML = data;
+                helperElem.innerHTML = event.data;
 
                 _this.reScript(helperElem);
 
@@ -798,7 +722,12 @@ export default class Secutio {
 
         this.setTransformation(properties, block.transformation);
 
-        const helperFragment = await this.processReqData(block.data, properties);
+        if (properties['is-template'] == true) {
+            event.template = block.data;
+        } else {
+            event.data = block.data
+        }
+        const helperFragment = await this.processReqData(event, properties);
         await this.sequenceTasks(helperFragment, event, properties);
     }
 
@@ -816,8 +745,7 @@ export default class Secutio {
 
         // Listen for messages
         socket.addEventListener("message", async (e) => {
-
-            const helperFragment = await this.processReqData(e.data, properties);
+            const helperFragment = await this.processReqData(e, properties);
             await this.sequenceTasks(helperFragment, event, properties);
         });
     }
