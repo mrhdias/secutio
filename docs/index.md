@@ -48,7 +48,7 @@ Example of a tasks file.
   "switch-contact-status": {
     "action": "/statuscontact",
     "method": "put",
-    "collect-data": "#contacts-list > table > tbody > tr > td > input[name]",
+    "function": "prepare-data",
     "trigger": "click"
   }
 }
@@ -59,7 +59,6 @@ The following properties can be used in the "data-tasks" attribute:
 - **method**: Set a request method (GET, POST, PUT, PATCH or DELETE) to indicate the desired action to be performed for a given resource;
 - **trigger**: Specifies the event that triggers the request;
 - **then**: List of subtasks with the CSS "selector" property to be executed after the trigger has been performed (useful for displaying loaders);
-- **collect-data**: Uses the data attributes given by the first element within the document that matches the specified selector as a source of data;
 - **src-file**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
 - **disabled**: This property disable the task execution if set to "true";
 - **error**: Sets a new task that replaces the original if an error occurs during the request.
@@ -77,6 +76,7 @@ The following properties can be used both client-side and server-side via custom
   - <ins>prepend</ins>: Inserts a set of node objects or string objects before the first child of the target element;
   - <ins>append</ins>: Inserts a set of node objects or string objects after the target element;
   - <ins>delete</ins>: Removes the target element from the DOM;
+  - <ins>clean</ins>: Remove all child nodes from target element;
   - <ins>none</ins>: It exists only for convenience, but does not make any transformations.
 
 ### Custom Attributes

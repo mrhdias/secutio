@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-26 22:48:04
+    Last Modification: 2024-02-27 22:42:56
     Attention: This is work in progress
 
     References:
@@ -35,6 +35,7 @@ export default class Secutio {
             'mouseup',
             'mouseleave',
             'mousemove',
+            'reset',
             'scroll',
             'scrollend',
             'submit'
@@ -181,6 +182,14 @@ export default class Secutio {
         if (clone === null) {
             if (swap === 'delete') {
                 target.remove();
+                return;
+            }
+
+            // remove all child nodes from target
+            if (swap === 'clean') {
+                while (target.firstChild) {
+                    target.removeChild(target.firstChild);
+                }
                 return;
             }
 
