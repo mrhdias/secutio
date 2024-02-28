@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-28 18:24:52
+    Last Modification: 2024-02-28 19:03:35
     Attention: This is work in progress
 
     References:
@@ -492,17 +492,17 @@ export default class Secutio {
                 script.innerHTML = 'function populateTemplate(event) {const data = event.data; return `' + event.template + '`;}';
                 let count = 0;
                 let timeoutID = setInterval(() => {
-                    if (count > 5) {
-                        throw new Error(`The temporary helper already exist after 500ms!`);
-                    }
-                    if (document.getElementById("temporary-helper") === null) {
+                    if (count > 5 || document.getElementById("temporary-helper") === null) {
+                        if (count > 5) {
+                            throw new Error(`The temporary helper already exist after 500ms!`);
+                        }
                         clearInterval(timeoutID);
                     }
                     count++;
                 }, 100);
                 document.body.appendChild(script);
                 return populateTemplate(event);
-            })(event));
+            })());
             delete (event.template);
             const tmp = document.getElementById("temporary-helper");
             if (tmp !== null) {
