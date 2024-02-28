@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-27 22:42:56
+    Last Modification: 2024-02-28 18:24:52
     Attention: This is work in progress
 
     References:
@@ -478,9 +478,37 @@ export default class Secutio {
             if (!event.hasOwnProperty('template')) {
                 throw new Error(`The template not exist`);
             }
-            const data = event.data;
-            helper.insertAdjacentHTML('afterbegin', eval('`' + event.template + '`'));
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
+            // const data = event.data;
+            // helper.insertAdjacentHTML('afterbegin', eval('`' + event.template + '`'));
+            // delete (event.template);
+            // Code execution by the eval() function is a security risk,
+            // so it has been removed and replaced with the following code:
+
+            helper.insertAdjacentHTML('afterbegin', (() => {
+                const script = document.createElement('script');
+                script.type = "text/javascript";
+                script.id = "temporary-helper";
+                script.innerHTML = 'function populateTemplate(event) {const data = event.data; return `' + event.template + '`;}';
+                let count = 0;
+                let timeoutID = setInterval(() => {
+                    if (count > 5) {
+                        throw new Error(`The temporary helper already exist after 500ms!`);
+                    }
+                    if (document.getElementById("temporary-helper") === null) {
+                        clearInterval(timeoutID);
+                    }
+                    count++;
+                }, 100);
+                document.body.appendChild(script);
+                return populateTemplate(event);
+            })(event));
             delete (event.template);
+            const tmp = document.getElementById("temporary-helper");
+            if (tmp !== null) {
+                tmp.remove();
+            }
+
         } catch (error) {
             console.error(error);
         }
