@@ -155,8 +155,7 @@ In the "class" and "style" properties, which are already attributes, the value i
 
 These templates can be used to generate HTML content on the client side and can be embedded into the HTML page or loaded. This has nothing to do with the templating engines used on the server side to render pages before sending them to the client.
 
-There are two special variables that can be used in templates:
-- **input**: This variable contains the values of the "name" attributes of the forms submitted or selected through the 'collect-data' task property.
+There is a special variable that can be used in templates:
 - **data**: The data variable contains information obtained from an HTTP response or a JSON file when the "src-file" task property is provided.
 
 ### Embedded

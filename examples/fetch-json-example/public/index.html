@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Fetch json example</title>
+    <style>
+        html {
+            font-family: sans-serif;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        ul {
+            list-style-type: none;
+            display: flex;
+            flex-flow: column;
+            align-items: flex-start;
+        }
+
+        li {
+            margin-bottom: 10px;
+            background-color: pink;
+            font-size: 150%;
+            border-top: 3px solid pink;
+            border-bottom: 3px solid pink;
+            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        strong {
+            background-color: purple;
+            color: white;
+            padding: 0 8px;
+            border-top: 3px solid purple;
+            border-bottom: 3px solid purple;
+            text-shadow: 2px 2px 1px black;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- exemple from https://mdn.github.io/dom-examples/fetch/fetch-json/ -->
+
+    <h1>Fetch json example</h1>
+    <small><a href="https://github.com/mdn/dom-examples/tree/main/fetch/fetch-json">JSON Source</a> | <a
+            href="https://mdn.github.io/dom-examples/fetch/fetch-json/">MDN Example</a></small>
+    <div id="food-list" data-tasks="get-food"></div>
+
+    <template id="food-list-tpl">
+        <ul>
+            ${data['products'].map(record => `<li><strong>${record["Name"]}</strong>
+                can be found in ${record["Location"]}. Cost: <strong>${record["Price"]}€</strong>
+            </li>`).join("")}
+        </ul>
+    </template>
+
+    <script data-tasktable type="application/json">
+    {
+        "get-food": {
+            "action": "https://mdn.github.io/dom-examples/fetch/fetch-json/products.json",
+            "method": "get",
+            "trigger": "init",
+            "target": "#food-list",
+            "template": "#food-list-tpl",
+            "swap": "outer"
+        }
+    }
+    </script>
+
+    <script>
+        import("https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js").then((module) => {
+            const secutio = new module.Secutio();
+            secutio.init();
+        });
+    </script>
+
+</body>
+
+</html>

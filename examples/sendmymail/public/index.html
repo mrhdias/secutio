@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Send My Mail</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/styles.css?2024022801">
+</head>
+
+<body>
+
+    <div id="sendmail-form" data-tasks="add-form"></div>
+    <div class="loader"></div>
+
+    <script data-tasktable type="application/json">
+    {
+        "add-form": {
+            "action": "getform",
+            "trigger": "init",
+            "target": "#sendmail-form"
+        },
+        "add-attachment": {
+            "trigger": "click",
+            "function": "add-attachment"
+        },
+        "add-attach-to-list": {
+            "action": "getattachments",
+            "trigger": "change",
+            "target": "#add-attachments",
+            "is-template": true,
+            "swap": "after",
+            "then": "remove-attachments"
+        },
+        "remove-attachments": {
+            "selector": "#attachments",
+            "remove": {}
+        },
+        "check-consent": {
+            "trigger": "change",
+            "function": "enable-button"
+        },
+        "send-mail": {
+            "action": "sendmail",
+            "method": "post",
+            "function": "prepare-data",
+            "trigger": "submit",
+            "target": "#sendmail-form",
+            "swap": "append",
+            "then": "show-loader",
+            "after": "hide-loader",
+            "next": "show-result"
+        },
+        "show-loader": {
+            "selector": ".loader",
+            "remove": {
+                "class": "hide"
+            },
+            "add": {
+                "class": "show"
+            }
+        },
+        "hide-loader": {
+            "selector": ".loader",
+            "remove": {
+                "class": "show"
+            },
+            "add": {
+                "class": "hide"
+            }
+        },
+        "reset-to-defaults": {
+            "trigger": "reset",
+            "function": "reset-to-defaults",
+            "swap": "none",
+            "prevent": false
+        },
+        "show-result": {
+            "function": "show-result"
+        },
+        "close-dialog": {
+            "trigger": "click",
+            "target": "dialog",
+            "swap": "delete"
+        }
+    }
+  </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script>
+
+        import("https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js").then((module) => {
+            // Do something with the module.
+            const secutio = new module.Secutio();
+            secutio.init();
+
+            secutio.function_register('add-attachment', (() => {
+                const attachments = document.querySelector('[type="file"]');
+                attachments.click();
+            }));
+
+            secutio.function_register('enable-button', ((event) => {
+                const radio = event.currentTarget;
+                if (radio.checked) {
+                    document.querySelector('button[type="submit"]').removeAttribute('disabled');
+                } else {
+                    document.querySelector('button[type="submit"]').setAttribute('disabled', '');
+                }
+            }));
+
+            // https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
+
+            secutio.function_register('prepare-data', ((event) => {
+
+                const form = event.currentTarget.closest('form');
+
+                const nameSender = form.querySelector('#name-sender').value;
+                const emailSender = form.querySelector('#email-sender').value;
+                const nameTo = form.querySelector('#name-to').value;
+                const emailTo = form.querySelector('#email-to').value;
+                const phone = form.querySelector('#phone').value;
+                const subject = form.querySelector('#subject').value;
+                const message = form.querySelector('#message').value;
+                const copyToMe = form.querySelector('#copy-to-me').checked;
+                const yourConsent = form.querySelector('#your-consent').checked;
+
+                const formData = new FormData();
+                formData.append('name_sender', nameSender);
+                formData.append('email_sender', emailSender);
+                formData.append('name_to', nameTo);
+                formData.append('email_to', emailTo);
+                formData.append('subject', subject);
+                formData.append('phone', phone.replace(/ +/, ''));
+                formData.append('message', message);
+                formData.append('copy_to_me', copyToMe);
+                formData.append('your_consent', yourConsent);
+
+                // https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
+
+                const attachments = form.querySelector('[type="file"]');
+                if (attachments !== null) {
+                    for (let i = 0; i < attachments.files.length; i++) {
+                        if (attachments.files[i] !== undefined) {
+                            console.log('attachment:', attachments.files[i]);
+                            formData.append('attachment', attachments.files[i]);
+                        }
+                    }
+                }
+
+                for (let [key, value] of formData) {
+                    console.log("FormData:", key, value);
+                }
+
+                return formData;
+            }));
+
+            secutio.function_register('show-result', ((event) => {
+                const dialog = document.querySelector("dialog");
+                if (dialog !== null) {
+                    dialog.showModal();
+                    if (dialog.querySelector('.alert-success') !== null) {
+                        const form = event.target.closest('form');
+                        form.querySelector('[type="reset"]').click();
+                    }
+                }
+            }));
+
+            secutio.function_register('reset-to-defaults', ((event) => {
+                const attachments = event.target.querySelector('[type="file"]');
+                if (attachments !== null) {
+                    attachments.value = "";
+                }
+                document.getElementById('attachments').innerHTML = "";
+                document.querySelector('button[type="submit"]').setAttribute('disabled', '');
+            }));
+
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+<form data-tasks="send-mail reset-to-defaults" enctype="multipart/form-data">
+
+    <div class="mb-3 row">
+        <label for="name_sender" class="col-sm-2 col-form-label">Name:</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="name-sender" name="name-sender" value="{{.NameSender}}" placeholder="Name"
+                maxlength="128" required>
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="email-sender" class="col-sm-2 col-form-label">Sender:</label>
+        <div class="col-sm-10">
+            <input type="email" class="form-control" id="email-sender" name="email-sender" value="{{.EmailSender}}"
+                placeholder="email@example.com" maxlength="128" pattern="^[\w\.^@]+\w@[a-z]+[\w\.]+\.[a-z]{2,}$" required>
+        </div>
+    </div>
+
+    <input type="hidden" id="name-to" name="name-to" value="{{.NameTo}}">
+    <input type="hidden" id="email-to" name="email-to" value="{{.EmailTo}}">
+
+    <div class="mb-3 row">
+        <label for="phone" class="col-sm-2 col-form-label">Phone:</label>
+        <div class="col-sm-10">
+            <input type="tel" class="form-control" id="phone" name="phone" value="{{.Phone}}"
+                placeholder="000 000 000" maxlength="128" optional>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="subject" class="form-label">Subject:</label>
+        <input type="text" class="form-control" id="subject" name="subject" value="{{.Subject}}" placeholder="subject"
+            maxlength="256" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="message" class="form-label">Message:</label>
+        <textarea class="form-control" name="message" placeholder="Write here your message..."
+            id="message" spellcheck="true">{{.Message}}</textarea>
+    </div>
+
+    <div class="mb-3" id="add-attachments">
+        <span class="material-symbols-outlined" style="cursor: pointer;"
+            data-tasks="add-attachment">attach_file_add</span>
+        <input type="file" multiple name="attachment" value="" class="form-control"
+            data-tasks="add-attach-to-list" style="display: none;">
+    </div>
+
+    <div class="mb-3" id="attachments"></div>
+
+    <div class="mb-3 form-check form-control-sm">
+        <input class="form-check-input" type="checkbox" id="copy-to-me" {{.Checked}}>
+        <label class="form-check-label" for="copy-to-me">Send me a copy.</label>
+    </div>
+
+    <hr class="border border-secondary border-1 opacity-50">
+
+    <div class="mb-3 form-check form-control-sm">
+        <input data-tasks="check-consent" class="form-check-input" type="checkbox" id="your-consent" {{.Checked}}>
+        <label class="form-check-label" for="your-consent">I have read and accept the privacy policy concerning the
+            treatment of personal information.</label>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <button type="reset" class="btn btn-secondary">Reset</button>
+        <button type="submit" class="btn btn-primary" {{.Disabled}}>Submit</button>
+    </div>
+</form>

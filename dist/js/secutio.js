@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-28 19:03:35
+    Last Modification: 2024-02-29 19:05:36
     Attention: This is work in progress
 
     References:
@@ -29,6 +29,7 @@ export default class Secutio {
             'click',
             'focus',
             'init', // custom
+            'input',
             'keydown',
             'mouseenter',
             'mouseover',
@@ -474,7 +475,7 @@ export default class Secutio {
         try {
             // console.log('Source:', event.template);
             // The data from the registered functions is passed
-            // to templates in event property data (event.data).
+            // to templates in event property data (event.result).
             if (!event.hasOwnProperty('template')) {
                 throw new Error(`The template not exist`);
             }
@@ -489,14 +490,14 @@ export default class Secutio {
                 const script = document.createElement('script');
                 script.type = "text/javascript";
                 script.id = "temporary-helper";
-                script.innerHTML = 'function populateTemplate(event) {const data = event.data; return `' + event.template + '`;}';
+                script.innerHTML = 'function populateTemplate(event) {const data = event.result; return `' + event.template + '`;}';
                 let count = 0;
                 let timeoutID = setInterval(() => {
                     if (count > 5 || document.getElementById("temporary-helper") === null) {
+                        clearInterval(timeoutID);
                         if (count > 5) {
                             throw new Error(`The temporary helper already exist after 500ms!`);
                         }
-                        clearInterval(timeoutID);
                     }
                     count++;
                 }, 100);
@@ -623,8 +624,8 @@ export default class Secutio {
 
     async setTemplateData(event, properties) {
 
-        // If the "src-file" property is defined, fetch the data.
-        event.data = await (async (_this) => {
+        // If the "src-file" property is defined, fetch the data to result.
+        event.result = await (async (_this) => {
             if (properties.hasOwnProperty('src-file')) {
                 return await _this.getResource(properties['src-file']);
             }
@@ -666,12 +667,12 @@ export default class Secutio {
             return helperFragment;
         }
 
-        if (!('data' in event)) {
+        if (!('result' in event)) {
             throw new Error("There is no any data for the transformation");
         }
 
         // if data is json
-        if (typeof event.data === 'object') {
+        if (typeof event.result === 'object') {
             console.log('json data from server...');
 
             // with templates
@@ -684,12 +685,12 @@ export default class Secutio {
         }
 
         // if html fragment is returned
-        if (typeof event.data === 'string' && event.data !== "") {
+        if (typeof event.result === 'string' && event.result !== "") {
             console.log('raw data from server...');
 
             const helperFragment = ((_this) => {
                 const helperElem = document.createElement('div');
-                helperElem.innerHTML = event.data;
+                helperElem.innerHTML = event.result;
 
                 _this.reScript(helperElem);
 
@@ -762,7 +763,7 @@ export default class Secutio {
         if (properties['is-template'] == true) {
             event.template = block.data;
         } else {
-            event.data = block.data
+            event.result = block.data
         }
         const helperFragment = await this.processReqData(event, properties);
         await this.sequenceTasks(helperFragment, event, properties);
@@ -782,6 +783,9 @@ export default class Secutio {
 
         // Listen for messages
         socket.addEventListener("message", async (e) => {
+            // console.log('Event WebSocket:', e.data);
+            e.result = e.data;
+            delete (e.data);
             const helperFragment = await this.processReqData(e, properties);
             await this.sequenceTasks(helperFragment, event, properties);
         });
@@ -927,9 +931,12 @@ export default class Secutio {
                 continue;
             }
 
-            // set the default trigger property
-            if (!(properties.hasOwnProperty('trigger') &&
-                this.triggers.has(properties.trigger))) {
+            if (properties.hasOwnProperty('trigger')) {
+                if (!this.triggers.has(properties.trigger)) {
+                    throw new Error(`The "${properties.trigger}" trigger is not allowed yet!`);
+                }
+            } else {
+                // set the default trigger property
                 properties.trigger = this.setDefaultTrigger(element);
                 if (properties.trigger === null) {
                     throw new Error(`No trigger defined for "${task}"!`);

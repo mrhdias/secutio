@@ -1,0 +1,89 @@
+body {
+    display: flex;
+    justify-content: center;
+}
+
+#sendmail-form {
+    padding: 20px;
+    max-width: 500px;
+}
+
+form {
+    border: 1px solid #adb5bd;
+    border-radius: 7px;
+    padding: 20px;
+}
+
+.attachment-list {
+    padding-left: 0;
+}
+
+.attachment-list>li {
+    display: flex;
+    gap: 5px;
+    font-size: smaller;
+    padding-bottom: 4px;
+}
+
+.attachment-list>li>div {
+    width: 100%;
+}
+
+.filename {
+    display: block;
+    width: calc(100% - 60px);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.filesize {
+    background-color: #0d6efd;
+    color: #fff;
+    font-size: smaller;
+    padding: 3px 5px;
+    border-radius: 5px;
+}
+
+dialog::backdrop {
+    background-image: linear-gradient(45deg,
+            rgb(235, 235, 235),
+            rgb(155, 155, 155),
+            rgb(94, 94, 94),
+            rgb(37, 37, 37));
+    opacity: 0.75;
+}
+
+.loader {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    top: calc(50% - 100px / 2);
+    left: 0;
+    right: 0;
+    margin: auto;
+    border: 10px solid #c2c2c2;
+    border-radius: 50%;
+    border-top: 10px solid #5c5c5c;
+    width: 100px;
+    height: 100px;
+    animation: spinner 4s linear infinite;
+}
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}

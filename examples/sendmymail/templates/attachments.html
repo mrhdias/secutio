@@ -1,0 +1,65 @@
+<div class="mb-3" id="attachments">
+    <label for="attachment" class="form-label">{{.Header}}:</label>
+    ${(() => {
+        // console.log('Get the data from event:', event.data);
+        const files = event.target.files;
+
+        const dialog = (message) => `<dialog>
+            <div class="alert alert-danger" role="alert">${message}</div>
+            <div style="text-align: right;">
+                <button type="button" class="btn btn-primary" data-tasks="close-dialog">Close</button>
+            </div>
+        </dialog>`;
+
+        if(files.length > 0) {
+            if (files.length > {{.MaxNumberAttachs}}) {
+                return dialog('Maximum number of files of 10 exceeded!');
+            }
+            let list = ['<ul class="attachment-list">'];
+            let totalSize = 0;
+            for (let i = 0; i < files.length; i++) {
+                const url=URL.createObjectURL(files[i]); list.push(`<li data-position="${i}">
+                    <a href="${url}" target="_blank">
+                        <span class="file-icon material-symbols-outlined">draft</span>
+                    </a>
+                    <div>
+                        <span class="filename">${files[i].name}</span>
+                        <span class="filesize">${((size) => {
+                            if (size < 1024) {
+                                return `${size} bytes`;
+                            } else if (size >= 1024 && size < 1048576) {
+                                return `${(size / 1024).toFixed(1)} KB`;
+                            }
+                            return `${(size / 1048576).toFixed(1)} MB`;
+                        })(files[i].size)}</span>
+                    </div>
+                </li>`);
+                totalSize += files[i].size;
+            }
+            if (totalSize > {{.MaxAttachsSize}}) {
+                // console.log('Total Size:', totalSize);
+                return dialog('Your files are larger than 10MB!');
+            }
+            list.push(`</ul>`);
+            return list.join("");
+        } else {
+            const attachments = document.getElementById('attachments');
+            if (attachments !== null) {
+                document.getElementById('attachments').innerHTML = "";
+            }
+        }
+    })()}
+    <script>
+        function openDialog() {
+            const dialog = document.querySelector("dialog");
+            if (dialog !== null) {
+                dialog.showModal();
+            }
+        }
+        openDialog();
+
+        // function revokeUrl(url) {
+        //    URL.revokeObjectURL(url);
+        // }
+    </script>
+</div>
