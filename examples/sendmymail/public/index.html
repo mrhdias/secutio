@@ -118,26 +118,15 @@
 
                 const form = event.currentTarget.closest('form');
 
-                const nameSender = form.querySelector('#name-sender').value;
-                const emailSender = form.querySelector('#email-sender').value;
-                const nameTo = form.querySelector('#name-to').value;
-                const emailTo = form.querySelector('#email-to').value;
-                const phone = form.querySelector('#phone').value;
-                const subject = form.querySelector('#subject').value;
-                const message = form.querySelector('#message').value;
-                const copyToMe = form.querySelector('#copy-to-me').checked;
-                const yourConsent = form.querySelector('#your-consent').checked;
-
                 const formData = new FormData();
-                formData.append('name_sender', nameSender);
-                formData.append('email_sender', emailSender);
-                formData.append('name_to', nameTo);
-                formData.append('email_to', emailTo);
-                formData.append('subject', subject);
-                formData.append('phone', phone.replace(/ +/, ''));
-                formData.append('message', message);
-                formData.append('copy_to_me', copyToMe);
-                formData.append('your_consent', yourConsent);
+                for (const attrName of [
+                    '#name-sender', '#email-sender', '#name-to',
+                    '#email-to', '#phone', '#subject',
+                    '#message', '#copy-to-me', '#your-consent']) {
+
+                    const field = form.querySelector(attrName).value;
+                    formData.append(attrName.replaceAll("-", '_').slice(1), field);
+                }
 
                 // https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
 
