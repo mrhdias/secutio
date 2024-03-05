@@ -2,7 +2,7 @@ package main
 
 //
 // Author: Henrique Dias
-// Last Modification: 2024-02-29 18:54:33
+// Last Modification: 2024-03-05 18:57:22
 //
 // References:
 // https://developers.google.com/gmail/api/quickstart/go

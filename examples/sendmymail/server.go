@@ -70,7 +70,7 @@ func (app *App) getForm(w http.ResponseWriter, r *http.Request) {
 func (app *App) getAttachments(w http.ResponseWriter, r *http.Request) {
 	tpl, err := template.ParseFiles(path.Join(app.TemplatesDir, "attachments.html"))
 	if err != nil {
-		panic(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	if err := tpl.Execute(w, map[string]string{
 		"Header":           "Attachment",
@@ -172,7 +172,7 @@ func (app *App) sendMail(w http.ResponseWriter, r *http.Request) {
 		"Type":    "success",
 		"Message": "The email was successfully sent!",
 	}); err != nil {
-		panic(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 

@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-02-29 19:05:36
+    Last Modification: 2024-03-05 18:51:47
     Attention: This is work in progress
 
     References:
@@ -998,35 +998,36 @@ export default class Secutio {
 
         // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
         // begin mutation observer
-
-        const config = {
-            childList: true,
-            subtree: true
-        };
-
-        const callback = (mutations, observer) => {
-            mutations.forEach(mutation => {
-                if (mutation.type === "childList") {
-
-                    for (const addedNode of mutation.addedNodes) {
-                        // on added
-                        console.log("Added Nodes...");
-                    }
-
-                    for (const removedNode of mutation.removedNodes) {
-                        // on removed
-                        console.log("Removed Nodes...");
-                    }
-
-                    if (mutation.target.childNodes.length === 0) {
-                        observer.disconnect();
-                    }
-                }
-            });
-        }
-
-        const observer = new MutationObserver(callback);
-        observer.observe(targetNode[0], config);
+        // for future use
+        //
+        // const config = {
+        //    childList: true,
+        //    subtree: true
+        // };
+        //
+        // const callback = (mutations, observer) => {
+        //     mutations.forEach(mutation => {
+        //         if (mutation.type === "childList") {
+        //
+        //             for (const addedNode of mutation.addedNodes) {
+        //                 // on added
+        //                 console.log("Added Nodes...");
+        //             }
+        //
+        //             for (const removedNode of mutation.removedNodes) {
+        //                 // on removed
+        //                 console.log("Removed Nodes...");
+        //             }
+        //
+        //             if (mutation.target.childNodes.length === 0) {
+        //                 observer.disconnect();
+        //             }
+        //         }
+        //     });
+        // }
+        //
+        // const observer = new MutationObserver(callback);
+        // observer.observe(targetNode[0], config);
         // end mutation observer
 
         this.getDataTasks().then(async () => {
