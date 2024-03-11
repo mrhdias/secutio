@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-05 18:51:47
+    Last Modification: 2024-03-11 18:18:28
     Attention: This is work in progress
 
     References:
@@ -519,18 +519,29 @@ export default class Secutio {
         return helper;
     }
 
-    async fetchTemplate(templateName) {
+    // async fetchTemplate(templateName) {
+    //    try {
+    //        const response = await fetch('./templates/'.concat(templateName, '.html'));
+    //        if (!response.ok) {
+    //            throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
+    //        }
+    //        return response.text();
+    //    } catch (error) {
+    //        console.error(error);
+    //    }
+    //    return undefined;
+    // }
+
+    async fetchTemplate(path) {
         try {
-            const response = await fetch('./templates/'.concat(templateName, '.html'));
+            const response = await fetch(path);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
             }
             return response.text();
-
         } catch (error) {
             console.error(error);
         }
-
         return undefined;
     }
 

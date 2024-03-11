@@ -65,7 +65,7 @@ The following properties can be used in the "data-tasks" attribute:
 
 The following properties can be used both client-side and server-side via custom HTTP header:
 - **target**: Uses the first document element that matches the specified CSS selector as the final destination for data association with the template. The string "this" indicates that the target of the replacement is the element that triggered the action;
-- **template**: This property enables you to choose the template for use to associate the data. If the name starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Conversely, if it starts with "@", it signifies that it is a template to be loaded from the templates directory;
+- **template**: This property enables you to choose the template for use to associate the data. If the name starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Conversely, if it starts with "@", it signifies that it is a template to be loaded from the specified path (@path_to_resource) on the server;
 - **before**: List of subtasks with the CSS "selector" property to be executed before swapping the new content at the target;
 - **after**: List of subtasks with the CSS "selector" property to be executed after swapping the new content in the target;
 - **swap**: This property controls how content is swapped into the target element. The following "swaps" are available:
@@ -170,10 +170,9 @@ Embedded templates should have a unique id property, and their content must be e
 
 ### Loaded
 
-These templates reside in the templates directory and are loaded using the "template" property on tasks. The property must begin with the character @ followed by the name of the HTML file that contains the template.
+These templates reside in the public directory like normal html files and are loaded using the "template" property on tasks. The property must begin with the character "@" followed by the path of the HTML file that contains the template.
 
 templates/example.html
-
 ```html
 <!-- HTML Content -->
 ```
