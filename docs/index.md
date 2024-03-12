@@ -2,6 +2,7 @@
 
 **Table of Contents:**
 <!-- no toc -->
+- [Example Usage](#example-usage)
 - [Project Directory Structure](#project-directory-structure)
 - [Tasks](#tasks)
   - [Properties](#properties)
@@ -14,6 +15,27 @@
   - [Loaded](#loaded)
   - [Template Literals](#template-literals)
 - [Todo List](#todo-list)
+
+## Example Usage
+
+If using Node.js or another CommonJS environment
+```js
+  const Secutio = require('./secutio');
+  const app = new Secutio();
+  app.init();
+```
+
+If in a browser environment
+```html
+  <script
+    type="text/javascript"
+    src="https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js">
+  </script>
+  <script>
+    const app = new Secutio();
+    app.init();
+  </script>
+```
 
 ## Project Directory Structure
 

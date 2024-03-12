@@ -46,12 +46,11 @@ Here is a working example that retrieves a joke and can be viewed on [CodePen](h
     }
   </script>
 
+  <!-- If in a browser environment -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js"></script>
   <script>
-    import("https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js").then((module) => {
-      // Do something with the module.
-      const secutio = new module.Secutio();
-      secutio.init();
-    });
+    const app = new Secutio();
+    app.init();
   </script>
 
 </body>

@@ -1,54 +1,55 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <title>Test for Flask, Secutio and Websockets</title>
+    <title>Test for Flask, Secutio and Websockets</title>
 </head>
+
 <body>
 
-  <h1>Test for Flask, Secutio and Websockets</h1>
-  <h3>Clock</h3>
-  <div>
-    <p>Simple clock that update itself each 5 seconds using Secutio and Flask-Sock</p>
-  </div>
+    <h1>Test for Flask, Secutio and Websockets</h1>
+    <h3>Clock</h3>
+    <div>
+        <p>Simple clock that update itself each 5 seconds using Secutio and Flask-Sock</p>
+    </div>
 
-  <div data-tasks="update-clock">
-    <div id="clock"></div>
-  </div>
+    <div data-tasks="update-clock">
+        <div id="clock"></div>
+    </div>
 
-  <div data-tasks="api">
-    <div id="api"></div>
-  </div>
+    <div data-tasks="api">
+        <div id="api"></div>
+    </div>
 
-  <script data-tasktable type="application/json">
+    <script data-tasktable type="application/json">
     {
-      "update-clock": {
-        "connect": "ws://localhost:5000/clock",
-        "trigger": "init",
-        "target": "#clock",
-        "swap": "outer"
-      },
-      "api": {
-        "connect": "ws://localhost:5000/api",
-        "trigger": "init",
-        "target": "#api",
-        "swap": "outer"
-      }
-  }
-  </script>
+        "update-clock": {
+            "connect": "ws://localhost:5000/clock",
+            "trigger": "init",
+            "target": "#clock",
+            "swap": "outer"
+        },
+        "api": {
+            "connect": "ws://localhost:5000/api",
+            "trigger": "init",
+            "target": "#api",
+            "swap": "outer"
+        }
+    }
+    </script>
 
-  <h3>Credits</h3>
-  <div>
-    <p>Original project from <a href="https://github.com/paluigi/flask-htmx" target="_blank">paluigi/flask-htmx</a> webpage</p>
-    <p>Flask-Sock <a href="https://flask-sock.readthedocs.io/en/latest/index.html" target="_blank">documentation</a></p>
-  </div>
+    <h3>Credits</h3>
+    <div>
+        <p>Original project from <a href="https://github.com/paluigi/flask-htmx" target="_blank">paluigi/flask-htmx</a>webpage</p>
+        <p>Flask-Sock <a href="https://flask-sock.readthedocs.io/en/latest/index.html" target="_blank">documentation</a></p>
+    </div>
 
-  <script>
-    import("https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js").then((module) => {
-      // Do something with the module.
-      const secutio = new module.Secutio();
-      secutio.init();
-    });
-  </script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js"></script>
+    <script>
+        const app = new Secutio();
+        app.init();
+    </script>
 
 </body>
 
