@@ -81,6 +81,7 @@ The following properties can be used in the "data-tasks" attribute:
 - **method**: Set a request method (GET, POST, PUT, PATCH or DELETE) to indicate the desired action to be performed for a given resource;
 - **trigger**: Specifies the event that triggers the request;
 - **then**: List of subtasks with the CSS "selector" property to be executed after the trigger has been performed (useful for displaying loaders);
+- **next**: Performs a new task within the context of the original event where the property was declared;
 - **src-file**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
 - **disabled**: This property disable the task execution if set to "true";
 - **error**: Sets a new task that replaces the original if an error occurs during the request.
