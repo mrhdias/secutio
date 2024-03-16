@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-12 18:12:41
+    Last Modification: 2024-03-15 19:25:03
     Attention: This is work in progress
 
     References:
@@ -761,13 +761,14 @@
                 if (!this.custom_functions.hasOwnProperty(properties['function'])) {
                     throw new Error(`The registered function "${properties.function}" not exist!`);
                 }
-                bodyData = this.custom_functions[properties['function']](event);
-                if (bodyData === undefined) {
+                const result = this.custom_functions[properties['function']](event);
+                if (event.data === undefined || result === false) {
                     if (properties.hasOwnProperty('next')) {
                         delete properties.next;
                     }
                     return;
                 }
+                bodyData = event.data;
             } else if (properties.hasOwnProperty('trigger') &&
                 properties.trigger === 'submit') {
                 const form = event.currentTarget.closest('form');
@@ -919,7 +920,7 @@
                     // continue;
                 }
 
-                console.log("Task:", task);
+                // console.log("Task:", task);
 
                 // const properties = this.tasks[task];
                 // Leave original tasks intact

@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os/exec"
 	"runtime"
@@ -65,11 +64,16 @@ func contactManager(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 
 		parts := strings.Split(r.RequestURI[1:], "/")
-		id, _ := strconv.Atoi(parts[1])
+		id, err := strconv.Atoi(parts[1])
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		jsonResp, err := json.Marshal(contacts[id-1])
 		if err != nil {
-			log.Fatalf("Err: %v\r\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		w.Write([]byte(jsonResp))
@@ -99,7 +103,8 @@ func contactManager(w http.ResponseWriter, r *http.Request) {
 
 		jsonResp, err := json.Marshal(contacts[id-1])
 		if err != nil {
-			log.Fatalf("Err: %v\r\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		w.Write([]byte(jsonResp))
