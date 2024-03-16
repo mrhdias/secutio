@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-16 18:46:12
+    Last Modification: 2024-03-16 21:57:44
     Attention: This is work in progress
 
     References:
@@ -300,7 +300,8 @@
                         properties.wait = 0;
                     }
                     setTimeout(async () => {
-                        await this.setTemplateData(event, properties);
+                        await this.findResourcePath(event, properties);
+
                         if (properties.hasOwnProperty('next')) {
                             await this.runNextTask(event, properties.next);
                         }
@@ -545,19 +546,6 @@
             // remove the element helper div element
             return helper;
         }
-
-        // async fetchTemplate(templateName) {
-        //    try {
-        //        const response = await fetch('./templates/'.concat(templateName, '.html'));
-        //        if (!response.ok) {
-        //            throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
-        //        }
-        //        return response.text();
-        //    } catch (error) {
-        //        console.error(error);
-        //    }
-        //    return undefined;
-        // }
 
         async fetchTemplate(path) {
             try {
@@ -830,6 +818,42 @@
             });
         }
 
+        async findResourcePath(event, properties) {
+            if (properties.hasOwnProperty('connect')) {
+                // get data from websocket connection
+                if (properties.connect === '') {
+                    throw new Error('Empty connection');
+                }
+                this.webSocketConnection(event, properties);
+
+                return;
+            }
+
+            if (properties.hasOwnProperty('action')) {
+                // get data from server
+                if (properties.action === '') {
+                    throw new Error('Empty action');
+                }
+
+                // default method
+                if (properties.hasOwnProperty('method')) {
+                    properties.method = properties.method.toLowerCase();
+                    if (!this.methods.has(properties.method)) {
+                        throw new Error(`Unknown HTTP method: ${properties.method}`);
+                    }
+                } else {
+                    properties['method'] = 'get';
+                }
+
+                await this.prepareRequest(event, properties);
+
+                return;
+            }
+
+            // In events without action, the target can be replaced with templates.
+            await this.setTemplateData(event, properties);
+        }
+
         async processEvent(event, properties) {
 
             // replace with custom attributes
@@ -854,34 +878,7 @@
                 this.runSubtasks(event.currentTarget, properties.then);
             }
 
-            if (properties.hasOwnProperty('connect')) {
-                // get data from websocket connection
-                if (properties.connect === '') {
-                    throw new Error('Empty connection');
-                }
-                this.webSocketConnection(event, properties);
-
-            } else if (properties.hasOwnProperty('action')) {
-                // get data from server
-                if (properties.action === '') {
-                    throw new Error('Empty action');
-                }
-
-                // default method
-                if (properties.hasOwnProperty('method')) {
-                    properties.method = properties.method.toLowerCase();
-                    if (!this.methods.has(properties.method)) {
-                        throw new Error(`Unknown HTTP method: ${properties.method}`);
-                    }
-                } else {
-                    properties['method'] = 'get';
-                }
-
-                await this.prepareRequest(event, properties);
-            } else {
-                // In events without action, the target can be replaced with templates.
-                await this.setTemplateData(event, properties);
-            }
+            await this.findResourcePath(event, properties);
 
             // Executes another task in the same event after swap the content.
             if (properties.hasOwnProperty('next') &&
