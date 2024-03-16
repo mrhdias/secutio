@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-15 19:25:03
+    Last Modification: 2024-03-16 18:46:12
     Attention: This is work in progress
 
     References:
@@ -301,6 +301,9 @@
                     }
                     setTimeout(async () => {
                         await this.setTemplateData(event, properties);
+                        if (properties.hasOwnProperty('next')) {
+                            await this.runNextTask(event, properties.next);
+                        }
                     }, properties.wait);
                 }
             }
