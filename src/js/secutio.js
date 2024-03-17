@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-16 21:57:44
+    Last Modification: 2024-03-17 11:59:53
     Attention: This is work in progress
 
     References:
@@ -183,7 +183,7 @@
             return obj;
         }
 
-        async getResource(filepath, skip404 = false) {
+        async getResource(filepath) {
             // test if the extension is json
             if (filepath.length <= '.json'.length || !filepath.endsWith('.json')) {
                 throw new Error(`The ${filepath} file is not a valid JSON file!`);
@@ -193,9 +193,6 @@
                 cache: "no-cache"
             });
             if (!response.ok) {
-                if (response.status === 404 && skip404) {
-                    return {};
-                }
                 throw new Error(`When fetching the file ${filepath} \
                 happen an HTTP error! status: ${response.status} ${response.statusText}`);
             }
