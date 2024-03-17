@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-17 11:59:53
+    Last Modification: 2024-03-17 22:18:11
     Attention: This is work in progress
 
     References:
@@ -378,8 +378,11 @@
                         }
 
                         if (element.hasAttribute('class') && properties['remove'].hasOwnProperty('class')) {
-                            if (element.classList.contains(properties['remove']['class'])) {
-                                element.classList.remove(properties['remove']['class']);
+                            const classes = properties['remove']['class'].split(/ +/);
+                            for (const c of classes) {
+                                if (element.classList.contains(c)) {
+                                    element.classList.remove(c);
+                                }
                             }
                             if (element.getAttribute('class') === '') {
                                 element.removeAttribute('class');
@@ -420,7 +423,10 @@
                         }
 
                         if (properties['add'].hasOwnProperty('class')) {
-                            element.classList.add(properties['add']['class']);
+                            const classes = properties['add']['class'].split(/ +/);
+                            for (const c of classes) {
+                                element.classList.add(c);
+                            }
                         }
 
                         if (properties['add'].hasOwnProperty('style')) {
@@ -816,6 +822,13 @@
         }
 
         async findResourcePath(event, properties) {
+            // Execute subtasks "then" as soon as possible!
+            // Useful for example to show a loader.
+            if (properties.hasOwnProperty('then') &&
+                properties.then !== "") {
+                this.runSubtasks(event.currentTarget, properties.then);
+            }
+
             if (properties.hasOwnProperty('connect')) {
                 // get data from websocket connection
                 if (properties.connect === '') {
@@ -866,13 +879,6 @@
                 if (property.length > 1 && event.currentTarget.hasAttribute(properties[key])) {
                     properties[property] = event.currentTarget.getAttribute(properties[key]);
                 }
-            }
-
-            // Execute subtasks "then" as soon as possible!
-            // Useful for example to show a loader.
-            if (properties.hasOwnProperty('then') &&
-                properties.then !== "") {
-                this.runSubtasks(event.currentTarget, properties.then);
             }
 
             await this.findResourcePath(event, properties);

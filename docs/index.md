@@ -84,7 +84,8 @@ The following properties can be used in the "data-tasks" attribute:
 - **next**: Performs a new task within the context of the original event where the property was declared;
 - **src-file**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
 - **disabled**: This property disable the task execution if set to "true";
-- **error**: Sets a new task that replaces the original if an error occurs during the request.
+- **error**: Sets a new task that replaces the original if an error occurs during the request;
+- **wait**: The time, in milliseconds that the timer should wait before the specified task is executed (currently available only for the "next" property).
 
 The following properties can be used both client-side and server-side via custom HTTP header:
 - **target**: Uses the first document element that matches the specified CSS selector as the final destination for data association with the template. The string "this" indicates that the target of the replacement is the element that triggered the action;
@@ -162,6 +163,7 @@ tasks.json
 ### Properties
 
 Description of each of the properties allowed in the subtasks:
+- **traverse**: The traversal starts at the specified element and moves up through its parents (toward the document root) until it locates a node that matches the specified CSS selector if "closest" is selected; otherwise, if "target" is used, it is limited to the owner element. If the "traverse" property is not used, the traversal begins from the document.
 - **selector**: Returns a list of elements that match the specified group of selectors. The "remove" and "add" properties are applied to this list of elements;
 - **remove**: Uses the list of document elements that match the specified CSS "selector" to remove attributes or properties of them before/after inserting the content into the target. If the property is empty "{}", remove the element itself. If the "remove" and "add" property is present in the subtask, the first one to be executed is "remove".
   - <ins>attributes</ins>: List (array) of attributes to remove on each selected element;
