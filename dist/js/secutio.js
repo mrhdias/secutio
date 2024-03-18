@@ -1,7 +1,7 @@
 /*
     Secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-17 22:18:11
+    Last Modification: 2024-03-18 21:56:29
     Attention: This is work in progress
 
     References:
@@ -702,7 +702,7 @@
 
             // if data is json
             if (typeof event.result === 'object') {
-                console.log('json data from server...');
+                // console.log('json data from server...');
 
                 // with templates
                 if (properties.hasOwnProperty('template')) {
@@ -715,7 +715,13 @@
 
             // if html fragment is returned
             if (typeof event.result === 'string' && event.result !== "") {
-                console.log('raw data from server...');
+                // console.log('raw data from server...');
+
+                // with templates
+                if (properties.hasOwnProperty('template')) {
+                    const helperFragment = await this.templateManager(properties, event);
+                    return helperFragment;
+                }
 
                 const helperFragment = ((_this) => {
                     const helperElem = document.createElement('div');
@@ -983,13 +989,7 @@
                 }
 
                 // https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event
-
-                // const targetElem = function () {
-                //    if (properties.trigger === 'scroll' || properties.trigger === 'scrollend') {
-                //        return document;
-                //    }
-                //    return element;
-                // }();
+                // https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event
 
                 element.addEventListener(properties.trigger, async (event) => {
                     if (properties.prevent) {
