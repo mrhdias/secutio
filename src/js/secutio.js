@@ -1,7 +1,7 @@
 /*
-    Secutio.js
+    secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-18 21:56:29
+    Last Modification: 2024-03-20 18:36:20
     Attention: This is work in progress
 
     References:
@@ -25,7 +25,7 @@
         const app = new Secutio();
         app.init();
     </script>
- */
+*/
 
 (function (global, factory) {
     if (typeof exports === 'object' && typeof module !== 'undefined') {
@@ -76,6 +76,7 @@
             this.startElement = parameters["start_element"];
             this.tasks = {};
             this.custom_functions = {};
+            this.extensions = {};
         }
 
         fetchOptions(properties, data) {
@@ -805,28 +806,6 @@
             await this.sequenceTasks(helperFragment, event, properties);
         }
 
-        // https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
-        webSocketConnection(event, properties) {
-            // Create WebSocket connection.
-
-            const socket = new WebSocket(properties.connect);
-
-            // Connection opened
-            socket.addEventListener("open", async (e) => {
-                console.log('unimplemented!');
-                socket.send("Hello Server!");
-            });
-
-            // Listen for messages
-            socket.addEventListener("message", async (e) => {
-                // console.log('Event WebSocket:', e.data);
-                e.result = e.data;
-                delete (e.data);
-                const helperFragment = await this.processReqData(e, properties);
-                await this.sequenceTasks(helperFragment, event, properties);
-            });
-        }
-
         async findResourcePath(event, properties) {
             // Execute subtasks "then" as soon as possible!
             // Useful for example to show a loader.
@@ -835,14 +814,18 @@
                 this.runSubtasks(event.currentTarget, properties.then);
             }
 
-            if (properties.hasOwnProperty('connect')) {
-                // get data from websocket connection
-                if (properties.connect === '') {
-                    throw new Error('Empty connection');
+            // Extensions
+            if (properties.hasOwnProperty('extension')) {
+                if (!properties['extension'].hasOwnProperty('name')) {
+                    throw new Error('The registered extension has no "name" property!');
                 }
-                this.webSocketConnection(event, properties);
-
-                return;
+                if (this.extensions.hasOwnProperty(properties['extension']['name'])) {
+                    if (!this.extensions.hasOwnProperty(properties['extension']['name'])) {
+                        throw new Error(`The registered extension "${properties['extension']['name']}" not exist!`);
+                    }
+                    this.extensions[properties['extension']['name']](event, properties);
+                    return;
+                }
             }
 
             if (properties.hasOwnProperty('action')) {
@@ -1029,6 +1012,10 @@
 
         function_register(name, func) {
             this.custom_functions[name] = func;
+        }
+
+        extension_register(name, func) {
+            this.extensions[name] = func;
         }
 
         init() {

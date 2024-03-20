@@ -13,6 +13,10 @@
         <p>Simple clock that update itself each 5 seconds using Secutio and Flask-Sock</p>
     </div>
 
+    <div data-tasks="echo">
+        <div id="echo"></div>
+    </div>
+
     <div data-tasks="update-clock">
         <div id="clock"></div>
     </div>
@@ -23,14 +27,30 @@
 
     <script data-tasktable type="application/json">
     {
+        "echo": {
+            "extension": {
+                "name": "websocket",
+                "connect": "ws://localhost:5000/echo",
+                "function": "send-data"
+            },
+            "trigger": "init",
+            "target": "#echo",
+            "swap": "outer"
+        },
         "update-clock": {
-            "connect": "ws://localhost:5000/clock",
+            "extension": {
+                "name": "websocket",
+                "connect": "ws://localhost:5000/clock"
+            },
             "trigger": "init",
             "target": "#clock",
             "swap": "outer"
         },
         "api": {
-            "connect": "ws://localhost:5000/api",
+            "extension": {
+                "name": "websocket",
+                "connect": "ws://localhost:5000/api"
+            },
             "trigger": "init",
             "target": "#api",
             "swap": "outer"
@@ -40,15 +60,25 @@
 
     <h3>Credits</h3>
     <div>
-        <p>Original project from <a href="https://github.com/paluigi/flask-htmx" target="_blank">paluigi/flask-htmx</a>webpage</p>
-        <p>Flask-Sock <a href="https://flask-sock.readthedocs.io/en/latest/index.html" target="_blank">documentation</a></p>
+        <p>Original project from <a href="https://github.com/paluigi/flask-htmx"
+                target="_blank">paluigi/flask-htmx</a>webpage</p>
+        <p>Flask-Sock <a href="https://flask-sock.readthedocs.io/en/latest/index.html" target="_blank">documentation</a>
+        </p>
     </div>
 
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/ext/websocket.min.js"></script>
     <script>
         const app = new Secutio();
         app.init();
+        // register extension
+        app.extension_register('websocket', wsExtension);
+
+        app.function_register('send-data', ((socket) => {
+            socket.send('Hello Echo!');
+        }));
     </script>
 
 </body>

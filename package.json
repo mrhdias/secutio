@@ -19,10 +19,18 @@
     "bugs": {
         "url": "https://github.com/mrhdias/secutio/issues"
     },
+    "files": [
+        "LICENSE",
+        "README.md",
+        "dist/js/*.js",
+        "dist/js/*.js.gz",
+        "dist/js/ext/*.js",
+        "dist/js/ext/*.js.gz"
+    ],
     "main": "dist/js/secutio.js",
     "unpkg": "dist/js/secutio.min.js",
     "scripts": {
         "dist": "cp -r src/js/* dist/js/ && npm run-script uglify && gzip -9 -k -f dist/js/secutio.min.js > dist/js/secutio.min.js.gz && exit",
-        "uglify": "uglifyjs -m eval -o dist/secutio.min.js dist/js/secutio.js"
+        "uglify": "uglifyjs -m eval -o dist/js/secutio.min.js dist/js/secutio.js"
     }
 }

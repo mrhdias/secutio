@@ -21,9 +21,20 @@ sock = Sock(app)
 
 api_endpoint = "https://api.publicapis.org/random"
 
+@sock.route("/echo")
+def echoflow(ws):
+    while True:
+        data = ws.receive()
+        if (len(data) > 0):
+            print("Data from client:", data)
+
+        ws.send(data)
+        time.sleep(5)
+
 @sock.route("/clock")
 def timeflow(ws):
     while True:
+
         new_time = '<div id="clock"><p>Current date and time: {}</p></div>'.format(
             datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
