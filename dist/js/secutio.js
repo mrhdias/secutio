@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-22 19:21:00
+    Last Modification: 2024-03-23 17:18:19
     Attention: This is work in progress
 
     References:
@@ -445,7 +445,7 @@
             }
         }
 
-        async search4ElemTasks(parentNode) {
+        async findElemWithTasks(parentNode) {
             if (parentNode.hasChildNodes()) {
                 for (const node of parentNode.childNodes) {
                     // console.log('Search for tasks:', node.nodeType, node.nodeName);
@@ -456,7 +456,7 @@
                         node.nodeType !== node.DOCUMENT_FRAGMENT_NODE) {
                         // Order changed in 2024-03-22 19:11:10
                         if (node.hasChildNodes()) {
-                            await this.search4ElemTasks(node);
+                            await this.findElemWithTasks(node);
                         }
                         if (node.hasAttribute(this.tasksAttribute)) {
                             await this.setTask(node);
@@ -598,7 +598,7 @@
                 this.runSubtasks(event.currentTarget, properties.before)
             }
 
-            await this.search4ElemTasks(helperFragment);
+            await this.findElemWithTasks(helperFragment);
             this.swapContent(helperFragment, target,
                 properties.hasOwnProperty('swap') ? properties.swap : 'inner');
 
@@ -1060,7 +1060,7 @@
             this.getDataTasks().then(async () => {
                 // console.log(this.tasks);
                 if (Object.keys(this.tasks).length >= 0) {
-                    await this.search4ElemTasks(targetNode[0]);
+                    await this.findElemWithTasks(targetNode[0]);
                 }
             });
         }
