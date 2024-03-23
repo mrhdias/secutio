@@ -24,7 +24,7 @@
         },
         "add-attachment": {
             "trigger": "click",
-            "function": "add-attachment"
+            "callback": "add-attachment"
         },
         "add-attach-to-list": {
             "action": "getattachments",
@@ -40,12 +40,12 @@
         },
         "check-consent": {
             "trigger": "change",
-            "function": "enable-button"
+            "callback": "enable-button"
         },
         "send-mail": {
             "action": "sendmail",
             "method": "post",
-            "function": "prepare-data",
+            "callback": "prepare-data",
             "trigger": "submit",
             "target": "#sendmail-form",
             "swap": "append",
@@ -73,12 +73,12 @@
         },
         "reset-to-defaults": {
             "trigger": "reset",
-            "function": "reset-to-defaults",
+            "callback": "reset-to-defaults",
             "swap": "none",
             "prevent": false
         },
         "show-result": {
-            "function": "show-result"
+            "callback": "show-result"
         },
         "close-dialog": {
             "trigger": "click",
@@ -94,16 +94,16 @@
 
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js"></script>
-    <script>
+    <script type="text/javascript">
         const app = new Secutio();
         app.init();
 
-        app.function_register('add-attachment', (() => {
+        app.callback_register('add-attachment', (() => {
             const attachments = document.querySelector('[type="file"]');
             attachments.click();
         }));
 
-        app.function_register('enable-button', ((event) => {
+        app.callback_register('enable-button', ((event) => {
             const radio = event.currentTarget;
             if (radio.checked) {
                 document.querySelector('button[type="submit"]').removeAttribute('disabled');
@@ -114,7 +114,7 @@
 
         // https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
 
-        app.function_register('prepare-data', ((event) => {
+        app.callback_register('prepare-data', ((event) => {
 
             const form = event.currentTarget.closest('form');
 
@@ -144,10 +144,10 @@
                 console.log("FormData:", key, value);
             }
 
-            return formData;
+            event.data = formData;
         }));
 
-        app.function_register('show-result', ((event) => {
+        app.callback_register('show-result', ((event) => {
             const dialog = document.querySelector("dialog");
             if (dialog !== null) {
                 dialog.showModal();
@@ -158,7 +158,7 @@
             }
         }));
 
-        app.function_register('reset-to-defaults', ((event) => {
+        app.callback_register('reset-to-defaults', ((event) => {
             const attachments = event.target.querySelector('[type="file"]');
             if (attachments !== null) {
                 attachments.value = "";

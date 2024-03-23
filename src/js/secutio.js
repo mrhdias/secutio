@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-20 18:36:20
+    Last Modification: 2024-03-22 19:21:00
     Attention: This is work in progress
 
     References:
@@ -75,7 +75,7 @@
             this.tasksAttribute = parameters["tasks_attribute"];
             this.startElement = parameters["start_element"];
             this.tasks = {};
-            this.custom_functions = {};
+            this.callbacks = {};
             this.extensions = {};
         }
 
@@ -118,7 +118,7 @@
             // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
             // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
 
-            console.log('Body Data:', data, properties.action);
+            // console.log('Body Data:', data, properties.action);
 
             try {
                 const response = await fetch(properties.action, this.fetchOptions(properties, data));
@@ -454,11 +454,12 @@
                         node.nodeType !== node.TEXT_NODE &&
                         node.nodeType !== node.COMMENT_NODE &&
                         node.nodeType !== node.DOCUMENT_FRAGMENT_NODE) {
-                        if (node.hasAttribute(this.tasksAttribute)) {
-                            await this.setTask(node);
-                        }
+                        // Order changed in 2024-03-22 19:11:10
                         if (node.hasChildNodes()) {
                             await this.search4ElemTasks(node);
+                        }
+                        if (node.hasAttribute(this.tasksAttribute)) {
+                            await this.setTask(node);
                         }
                     }
                 }
@@ -506,7 +507,7 @@
             const helper = document.createElement('div');
             try {
                 // console.log('Source:', event.template);
-                // The data from the registered functions is passed
+                // The data from the registered callbacks is passed
                 // to templates in event property data (event.result).
                 if (!event.hasOwnProperty('template')) {
                     throw new Error(`The template not exist`);
@@ -662,11 +663,11 @@
                 return {};
             })(this);
 
-            if (properties.hasOwnProperty('function')) {
-                if (!this.custom_functions.hasOwnProperty(properties['function'])) {
-                    throw new Error(`The registered function "${properties.function}" not exist!`);
+            if (properties.hasOwnProperty('callback')) {
+                if (!this.callbacks.hasOwnProperty(properties.callback)) {
+                    throw new Error(`The registered calback "${properties.callback}" not exist!`);
                 }
-                this.custom_functions[properties['function']](event);
+                this.callbacks[properties.callback](event);
             }
 
             // If the task has a template and target
@@ -758,11 +759,11 @@
 
             let bodyData = undefined;
 
-            if (properties.hasOwnProperty('function')) {
-                if (!this.custom_functions.hasOwnProperty(properties['function'])) {
-                    throw new Error(`The registered function "${properties.function}" not exist!`);
+            if (properties.hasOwnProperty('callback')) {
+                if (!this.callbacks.hasOwnProperty(properties.callback)) {
+                    throw new Error(`The registered callback "${properties.callback}" not exist!`);
                 }
-                const result = this.custom_functions[properties['function']](event);
+                const result = this.callbacks[properties.callback](event);
                 if (event.data === undefined || result === false) {
                     if (properties.hasOwnProperty('next')) {
                         delete properties.next;
@@ -1010,8 +1011,8 @@
             }
         }
 
-        function_register(name, func) {
-            this.custom_functions[name] = func;
+        callback_register(name, func) {
+            this.callbacks[name] = func;
         }
 
         extension_register(name, func) {

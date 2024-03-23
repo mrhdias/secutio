@@ -30,7 +30,8 @@
     "main": "dist/js/secutio.js",
     "unpkg": "dist/js/secutio.min.js",
     "scripts": {
-        "dist": "cp -r src/js/* dist/js/ && npm run-script uglify && gzip -9 -k -f dist/js/secutio.min.js > dist/js/secutio.min.js.gz && exit",
-        "uglify": "uglifyjs -m eval -o dist/js/secutio.min.js dist/js/secutio.js"
+        "dist": "cp -r src/js/* dist/js/ && npm run-script uglify && npm run-script compress && exit",
+        "uglify": "scripts/uglify.sh",
+        "compress": "scripts/compress.sh"
     }
 }

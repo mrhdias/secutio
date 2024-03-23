@@ -1,7 +1,7 @@
 /*
     websocket.js - secutio extension
     Author: Henrique Dias
-    Last Modification: 2024-03-20 18:42:22
+    Last Modification: 2024-03-22 19:11:57
 
     References:
     https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
@@ -21,7 +21,7 @@
             "extension": {
                 "name": "websocket",
                 "connect": "ws://localhost:8080/echo",
-                "function": "send-data",
+                "callback": "send-data",
                 "element": "#send-data",
                 "trigger": "click"
             },
@@ -38,7 +38,7 @@
 
         app.extension_register('websocket', wsExtension);
 
-        app.function_register('send-data', ((socket) => {
+        app.callback_register('send-data', ((socket) => {
             socket.send('Hello Server!');
         }));
     </script>
@@ -52,18 +52,23 @@ const wsExtension = ((taskEvent, taskProperties) => {
     if (properties['name'] !== 'websocket') {
         throw new Error('The extension name is not \"websocket\"!');
     }
-    if (properties['connect'] === '') {
-        throw new Error('The websocket extension \"connect\" property is empty');
+
+    if (!properties.hasOwnProperty('connect')) {
+        throw new Error(`The \"connect\" property is not defined for websocket extension!`);
     }
 
-    const socket = new WebSocket(properties['connect']);
+    if (properties.connect === '') {
+        throw new Error('The \"connect\" property is empty in websocket extension!');
+    }
+
+    const socket = new WebSocket(properties.connect);
 
     const sendData = () => {
-        if (properties.hasOwnProperty('function')) {
-            if (properties['function'] === '') {
-                throw new Error(`The websocket extension \"function\" property is empty!`);
+        if (properties.hasOwnProperty('callback')) {
+            if (properties.callback === '') {
+                throw new Error(`The websocket extension \"callback\" property is empty!`);
             }
-            app.custom_functions[properties['function']](socket);
+            app.callbacks[properties.callback](socket);
         }
     };
 
@@ -71,21 +76,21 @@ const wsExtension = ((taskEvent, taskProperties) => {
     socket.addEventListener("open", async (e) => {
         // socket.send("Hello Server!");
         if (properties.hasOwnProperty('element')) {
-            if (properties['element'] === '') {
+            if (properties.element === '') {
                 throw new Error(`The websocket extension \"element\" property is empty!`);
             }
 
-            const element = document.querySelector(properties['element']);
+            const element = document.querySelector(properties.element);
             if (element !== null) {
                 if (properties.hasOwnProperty('trigger')) {
-                    if (properties['trigger'] === '') {
+                    if (properties.trigger === '') {
                         throw new Error(`The websocket extension \"trigger\" property is empty!`);
                     }
                 } else {
-                    properties['trigger'] = 'click';
+                    properties.trigger = 'click';
                 }
 
-                element.addEventListener(properties['trigger'], sendData);
+                element.addEventListener(properties.trigger, sendData);
             }
         } else {
             sendData();
