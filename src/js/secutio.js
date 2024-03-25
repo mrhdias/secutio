@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-23 17:18:19
+    Last Modification: 2024-03-25 19:10:51
     Attention: This is work in progress
 
     References:
@@ -116,17 +116,19 @@
 
         async makeRequest(properties, data) {
             // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
 
-            // console.log('Body Data:', data, properties.action);
+            // console.log('Body Data:', data, properties.action, properties.method);
 
             try {
                 const response = await fetch(properties.action, this.fetchOptions(properties, data));
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
-                }
 
-                let result = { transformation: {}, data: undefined, error: false };
+                let result = {
+                    transformation: {},
+                    data: undefined,
+                    ok: response.ok,
+                    status: response.status
+                };
+
                 if (response.headers.has("Secutio-Transformation")) { // is optional and if not exits use from tasks file
                     console.log("Secutio-Transformation:", response.headers.get("Secutio-Transformation"));
                     const headerValue = response.headers.get("Secutio-Transformation");
@@ -151,17 +153,16 @@
 
                 const fragment = await response.text();
                 result.data = fragment;
+
                 return result;
 
             } catch (error) {
-                // console.error(error);
-                if (properties.hasOwnProperty('error')) {
-                    return {
-                        transformation: {},
-                        data: `${error.name}: ${error.message}`,
-                        error: true
-                    };
-                }
+                return {
+                    transformation: {},
+                    data: undefined,
+                    ok: false,
+                    status: 0
+                };
             }
         }
 
@@ -202,6 +203,11 @@
         }
 
         swapContent(clone, target, swap) {
+            if (target === null) {
+                console.warn('no target to swap');
+                return
+            }
+
             if (clone === null) {
                 if (swap === 'delete') {
                     target.remove();
@@ -587,18 +593,16 @@
 
         async sequenceTasks(helperFragment, event, properties) {
 
-            const target = (properties.target === 'this') ?
-                event.currentTarget : document.querySelector(properties.target);
-            if (target === null) {
-                throw new Error(`Target "${propertyTarget}" not exist!`);
-            }
-
             if (properties.hasOwnProperty('before') &&
                 properties.before !== "") {
                 this.runSubtasks(event.currentTarget, properties.before)
             }
 
             await this.findElemWithTasks(helperFragment);
+
+            const target = (properties.target === 'this') ?
+                event.currentTarget : document.querySelector(properties.target);
+
             this.swapContent(helperFragment, target,
                 properties.hasOwnProperty('swap') ? properties.swap : 'inner');
 
@@ -689,6 +693,8 @@
 
         async processReqData(event, properties) {
 
+            // console.log(`Event: Template: ${event.template} Result: ${event.result} Ok: ${event.ok} Status: ${event.status}`);
+
             // if a template is returned
             if ('template' in event) {
                 const helperFragment = this.buildFragment(event);
@@ -715,8 +721,8 @@
                 throw new Error("There is no json data for the transformation");
             }
 
-            // if html fragment is returned
-            if (typeof event.result === 'string' && event.result !== "") {
+            // if (typeof event.result === 'string' && event.result !== "") {
+            if (typeof event.result === 'string') {
                 // console.log('raw data from server...');
 
                 // with templates
@@ -763,8 +769,8 @@
                 if (!this.callbacks.hasOwnProperty(properties.callback)) {
                     throw new Error(`The registered callback "${properties.callback}" not exist!`);
                 }
-                const result = this.callbacks[properties.callback](event);
-                if (event.data === undefined || result === false) {
+                const result = this.callbacks[properties.callback](event, properties);
+                if (result === false) {
                     if (properties.hasOwnProperty('next')) {
                         delete properties.next;
                     }
@@ -783,13 +789,14 @@
 
             // send data to the server and wait for the response
             const block = await this.makeRequest(properties, bodyData);
-            if (block === undefined) {
-                return;
-            }
+            console.log('Make Request Result:', block.ok, block.status);
+
+            event.ok = block.ok;
+            event.status = block.status;
 
             // If an error happens replaces the current task
             // with the error task, if it exists.
-            if (properties.hasOwnProperty('error') && block.error) {
+            if (properties.hasOwnProperty('error') && !block.ok) {
                 properties = this.tasks[properties['error']];
                 if (properties.hasOwnProperty('message')) {
                     block.data = properties['message'];
@@ -801,8 +808,9 @@
             if (properties['is-template'] == true) {
                 event.template = block.data;
             } else {
-                event.result = block.data
+                event.result = block.data;
             }
+
             const helperFragment = await this.processReqData(event, properties);
             await this.sequenceTasks(helperFragment, event, properties);
         }
