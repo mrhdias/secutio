@@ -1,0 +1,49 @@
+{
+    "show-login": {
+        "trigger": "init",
+        "target": "#main",
+        "template": "#login-dialog-tpl",
+        "swap": "append"
+    },
+    "login": {
+        "action": "login",
+        "method": "post",
+        "callback": "login",
+        "trigger": "click",
+        "target": "#login-dialog > div",
+        "template": "#login-dialog-message-tpl",
+        "swap": "prepend",
+        "then": "rm-dialog-message"
+    },
+    "rm-dialog-message": {
+        "selector": "div.warning",
+        "remove": {}
+    },
+    "logout": {
+        "action": "logout",
+        "method": "delete",
+        "callback": "logout",
+        "trigger": "click",
+        "target": "#main",
+        "template": "#login-dialog-tpl",
+        "swap": "append",
+        "then": "rm-dialog"
+    },
+    "rm-dialog": {
+        "selector": "#login-dialog",
+        "remove": {}
+    },
+    "get-chat-thread": {
+        "extension": {
+            "name": "websocket",
+            "connect": "ws://localhost:8080/echo",
+            "callback": "send-sentence",
+            "element": "#send-sentence",
+            "trigger": "click"
+        },
+        "trigger": "init",
+        "target": "#chat-thread",
+        "template": "#chat-thread-tpl",
+        "swap": "prepend"
+    }
+}

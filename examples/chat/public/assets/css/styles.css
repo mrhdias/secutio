@@ -1,0 +1,157 @@
+/*
+ * Last Modification: 2024-03-26 16:54:52
+ */
+
+body {
+    padding: 20px;
+}
+
+header>div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: fit-content;
+    margin: 10px auto;
+    background-color: #8d6e63;
+    padding: 8px 8px;
+    border-radius: 9px;
+    font-size: large;
+    color: #fff;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+header>div>span {
+    background-color: #4e342e;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    font-family: sans-serif;
+    font-size: 18px;
+}
+
+.chat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 500px;
+    min-width: 100%;
+    padding: 10px;
+    background-color: #8d6e63;
+    border-radius: 8px;
+}
+
+#chat-thread {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column-reverse;
+    gap: 1px;
+    height: 210px;
+    border: 2px solid #000;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #e0e0e0;
+}
+
+#chat-thread>div {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 4px;
+    background-color: #eee;
+}
+
+.chat-line {
+    align-items: baseline;
+}
+
+.panel {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+textarea {
+    min-width: calc(100% - (36px + 15px));
+    min-height: 64px;
+    border: 2px solid #000000;
+    border-radius: 0;
+    outline: none;
+    font-size: 18px;
+    padding: 4px;
+}
+
+textarea:focus {
+    border: 2px solid #4e4e4e;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.actions>button {
+    border: none;
+    border-radius: 7px;
+    width: 36px;
+    height: 36px;
+    line-height: 52px;
+    background-color: #e0e0e0;
+    cursor: pointer;
+}
+
+.actions>button:hover {
+    background-color: #9c9c9c;
+}
+
+.user {
+    background-color: #787878;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 16px;
+    width: 60px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.self {
+    background-color: #78909c;
+}
+
+#login-dialog>div {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 4px;
+    align-items: stretch;
+    font-family: sans-serif;
+    font-size: 14px;
+}
+
+dialog::backdrop {
+    background-color: #bebebe;
+    opacity: 0.75;
+}
+
+.warning {
+    text-align: center;
+    border-radius: 4px;
+    background-color: #E57373;
+    padding: 2px 4px;
+}

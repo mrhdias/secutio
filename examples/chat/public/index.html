@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Test Websockets</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="assets/css/styles.css?2024032101">
+    <script data-tasktable type="application/json" src="tasks.json"></script>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <span></span>Spider Man Chat<span></span>
+        </div>
+    </header>
+    <main id="main" data-tasks="show-login">
+        <div class="chat">
+            <input type="hidden" id="myself" name="myself" value="">
+            <div id="chat-thread" data-tasks="get-chat-thread"></div>
+            <div class="panel">
+                <textarea id="sentence"></textarea>
+                <div class="actions">
+                    <button id="send-sentence">
+                        <span class="material-symbols-outlined">chat</span>
+                    </button>
+                    <button id="logout" data-tasks="logout">
+                        <span class="material-symbols-outlined">logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <template id="login-dialog-message-tpl">
+        ${(() => {
+            // console.log('Data from server:', event.ok, event.status);
+            if (event.ok) {
+                if (event.status === 201) { // Created
+                    document.querySelector('#sentence').value = "Entered the room...";
+                    document.querySelector('#send-sentence').click();
+                    document.getElementById("login-dialog").close();
+                }
+                return "";
+            }
+            if (event.status === 302) { // Found
+                const user = document.querySelector('#myself').value;
+                document.querySelector('#myself').value = '';
+                return `<div class="warning">The user ${user} already exist!</div>`;
+            }
+            return "";
+        })()}
+    </template>
+
+    <template id="login-dialog-tpl">
+        <dialog id="login-dialog">
+            <div>
+                <label for="new-user">Choose your favorite name</label>
+                <input type="text" id="new-user" name="new-user" value="">
+                <button class="close-dialog" data-tasks="login">Login</button>
+            </div>
+        </dialog>
+        <script>
+            document.getElementById("login-dialog").showModal();
+        </script>
+    </template>
+
+    <template id="chat-thread-tpl">
+        <div class="chat-line">${(() => {
+            // console.log('Data from server:', data);
+            const record = JSON.parse(data);
+            const mySelf = document.getElementById("myself").value;
+            return `<span class="user${(mySelf === record['login']) ? ' self' : ' '}">${record['login']}</span>
+                <span>${record['data']}</span>`;
+        })()}</div>
+    </template>
+
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/ext/websocket.min.js"></script>
+    <script type="text/javascript">
+
+        const app = new Secutio();
+        app.init();
+
+        app.extension_register('websocket', wsExtension);
+
+        app.callback_register('login', ((event) => {
+            const newUserElem = document.getElementById("new-user");
+            if (newUserElem.value.length > 2) {
+                event.data = { 'user': newUserElem.value };
+                document.getElementById("myself").value = newUserElem.value;
+            }
+        }));
+
+        app.callback_register('logout', ((event, properties) => {
+            const user = document.getElementById("myself").value;
+            if (user.length > 2) {
+                properties["action"] = `logout/${user}`;
+            }
+        }));
+
+        app.callback_register('send-sentence', ((socket) => {
+            const userElem = document.querySelector('#myself');
+            const dataElem = document.querySelector('#sentence');
+            if (dataElem !== null && dataElem.value !== '') {
+                socket.send(JSON.stringify({
+                    'login': userElem.value,
+                    'data': dataElem.value
+                }));
+                dataElem.value = '';
+            }
+        }));
+
+    </script>
+
+</body>
+
+</html>
