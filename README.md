@@ -1,3 +1,4 @@
+![Secutio Logo](./docs/assets/img/logo-secutio.svg)
 # Secutio
 > [!WARNING]
 > This framework is still in heavy development.
