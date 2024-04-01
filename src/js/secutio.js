@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-03-25 19:10:51
+    Last Modification: 2024-04-01 18:20:24
     Attention: This is work in progress
 
     References:
@@ -769,7 +769,7 @@
                 if (!this.callbacks.hasOwnProperty(properties.callback)) {
                     throw new Error(`The registered callback "${properties.callback}" not exist!`);
                 }
-                const result = this.callbacks[properties.callback](event, properties);
+                const result = this.callbacks[properties.callback](event);
                 if (result === false) {
                     if (properties.hasOwnProperty('next')) {
                         delete properties.next;

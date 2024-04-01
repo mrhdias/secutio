@@ -21,8 +21,8 @@
     },
     "logout": {
         "action": "logout",
+        "attribute-action": "data-action",
         "method": "delete",
-        "callback": "logout",
         "trigger": "click",
         "target": "#main",
         "template": "#login-dialog-tpl",

@@ -95,13 +95,7 @@
             if (newUserElem.value.length > 2) {
                 event.data = { 'user': newUserElem.value };
                 document.getElementById("myself").value = newUserElem.value;
-            }
-        }));
-
-        app.callback_register('logout', ((event, properties) => {
-            const user = document.getElementById("myself").value;
-            if (user.length > 2) {
-                properties["action"] = `logout/${user}`;
+                document.getElementById("logout").setAttribute('data-action', `logout/${newUserElem.value}`);
             }
         }));
 
