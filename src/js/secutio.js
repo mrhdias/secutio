@@ -675,7 +675,7 @@
                         }
                         throw new Error(`Invalid "${properties['src-data']}" embedded source data`);
                     } else {
-                        return await _this.getResource(properties['src-data'].substring(1));
+                        return await _this.getResource(properties['src-data']);
                     }
                 }
                 return {};
