@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-01 19:19:08
+    Last Modification: 2024-04-01 20:38:44
     Attention: This is work in progress
 
     References:
@@ -675,7 +675,7 @@
                         }
                         throw new Error(`Invalid "${properties['src-data']}" embedded source data`);
                     } else {
-                        return await _this.getResource(properties['src-data']);
+                        return _this.getResource(properties['src-data']);
                     }
                 }
                 return {};
