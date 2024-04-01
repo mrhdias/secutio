@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-01 18:20:24
+    Last Modification: 2024-04-01 19:19:08
     Attention: This is work in progress
 
     References:
@@ -644,7 +644,7 @@
 
                         throw new Error(`Invalid "${properties.template}" embedded template`);
                     default:
-                        throw new Error(`Invalid "${properties.template}" fetched template`);
+                        throw new Error(`Invalid "${properties.template}" selected template`);
                 }
 
             })(this);
@@ -659,10 +659,24 @@
 
         async setTemplateData(event, properties) {
 
-            // If the "src-file" property is defined, fetch the data to result.
+            // If the "src-data" property is defined, fetch the data to result.
             event.result = await (async (_this) => {
-                if (properties.hasOwnProperty('src-file')) {
-                    return await _this.getResource(properties['src-file']);
+                if (properties.hasOwnProperty('src-data')) {
+                    if (Array.from(properties['src-data'])[0] === '#') {
+                        const srcData = document.getElementById(properties['src-data'].substring(1));
+                        if (srcData === null) {
+                            throw new Error(`Source data "${properties['src-data']}" not exist!`);
+                        }
+
+                        if (srcData.DOCUMENT_TYPE_NODE === Node.DOCUMENT_TYPE_NODE &&
+                            srcData.nodeName === 'SCRIPT' &&
+                            srcData.type === 'application/json') {
+                            return JSON.parse(srcData.textContent);
+                        }
+                        throw new Error(`Invalid "${properties['src-data']}" embedded source data`);
+                    } else {
+                        return await _this.getResource(properties['src-data'].substring(1));
+                    }
                 }
                 return {};
             })(this);
@@ -868,7 +882,7 @@
             // the action can exist together with the attribute and
             // is used by default when the attribute is not defined.
             // properties:
-            // action, method, src-file, swap, target, then, after, before, next, error
+            // action, method, src-data, swap, target, then, after, before, next, error
             for (const key of Object.keys(properties)) {
                 if (!key.startsWith('attribute-')) {
                     continue;

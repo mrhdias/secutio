@@ -1,7 +1,7 @@
 {
     "add-top-menu": {
         "trigger": "init",
-        "src-file": "data/categories.json",
+        "src-data": "data/categories.json",
         "target": "#header",
         "template": "@templates/top-menu.html",
         "swap": "inner"
@@ -9,8 +9,8 @@
     "show-products": {
         "trigger": "init",
         "attribute-trigger": "data-trigger",
-        "src-file": "data/feed-promotions.json",
-        "attribute-src-file": "data-src-file",
+        "src-data": "data/feed-promotions.json",
+        "attribute-src-data": "data-src-data",
         "target": "#product-showcase",
         "template": "@templates/products.html",
         "swap": "inner",
@@ -49,7 +49,7 @@
     },
     "show-product-dialog": {
         "trigger": "click",
-        "attribute-src-file": "data-src-file",
+        "attribute-src-data": "data-src-data",
         "target": "#product-showcase",
         "template": "@templates/product.html",
         "swap": "after",

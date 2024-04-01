@@ -83,7 +83,7 @@ The following properties can be used in the "data-tasks" attribute:
 - **callback**: Callback function;
 - **then**: List of subtasks with the CSS "selector" property to be executed after the trigger has been performed (useful for displaying loaders);
 - **next**: Performs a new task within the context of the original event where the property was declared;
-- **src-file**: Used to load JSON data directly from a file to apply to templates. It only works if the action and method are not specified. It is ideal for creating dynamic content on static websites;
+- **src-data**: Used to load JSON data directly from a file to apply to templates. If the name starts with the character "#", it indicates that the source of data is embedded in an HTML page within a script element with an id attribute matching the given name and a content type of "application/json". It only works if the action and method are not specified. This approach is ideal for creating dynamic content on static websites;
 - **disabled**: This property disable the task execution if set to "true";
 - **error**: Sets a new task that replaces the original if an error occurs during the request;
 - **wait**: The time, in milliseconds that the timer should wait before the specified task is executed (currently available only for the "next" property).
@@ -105,7 +105,7 @@ The following properties can be used both client-side and server-side via custom
   - <ins>none</ins>: It exists only for convenience, but does not make any transformations.
 
 ### Custom Attributes
-Custom attributes can be added to the elements where "tasks" are specified, allowing one to override the default value of one property with another. The property in the "tasks" file that defines the attribute must always begin with the substring 'attribute-' followed by the attribute with property to replace. This transformation is available for the following properties: action, src-file, method, remove, target, swap, before, after, and trigger.
+Custom attributes can be added to the elements where "tasks" are specified, allowing one to override the default value of one property with another. The property in the "tasks" file that defines the attribute must always begin with the substring 'attribute-' followed by the attribute with property to replace. This transformation is available for the following properties: action, src-data, method, remove, target, swap, before, after, and trigger.
 
 Example:
 
@@ -182,7 +182,7 @@ In the "class" and "style" properties, which are already attributes, the value i
 These templates can be used to generate HTML content on the client side and can be embedded into the HTML page or loaded. This has nothing to do with the templating engines used on the server side to render pages before sending them to the client.
 
 There is a special variable that can be used in templates:
-- **data**: The data variable contains information obtained from an HTTP response or a JSON file when the "src-file" task property is provided.
+- **data**: The data variable contains information obtained from an HTTP response or a JSON file when the "src-data" task property is provided.
 
 ### Embedded
 
