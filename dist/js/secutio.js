@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-01 20:38:44
+    Last Modification: 2024-04-02 18:40:39
     Attention: This is work in progress
 
     References:
@@ -356,13 +356,23 @@
                     throw new Error(`The properties of subtask "${subtask}" has a empty selector!`);
                 })();
 
+                // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView
+                if (properties.hasOwnProperty('scroll-into')) {
+                    // console.log(properties.selector);
+                    if (properties.selector[0] !== '#') {
+                        throw new Error(`The value of the selector property to scroll-into of the "${subtask}" subtask must start with the "#" character`);
+                    }
+                    elements[0].scrollIntoView(properties['scroll-into']);
+                    continue;
+                }
+
                 // if empty removes all selected elements
                 if (properties.hasOwnProperty('remove') &&
                     Object.keys(properties['remove']).length === 0) {
                     for (const element of elements) {
                         element.remove();
                     }
-                    continue
+                    continue;
                 }
 
                 for (const element of elements) {
@@ -621,32 +631,29 @@
 
             event.template = await (async (_this) => {
 
-                switch (Array.from(properties.template)[0]) {
-                    case '@':
-                        return await _this.fetchTemplate(properties.template.substring(1));
-                    case '#':
-                        const template = document.getElementById(properties.template.substring(1));
-                        if (template === null) {
-                            throw new Error(`Template "${properties.template}" not exist!`);
-                        }
-                        // console.log('Template Node Name:', template.content.children[0].nodeName);
+                if (Array.from(properties.template)[0] === '#') {
+                    const template = document.getElementById(properties.template.substring(1));
+                    if (template === null) {
+                        throw new Error(`Embedded template "${properties.template}" not exist`);
+                    }
+                    // console.log('Template Node Name:', template.content.children[0].nodeName);
 
-                        if (template.content.hasChildNodes() &&
-                            template.content.nodeType === Node.DOCUMENT_FRAGMENT_NODE &&
-                            template.content.hasChildNodes) {
+                    if (template.nodeName === 'TEMPLATE' &&
+                        template.content.hasChildNodes() &&
+                        template.content.nodeType === Node.DOCUMENT_FRAGMENT_NODE &&
+                        template.content.hasChildNodes) {
 
-                            // decode the &lt; p&gt; strings back into real HTML
-                            const txt = document.createElement('textarea');
-                            txt.insertAdjacentHTML('afterbegin', template.innerHTML);
+                        // decode the &lt; p&gt; strings back into real HTML
+                        const textareaElem = document.createElement('textarea');
+                        textareaElem.insertAdjacentHTML('afterbegin', template.innerHTML);
 
-                            return txt.value;
-                        }
+                        return textareaElem.value;
+                    }
 
-                        throw new Error(`Invalid "${properties.template}" embedded template`);
-                    default:
-                        throw new Error(`Invalid "${properties.template}" selected template`);
+                    throw new Error(`Invalid "${properties.template}" embedded template`);
+                } else {
+                    return _this.fetchTemplate(properties.template);
                 }
-
             })(this);
 
             const helperFragment = this.buildFragment(event);

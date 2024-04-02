@@ -3,7 +3,7 @@
         "trigger": "init",
         "src-data": "data/categories.json",
         "target": "#header",
-        "template": "@templates/top-menu.html",
+        "template": "templates/top-menu.html",
         "swap": "inner"
     },
     "show-products": {
@@ -12,7 +12,7 @@
         "src-data": "data/feed-promotions.json",
         "attribute-src-data": "data-src-data",
         "target": "#product-showcase",
-        "template": "@templates/products.html",
+        "template": "templates/products.html",
         "swap": "inner",
         "before": "clean-active",
         "after": "active-promotions",
@@ -21,7 +21,7 @@
     "add-footer": {
         "trigger": "init",
         "target": "#footer",
-        "template": "@templates/footer.html"
+        "template": "templates/footer.html"
     },
     "search": {
         "disabled": true
@@ -51,7 +51,7 @@
         "trigger": "click",
         "attribute-src-data": "data-src-data",
         "target": "#product-showcase",
-        "template": "@templates/product.html",
+        "template": "templates/product.html",
         "swap": "after",
         "before": "remove-dialog"
     },

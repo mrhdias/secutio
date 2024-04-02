@@ -90,7 +90,7 @@ The following properties can be used in the "data-tasks" attribute:
 
 The following properties can be used both client-side and server-side via custom HTTP header:
 - **target**: Uses the first document element that matches the specified CSS selector as the final destination for data association with the template. The string "this" indicates that the target of the replacement is the element that triggered the action;
-- **template**: This property enables you to choose the template for use to associate the data. If the name starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Conversely, if it starts with "@", it signifies that it is a template to be loaded from the specified path (@path_to_resource) on the server;
+- **template**: This property enables you to choose the template for use to associate the data. If the value starts with the character "#", it indicates that the template is embedded in the destination page and corresponds to the "id" of the element to be utilized. Otherwise, the specified value will be utilized as the path to load the template from the server side;
 - **before**: List of subtasks with the CSS "selector" property to be executed before swapping the new content at the target;
 - **after**: List of subtasks with the CSS "selector" property to be executed after swapping the new content in the target;
 - **swap**: This property controls how content is swapped into the target element. The following "swaps" are available:
@@ -169,11 +169,12 @@ Description of each of the properties allowed in the subtasks:
 - **remove**: Uses the list of document elements that match the specified CSS "selector" to remove attributes or properties of them before/after inserting the content into the target. If the property is empty "{}", remove the element itself. If the "remove" and "add" property is present in the subtask, the first one to be executed is "remove".
   - <ins>attributes</ins>: List (array) of attributes to remove on each selected element;
   - <ins>class</ins>: String with class names separated by space;
-  - <ins>style</ins>: String with property names separated by space;
+  - <ins>style</ins>: String with property names separated by space
 - **add**: Uses the list of document elements that match the specified CSS "selector" to add attributes or modify them before/after inserting the content into the target.
   - <ins>attributes</ins>: Object with attributes in the form (attribute/value);
   - <ins>class</ins>: String with class names separated by space;
   - <ins>style</ins>: String in the form "property; value; property n; value;..."
+- **scroll-into**: Property utilized in conjunction with the 'selector' and/or 'transverse' properties to smoothly scroll the page to the element identified by the specified identifier. It allows for the configuration of an object with properties akin to those found in the JavaScript [scrollIntoView](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView) method.
 
 In the "class" and "style" properties, which are already attributes, the value is a string and in the attributes it is a list in "remove" and an "object" in "add".
 
