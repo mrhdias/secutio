@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-02 18:40:39
+    Last Modification: 2024-04-02 22:36:40
     Attention: This is work in progress
 
     References:
@@ -331,7 +331,13 @@
                 }
 
                 for (const property in properties) {
-                    if (!['traverse', 'selector', 'remove', 'add'].includes(property)) {
+                    if (![
+                        'scroll-into',
+                        'traverse',
+                        'selector',
+                        'remove',
+                        'add'
+                    ].includes(property)) {
                         throw new Error(`The property "${property}" in subtask "${subtask}" is not allowed with property "selector"!`);
                     }
                 }
