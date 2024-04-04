@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-02 22:36:40
+    Last Modification: 2024-04-04 22:14:13
     Attention: This is work in progress
 
     References:
@@ -82,7 +82,7 @@
         fetchOptions(properties, data) {
             // https://developer.mozilla.org/en-US/docs/Web/API/fetch
             let options = {
-                method: properties.method,
+                method: properties.hasOwnProperty('method') ? properties.method : 'get',
                 cache: "no-cache",
                 signal: AbortSignal.timeout(1000 *
                     (properties.hasOwnProperty('timeout') ? parseInt(properties.timeout, 10) : 300))
@@ -195,11 +195,11 @@
                 cache: "no-cache"
             });
             if (!response.ok) {
-                throw new Error(`When fetching the file ${filepath} \
-                happen an HTTP error! status: ${response.status} ${response.statusText}`);
+                console.error(`When fetching the file ${filepath}` +
+                    ` happen an HTTP error! status: ${response.status} ${response.statusText}`);
             }
 
-            return await response.json();
+            return response;
         }
 
         swapContent(clone, target, swap) {
@@ -338,7 +338,8 @@
                         'remove',
                         'add'
                     ].includes(property)) {
-                        throw new Error(`The property "${property}" in subtask "${subtask}" is not allowed with property "selector"!`);
+                        throw new Error(`The property "${property}" in subtask "${subtask}" ` +
+                            `is not allowed with property "selector"!`);
                     }
                 }
 
@@ -366,7 +367,8 @@
                 if (properties.hasOwnProperty('scroll-into')) {
                     // console.log(properties.selector);
                     if (properties.selector[0] !== '#') {
-                        throw new Error(`The value of the selector property to scroll-into of the "${subtask}" subtask must start with the "#" character`);
+                        throw new Error(`The value of the selector property to scroll-into of the "${subtask}" ` +
+                            `subtask must start with the "#" character`);
                     }
                     elements[0].scrollIntoView(properties['scroll-into']);
                     continue;
@@ -628,7 +630,7 @@
             }
         }
 
-        async templateManager(properties, event) {
+        async templateManager(event, properties) {
             // console.log('Template Manager...');
 
             if (properties.template.length < 3) {
@@ -688,10 +690,15 @@
                         }
                         throw new Error(`Invalid "${properties['src-data']}" embedded source data`);
                     } else {
-                        return _this.getResource(properties['src-data']);
+                        const response = await _this.getResource(properties['src-data']);
+                        event.ok = response.ok;
+                        event.status = response.status;
+                        return response.ok ? response.json() : response.statusText;
                     }
                 }
-                return {};
+                // If the task does not have the src-data property,
+                // it propagates the previous result to the next task.
+                return event.result ||= {};
             })(this);
 
             if (properties.hasOwnProperty('callback')) {
@@ -705,8 +712,7 @@
             if (properties.hasOwnProperty('template') &&
                 properties.hasOwnProperty('target') &&
                 properties.target != '') {
-
-                const helperFragment = await this.templateManager(properties, event);
+                const helperFragment = await this.templateManager(event, properties);
                 await this.sequenceTasks(helperFragment, event, properties);
             }
 
@@ -720,10 +726,11 @@
 
         async processReqData(event, properties) {
 
-            // console.log(`Event: Template: ${event.template} Result: ${event.result} Ok: ${event.ok} Status: ${event.status}`);
+            // console.log(`Event: Template: ${event.template} ` +
+            //     `Result: ${event.result} Ok: ${event.ok} Status: ${event.status}`);
 
             // if a template is returned
-            if ('template' in event) {
+            if (event.hasOwnProperty('template')) {
                 const helperFragment = this.buildFragment(event);
                 if (helperFragment === null) {
                     throw new Error('An error happened while processing the "remote" template from server');
@@ -731,7 +738,7 @@
                 return helperFragment;
             }
 
-            if (!('result' in event)) {
+            if (!event.hasOwnProperty('result')) {
                 throw new Error("There is no any data for the transformation");
             }
 
@@ -741,7 +748,7 @@
 
                 // with templates
                 if (properties.hasOwnProperty('template')) {
-                    const helperFragment = await this.templateManager(properties, event);
+                    const helperFragment = await this.templateManager(event, properties);
                     return helperFragment;
                 }
 
@@ -754,7 +761,7 @@
 
                 // with templates
                 if (properties.hasOwnProperty('template')) {
-                    const helperFragment = await this.templateManager(properties, event);
+                    const helperFragment = await this.templateManager(event, properties);
                     return helperFragment;
                 }
 
@@ -816,7 +823,7 @@
 
             // send data to the server and wait for the response
             const block = await this.makeRequest(properties, bodyData);
-            console.log('Make Request Result:', block.ok, block.status);
+            // console.log('Make Request Result:', block.ok, block.status);
 
             event.ok = block.ok;
             event.status = block.status;
@@ -1033,13 +1040,10 @@
                 }
                 if (taskElem.hasAttribute('src') && taskElem.src !== "") {
                     // get tasks from JSON file
-                    const jsonData = await (async (_this) => {
-                        return await _this.getResource(taskElem.src);
-                    })(this);
+                    const jsonData = await (await this.getResource(taskElem.src)).json();
                     Object.assign(this.tasks, jsonData);
                     continue;
                 }
-
                 // get inline task
                 const jsonData = JSON.parse(taskElem.text);
                 Object.assign(this.tasks, jsonData);
