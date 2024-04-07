@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-07 12:09:06
+    Last Modification: 2024-04-07 19:48:39
     Attention: This is work in progress
 
     References:
@@ -279,6 +279,24 @@
             throw new Error(`swap "${swap}" attribute not supported`);
         }
 
+        propertyOverride(currentTarget, properties) {
+            // replace with custom attributes
+            // the action can exist together with the attribute and
+            // is used by default when the attribute is not defined.
+            // properties:
+            // action, method, src-data, swap, target, then, after, before, next, error
+
+            for (const key of Object.keys(properties)) {
+                if (!key.startsWith('attribute-')) {
+                    continue;
+                }
+                const property = key.substring('attribute-'.length);
+                if (property.length > 1 && currentTarget.hasAttribute(properties[key])) {
+                    properties[property] = currentTarget.getAttribute(properties[key]);
+                }
+            }
+        }
+
         async runNextTask(event, tasksListStr) {
 
             const tasks = tasksListStr.split(/ +/);
@@ -290,6 +308,9 @@
                 }
 
                 const properties = this.tasks[task];
+                this.propertyOverride(
+                    event.currentTarget !== null ? event.currentTarget : event.target,
+                    properties);
 
                 if (!properties.hasOwnProperty('disabled')) {
                     properties['disabled'] = false;
@@ -900,20 +921,7 @@
 
         async processEvent(event, properties) {
 
-            // replace with custom attributes
-            // the action can exist together with the attribute and
-            // is used by default when the attribute is not defined.
-            // properties:
-            // action, method, src-data, swap, target, then, after, before, next, error
-            for (const key of Object.keys(properties)) {
-                if (!key.startsWith('attribute-')) {
-                    continue;
-                }
-                const property = key.substring('attribute-'.length);
-                if (property.length > 1 && event.currentTarget.hasAttribute(properties[key])) {
-                    properties[property] = event.currentTarget.getAttribute(properties[key]);
-                }
-            }
+            this.propertyOverride(event.currentTarget, properties);
 
             await this.findResourcePath(event, properties);
 
