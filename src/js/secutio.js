@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-04 22:14:13
+    Last Modification: 2024-04-07 12:09:06
     Attention: This is work in progress
 
     References:
@@ -314,8 +314,9 @@
             }
         }
 
-        runSubtasks(currentTarget, tasksListStr) {
+        runSubtasks(event, tasksListStr) {
 
+            const currentTarget = event.currentTarget !== null ? event.currentTarget : event.target;
             const subtasks = tasksListStr.split(/ +/);
 
             for (const subtask of subtasks) {
@@ -353,12 +354,13 @@
                             return [currentTarget];
                         }
                         if (properties.traverse === 'closest' &&
-                            properties['selector'] !== '') {
-                            return currentTarget.closest(properties['selector']);
+                            properties.selector !== '') {
+                            const elem = currentTarget.closest(properties.selector);
+                            return elem === null ? [] : [elem];
                         }
                     }
-                    if (properties['selector'] !== '') {
-                        return document.querySelectorAll(properties['selector']);
+                    if (properties.selector !== '') {
+                        return document.querySelectorAll(properties.selector);
                     }
                     throw new Error(`The properties of subtask "${subtask}" has a empty selector!`);
                 })();
@@ -613,7 +615,7 @@
 
             if (properties.hasOwnProperty('before') &&
                 properties.before !== "") {
-                this.runSubtasks(event.currentTarget, properties.before)
+                this.runSubtasks(event, properties.before)
             }
 
             await this.findElemWithTasks(helperFragment);
@@ -626,7 +628,7 @@
 
             if (properties.hasOwnProperty('after') &&
                 properties.after !== "") {
-                this.runSubtasks(event.currentTarget, properties.after)
+                this.runSubtasks(event, properties.after)
             }
         }
 
@@ -854,7 +856,7 @@
             // Useful for example to show a loader.
             if (properties.hasOwnProperty('then') &&
                 properties.then !== "") {
-                this.runSubtasks(event.currentTarget, properties.then);
+                this.runSubtasks(event, properties.then);
             }
 
             // Extensions
