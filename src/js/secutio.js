@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-07 19:48:39
+    Last Modification: 2024-04-08 20:25:00
     Attention: This is work in progress
 
     References:
@@ -185,11 +185,16 @@
             return obj;
         }
 
-        async getResource(filepath) {
+        async getResource(filepath, extensions) {
             // test if the extension is json
-            if (filepath.length <= '.json'.length || !filepath.endsWith('.json')) {
-                throw new Error(`The ${filepath} file is not a valid JSON file!`);
-            }
+            const fileType = (() => {
+                for (const extension of extensions) {
+                    if (filepath.length > `.${extension}`.length && filepath.endsWith(`.${extension}`)) {
+                        return extension;
+                    }
+                }
+                throw new Error(`The ${filepath} file is not a valid file!`);
+            })();
 
             const response = await fetch(filepath, {
                 cache: "no-cache"
@@ -198,7 +203,7 @@
                 console.error(`When fetching the file ${filepath}` +
                     ` happen an HTTP error! status: ${response.status} ${response.statusText}`);
             }
-
+            response.fileType = fileType;
             return response;
         }
 
@@ -713,10 +718,11 @@
                         }
                         throw new Error(`Invalid "${properties['src-data']}" embedded source data`);
                     } else {
-                        const response = await _this.getResource(properties['src-data']);
+                        const response = await _this.getResource(properties['src-data'], ['json', 'txt']);
                         event.ok = response.ok;
                         event.status = response.status;
-                        return response.ok ? response.json() : response.statusText;
+                        return !response.ok ? response.statusText :
+                            (response.fileType === 'json') ? response.json() : response.text();
                     }
                 }
                 // If the task does not have the src-data property,
@@ -742,8 +748,15 @@
             const target = (properties.target === 'this') ?
                 event.currentTarget : document.querySelector(properties.target);
             if (target !== null) {
-                this.swapContent(null, target,
-                    properties.hasOwnProperty('swap') ? properties.swap : 'inner');
+                this.swapContent((() => {
+                    if (typeof event.result === 'string') {
+                        const helper = document.createElement('span');
+                        const txtNode = document.createTextNode(event.result);
+                        helper.append(txtNode);
+                        return helper;
+                    }
+                    return null;
+                })(), target, properties.hasOwnProperty('swap') ? properties.swap : 'inner');
             }
         }
 
@@ -1050,7 +1063,7 @@
                 }
                 if (taskElem.hasAttribute('src') && taskElem.src !== "") {
                     // get tasks from JSON file
-                    const jsonData = await (await this.getResource(taskElem.src)).json();
+                    const jsonData = await (await this.getResource(taskElem.src, ['json'])).json();
                     Object.assign(this.tasks, jsonData);
                     continue;
                 }
