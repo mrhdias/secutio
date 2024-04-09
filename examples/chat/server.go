@@ -1,5 +1,5 @@
 //
-// Last Modification: 2024-03-26 23:25:53
+// Last Modification: 2024-04-09 18:46:58
 //
 
 package main
@@ -111,7 +111,8 @@ func (app *App) wsHandler(ws *websocket.Conn) {
 
 		for login, connection := range app.Connections {
 			if err := websocket.JSON.Send(connection.Ws, userData); err != nil {
-				log.Printf("Can't send data to %s\n", login)
+				log.Printf("Can't send data to %s, so it is removed\n", login)
+				delete(app.Connections, login)
 			}
 		}
 	}

@@ -38,16 +38,16 @@
 
     <template id="login-dialog-message-tpl">
         ${(() => {
-            // console.log('Data from server:', event.ok, event.status);
-            if (event.ok) {
-                if (event.status === 201) { // Created
+            // console.log('Data from server:', task.ok, task.status);
+            if (task.ok) {
+                if (task.status === 201) { // Created
                     document.querySelector('#sentence').value = "Entered the room...";
                     document.querySelector('#send-sentence').click();
                     document.getElementById("login-dialog").close();
                 }
                 return "";
             }
-            if (event.status === 302) { // Found
+            if (task.status === 302) { // Found
                 const user = document.querySelector('#myself').value;
                 document.querySelector('#myself').value = '';
                 return `<div class="warning">The user ${user} already exist!</div>`;
@@ -90,10 +90,10 @@
 
         app.extension_register('websocket', wsExtension);
 
-        app.callback_register('login', ((event) => {
+        app.callback_register('login', ((task) => {
             const newUserElem = document.getElementById("new-user");
             if (newUserElem.value.length > 2) {
-                event.data = { 'user': newUserElem.value };
+                task.data = { 'user': newUserElem.value };
                 document.getElementById("myself").value = newUserElem.value;
                 document.getElementById("logout").setAttribute('data-action', `logout/${newUserElem.value}`);
             }

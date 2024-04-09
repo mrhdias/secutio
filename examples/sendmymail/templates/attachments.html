@@ -1,8 +1,8 @@
 <div class="mb-3" id="attachments">
     <label for="attachment" class="form-label">{{.Header}}:</label>
     ${(() => {
-        // console.log('Get the data from event:', event.data);
-        const files = event.target.files;
+        // console.log('Get the data from task event:', task.data);
+        const files = task.event.target.files;
 
         const dialog = (message) => `<dialog>
             <div class="alert alert-danger" role="alert">${message}</div>

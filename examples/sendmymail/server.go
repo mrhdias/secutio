@@ -2,7 +2,7 @@ package main
 
 //
 // Author: Henrique Dias
-// Last Modification: 2024-02-29 19:26:20
+// Last Modification: 2024-04-09 19:14:01
 //
 
 import (
@@ -91,14 +91,10 @@ func (app *App) sendMail(w http.ResponseWriter, r *http.Request) {
 
 	// debug
 	if app.Debug {
-		fmt.Println("name_sender:", r.FormValue("name_sender"))
-		fmt.Println("email_sender:", r.FormValue("email_sender"))
-		fmt.Println("name_to:", r.FormValue("name_to"))
-		fmt.Println("email_to:", r.FormValue("email_to"))
-		fmt.Println("subject:", r.FormValue("subject"))
-		fmt.Println("message:", r.FormValue("message"))
-		fmt.Println("copy_to_me:", r.FormValue("copy_to_me"))
-		fmt.Println("your_consent:", r.FormValue("your_consent"))
+		for _, formName := range []string{"name_sender", "email_sender", "name_to",
+			"email_to", "subject", "message", "copy_to_me", "your_consent"} {
+			fmt.Printf("%s: %s\r\n", formName, r.FormValue(formName))
+		}
 	}
 
 	// Parse our multipart form, 10 << 20 specifies a maximum

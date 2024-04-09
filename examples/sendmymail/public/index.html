@@ -105,8 +105,8 @@
             attachments.click();
         }));
 
-        app.callback_register('enable-button', ((event) => {
-            const radio = event.currentTarget;
+        app.callback_register('enable-button', ((task) => {
+            const radio = task.event.currentTarget;
             if (radio.checked) {
                 document.querySelector('button[type="submit"]').removeAttribute('disabled');
             } else {
@@ -116,9 +116,9 @@
 
         // https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
 
-        app.callback_register('prepare-data', ((event) => {
+        app.callback_register('prepare-data', ((task) => {
 
-            const form = event.currentTarget.closest('form');
+            const form = task.event.currentTarget.closest('form');
 
             const formData = new FormData();
             for (const attrName of [
@@ -146,22 +146,22 @@
                 console.log("FormData:", key, value);
             }
 
-            event.data = formData;
+            task.data = formData;
         }));
 
-        app.callback_register('show-result', ((event) => {
+        app.callback_register('show-result', ((task) => {
             const dialog = document.querySelector("dialog");
             if (dialog !== null) {
                 dialog.showModal();
                 if (dialog.querySelector('.alert-success') !== null) {
-                    const form = event.target.closest('form');
+                    const form = task.event.target.closest('form');
                     form.querySelector('[type="reset"]').click();
                 }
             }
         }));
 
-        app.callback_register('reset-to-defaults', ((event) => {
-            const attachments = event.target.querySelector('[type="file"]');
+        app.callback_register('reset-to-defaults', ((task) => {
+            const attachments = task.event.target.querySelector('[type="file"]');
             if (attachments !== null) {
                 attachments.value = "";
             }

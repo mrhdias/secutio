@@ -197,7 +197,7 @@ Embedded templates should have a unique id property, and their content must be e
 
 ### Loaded
 
-These templates reside in the public directory like normal html files and are loaded using the "template" property on tasks. The property must begin with the character "@" followed by the path of the HTML file that contains the template.
+These templates function just like normal HTML files and reside within the public directory. To load a template, tasks utilize the "template" property. The value assigned to this property should be the path to the HTML file containing the template.
 
 templates/example.html
 ```html

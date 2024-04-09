@@ -44,16 +44,21 @@ def timeflow(ws):
 @sock.route("/api")
 def apiflow(ws):
     while True:
-        new_api = requests.get(api_endpoint)
-        api_dict = json.loads(new_api.text).get("entries")[0]
-        new_text = """<div id="api">
-                <p>API name: {0}</p>
-                <p>Description: {1}</p>
-                <p>link: <a href={2} target="_blank">{2}</a></p>
-            </div>""".format(
-            api_dict.get("API"), api_dict.get("Description"), api_dict.get("Link")
-        )
-        ws.send(new_text)
+        def getApi():
+            try:
+                new_api = requests.get(api_endpoint)
+                api_dict = json.loads(new_api.text).get("entries")[0]
+                return """<div id="api">
+                        <p>API name: {0}</p>
+                        <p>Description: {1}</p>
+                        <p>link: <a href={2} target="_blank">{2}</a></p>
+                    </div>""".format(
+                    api_dict.get("API"), api_dict.get("Description"), api_dict.get("Link")
+                )
+            except:
+                return "An error happened when connecting to {} waiting...".format(api_endpoint)
+
+        ws.send(getApi())
         time.sleep(10)
 
 @app.route('/')

@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-08 20:25:00
+    Last Modification: 2024-04-09 19:03:48
     Attention: This is work in progress
 
     References:
@@ -302,7 +302,7 @@
             }
         }
 
-        async runNextTask(event, tasksListStr) {
+        async runNextTask(taskEvent, tasksListStr) {
 
             const tasks = tasksListStr.split(/ +/);
 
@@ -312,9 +312,12 @@
                     throw new Error(`The next task "${task}" not exist in tasks file!`);
                 }
 
+                // target - The element that originally triggered the event.
+                // currentTarget - The element that has the event listener attached to it.
                 const properties = this.tasks[task];
                 this.propertyOverride(
-                    event.currentTarget !== null ? event.currentTarget : event.target,
+                    taskEvent.event.currentTarget !== null ?
+                        taskEvent.event.currentTarget : taskEvent.event.target,
                     properties);
 
                 if (!properties.hasOwnProperty('disabled')) {
@@ -330,19 +333,20 @@
                         properties.wait = 0;
                     }
                     setTimeout(async () => {
-                        await this.findResourcePath(event, properties);
+                        await this.findResourcePath(taskEvent, properties);
 
                         if (properties.hasOwnProperty('next')) {
-                            await this.runNextTask(event, properties.next);
+                            await this.runNextTask(taskEvent, properties.next);
                         }
                     }, properties.wait);
                 }
             }
         }
 
-        runSubtasks(event, tasksListStr) {
+        runSubtasks(taskEvent, tasksListStr) {
 
-            const currentTarget = event.currentTarget !== null ? event.currentTarget : event.target;
+            const currentTarget = taskEvent.event.currentTarget !== null ?
+                taskEvent.event.currentTarget : taskEvent.event.target;
             const subtasks = tasksListStr.split(/ +/);
 
             for (const subtask of subtasks) {
@@ -554,20 +558,20 @@
             }
         }
 
-        buildFragment(event) {
+        buildFragment(taskEvent) {
 
             const helper = document.createElement('div');
             try {
-                // console.log('Source:', event.template);
+                // console.log('Source:', taskEvent.template);
                 // The data from the registered callbacks is passed
-                // to templates in event property data (event.result).
-                if (!event.hasOwnProperty('template')) {
+                // to templates in taskEvent property data (taskEvent.result).
+                if (!taskEvent.hasOwnProperty('template')) {
                     throw new Error(`The template not exist`);
                 }
                 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
-                // const data = event.data;
-                // helper.insertAdjacentHTML('afterbegin', eval('`' + event.template + '`'));
-                // delete (event.template);
+                // const data = taskEvent.data;
+                // helper.insertAdjacentHTML('afterbegin', eval('`' + taskEvent.template + '`'));
+                // delete (taskEvent.template);
                 // Code execution by the eval() function is a security risk,
                 // so it has been removed and replaced with the following code:
 
@@ -575,7 +579,7 @@
                     const script = document.createElement('script');
                     script.type = "text/javascript";
                     script.id = "temporary-helper";
-                    script.innerHTML = 'function populateTemplate(event) {const data = event.result; return `' + event.template + '`;}';
+                    script.innerHTML = 'function populateTemplate(task) {const data = task.result; return `' + taskEvent.template + '`;}';
                     let count = 0;
                     let timeoutID = setInterval(() => {
                         if (count > 5 || document.getElementById("temporary-helper") === null) {
@@ -587,9 +591,9 @@
                         count++;
                     }, 100);
                     document.body.appendChild(script);
-                    return populateTemplate(event);
+                    return populateTemplate(taskEvent);
                 })());
-                delete (event.template);
+                delete (taskEvent.template);
                 const tmp = document.getElementById("temporary-helper");
                 if (tmp !== null) {
                     tmp.remove();
@@ -637,35 +641,35 @@
             }
         }
 
-        async sequenceTasks(helperFragment, event, properties) {
+        async sequenceTasks(helperFragment, taskEvent, properties) {
 
             if (properties.hasOwnProperty('before') &&
                 properties.before !== "") {
-                this.runSubtasks(event, properties.before)
+                this.runSubtasks(taskEvent, properties.before)
             }
 
             await this.findElemWithTasks(helperFragment);
 
             const target = (properties.target === 'this') ?
-                event.currentTarget : document.querySelector(properties.target);
+                taskEvent.event.currentTarget : document.querySelector(properties.target);
 
             this.swapContent(helperFragment, target,
                 properties.hasOwnProperty('swap') ? properties.swap : 'inner');
 
             if (properties.hasOwnProperty('after') &&
                 properties.after !== "") {
-                this.runSubtasks(event, properties.after)
+                this.runSubtasks(taskEvent, properties.after)
             }
         }
 
-        async templateManager(event, properties) {
+        async templateManager(taskEvent, properties) {
             // console.log('Template Manager...');
 
             if (properties.template.length < 3) {
                 throw new Error(`Short template name "${properties.template}"`);
             }
 
-            event.template = await (async (_this) => {
+            taskEvent.template = await (async (_this) => {
 
                 if (Array.from(properties.template)[0] === '#') {
                     const template = document.getElementById(properties.template.substring(1));
@@ -692,7 +696,7 @@
                 }
             })(this);
 
-            const helperFragment = this.buildFragment(event);
+            const helperFragment = this.buildFragment(taskEvent);
             if (helperFragment === null) {
                 throw new Error(`An error happened while processing the "${properties.template}" template`);
             }
@@ -700,10 +704,10 @@
             return helperFragment;
         }
 
-        async setTemplateData(event, properties) {
+        async setTemplateData(taskEvent, properties) {
 
             // If the "src-data" property is defined, fetch the data to result.
-            event.result = await (async (_this) => {
+            taskEvent.result = await (async (_this) => {
                 if (properties.hasOwnProperty('src-data')) {
                     if (Array.from(properties['src-data'])[0] === '#') {
                         const srcData = document.getElementById(properties['src-data'].substring(1));
@@ -719,39 +723,39 @@
                         throw new Error(`Invalid "${properties['src-data']}" embedded source data`);
                     } else {
                         const response = await _this.getResource(properties['src-data'], ['json', 'txt']);
-                        event.ok = response.ok;
-                        event.status = response.status;
+                        taskEvent.ok = response.ok;
+                        taskEvent.status = response.status;
                         return !response.ok ? response.statusText :
                             (response.fileType === 'json') ? response.json() : response.text();
                     }
                 }
                 // If the task does not have the src-data property,
                 // it propagates the previous result to the next task.
-                return event.result ||= {};
+                return taskEvent.result ||= {};
             })(this);
 
             if (properties.hasOwnProperty('callback')) {
                 if (!this.callbacks.hasOwnProperty(properties.callback)) {
                     throw new Error(`The registered calback "${properties.callback}" not exist!`);
                 }
-                this.callbacks[properties.callback](event);
+                this.callbacks[properties.callback](taskEvent);
             }
 
             // If the task has a template and target
             if (properties.hasOwnProperty('template') &&
                 properties.hasOwnProperty('target') &&
                 properties.target != '') {
-                const helperFragment = await this.templateManager(event, properties);
-                await this.sequenceTasks(helperFragment, event, properties);
+                const helperFragment = await this.templateManager(taskEvent, properties);
+                await this.sequenceTasks(helperFragment, taskEvent, properties);
             }
 
             const target = (properties.target === 'this') ?
-                event.currentTarget : document.querySelector(properties.target);
+                taskEvent.event.currentTarget : document.querySelector(properties.target);
             if (target !== null) {
                 this.swapContent((() => {
-                    if (typeof event.result === 'string') {
+                    if (typeof taskEvent.result === 'string') {
                         const helper = document.createElement('span');
-                        const txtNode = document.createTextNode(event.result);
+                        const txtNode = document.createTextNode(taskEvent.result);
                         helper.append(txtNode);
                         return helper;
                     }
@@ -760,50 +764,50 @@
             }
         }
 
-        async processReqData(event, properties) {
+        async processReqData(taskEvent, properties) {
 
-            // console.log(`Event: Template: ${event.template} ` +
-            //     `Result: ${event.result} Ok: ${event.ok} Status: ${event.status}`);
+            // console.log(`Task Event: Template: ${taskEvent.template} ` +
+            //     `Result: ${taskEvent.result} Ok: ${taskEvent.ok} Status: ${taskEvent.status}`);
 
             // if a template is returned
-            if (event.hasOwnProperty('template')) {
-                const helperFragment = this.buildFragment(event);
+            if (taskEvent.hasOwnProperty('template')) {
+                const helperFragment = this.buildFragment(taskEvent);
                 if (helperFragment === null) {
                     throw new Error('An error happened while processing the "remote" template from server');
                 }
                 return helperFragment;
             }
 
-            if (!event.hasOwnProperty('result')) {
+            if (!taskEvent.hasOwnProperty('result')) {
                 throw new Error("There is no any data for the transformation");
             }
 
             // if data is json
-            if (typeof event.result === 'object') {
+            if (typeof taskEvent.result === 'object') {
                 // console.log('json data from server...');
 
                 // with templates
                 if (properties.hasOwnProperty('template')) {
-                    const helperFragment = await this.templateManager(event, properties);
+                    const helperFragment = await this.templateManager(taskEvent, properties);
                     return helperFragment;
                 }
 
                 throw new Error("There is no json data for the transformation");
             }
 
-            // if (typeof event.result === 'string' && event.result !== "") {
-            if (typeof event.result === 'string') {
+            // if (typeof taskEvent.result === 'string' && taskEvent.result !== "") {
+            if (typeof taskEvent.result === 'string') {
                 // console.log('raw data from server...');
 
                 // with templates
                 if (properties.hasOwnProperty('template')) {
-                    const helperFragment = await this.templateManager(event, properties);
+                    const helperFragment = await this.templateManager(taskEvent, properties);
                     return helperFragment;
                 }
 
                 const helperFragment = ((_this) => {
                     const helperElem = document.createElement('div');
-                    helperElem.innerHTML = event.result;
+                    helperElem.innerHTML = taskEvent.result;
 
                     _this.reScript(helperElem);
 
@@ -831,7 +835,7 @@
             return obj;
         }
 
-        async prepareRequest(event, properties) {
+        async prepareRequest(taskEvent, properties) {
 
             let bodyData = undefined;
 
@@ -839,17 +843,17 @@
                 if (!this.callbacks.hasOwnProperty(properties.callback)) {
                     throw new Error(`The registered callback "${properties.callback}" not exist!`);
                 }
-                const result = this.callbacks[properties.callback](event);
+                const result = this.callbacks[properties.callback](taskEvent);
                 if (result === false) {
                     if (properties.hasOwnProperty('next')) {
                         delete properties.next;
                     }
                     return;
                 }
-                bodyData = event.data;
+                bodyData = taskEvent.data;
             } else if (properties.hasOwnProperty('trigger') &&
                 properties.trigger === 'submit') {
-                const form = event.currentTarget.closest('form');
+                const form = taskEvent.event.currentTarget.closest('form');
                 if (form !== null) {
                     // https://developer.mozilla.org/en-US/docs/Web/API/FormData
                     const data = new FormData(form);
@@ -861,8 +865,8 @@
             const block = await this.makeRequest(properties, bodyData);
             // console.log('Make Request Result:', block.ok, block.status);
 
-            event.ok = block.ok;
-            event.status = block.status;
+            taskEvent.ok = block.ok;
+            taskEvent.status = block.status;
 
             // If an error happens replaces the current task
             // with the error task, if it exists.
@@ -876,21 +880,21 @@
             this.setTransformation(properties, block.transformation);
 
             if (properties['is-template'] == true) {
-                event.template = block.data;
+                taskEvent.template = block.data;
             } else {
-                event.result = block.data;
+                taskEvent.result = block.data;
             }
 
-            const helperFragment = await this.processReqData(event, properties);
-            await this.sequenceTasks(helperFragment, event, properties);
+            const helperFragment = await this.processReqData(taskEvent, properties);
+            await this.sequenceTasks(helperFragment, taskEvent, properties);
         }
 
-        async findResourcePath(event, properties) {
+        async findResourcePath(taskEvent, properties) {
             // Execute subtasks "then" as soon as possible!
             // Useful for example to show a loader.
             if (properties.hasOwnProperty('then') &&
                 properties.then !== "") {
-                this.runSubtasks(event, properties.then);
+                this.runSubtasks(taskEvent, properties.then);
             }
 
             // Extensions
@@ -902,7 +906,7 @@
                     if (!this.extensions.hasOwnProperty(properties['extension']['name'])) {
                         throw new Error(`The registered extension "${properties['extension']['name']}" not exist!`);
                     }
-                    this.extensions[properties['extension']['name']](event, properties);
+                    this.extensions[properties['extension']['name']](taskEvent, properties);
                     return;
                 }
             }
@@ -923,25 +927,25 @@
                     properties['method'] = 'get';
                 }
 
-                await this.prepareRequest(event, properties);
+                await this.prepareRequest(taskEvent, properties);
 
                 return;
             }
 
             // In events without action, the target can be replaced with templates.
-            await this.setTemplateData(event, properties);
+            await this.setTemplateData(taskEvent, properties);
         }
 
-        async processEvent(event, properties) {
+        async processEvent(taskEvent, properties) {
 
-            this.propertyOverride(event.currentTarget, properties);
+            this.propertyOverride(taskEvent.event.currentTarget, properties);
 
-            await this.findResourcePath(event, properties);
+            await this.findResourcePath(taskEvent, properties);
 
             // Executes another task in the same event after swap the content.
             if (properties.hasOwnProperty('next') &&
                 properties.next !== "") {
-                await this.runNextTask(event, properties.next);
+                await this.runNextTask(taskEvent, properties.next);
             }
         }
 
@@ -1008,7 +1012,9 @@
                             }
                             if (properties.disabled === false) {
                                 try {
-                                    await this.processEvent(e, properties);
+                                    await this.processEvent({
+                                        event: e
+                                    }, properties);
                                 } catch (error) {
                                     console.log(`Error for "${task}": ${error}`);
                                 }
@@ -1046,7 +1052,9 @@
                     }
                     if (properties.disabled === false) {
                         try {
-                            await this.processEvent(event, properties);
+                            await this.processEvent({
+                                event: event
+                            }, properties);
                         } catch (error) {
                             console.log(`Error for "${task}": ${error}`);
                         }
