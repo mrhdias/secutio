@@ -1,0 +1,21 @@
+{
+    "id": 2,
+    "category": "Mundos",
+    "date_created": "2023-10-31T17:01:14",
+    "title": "Aliquam ultrices",
+    "excerpt": "Pharetra diam ac ultrices. Aenean mollis odio non nibh laoreet tincidunt. Vivamus rutrum tellus non dui imperdiet, quis venenatis purus blandit.",
+    "text": "Cras efficitur est eu leo rhoncus imperdiet. Aenean ac nisi in ante accumsan vehicula in luctus ipsum. Ut enim diam, rhoncus at lectus quis, pharetra elementum eros. Sed non tortor lorem. Sed hendrerit ligula ut nulla ullamcorper sodales. Aenean id ornare magna. Vivamus non dui nec dolor sagittis blandit vitae posuere metus. Nulla auctor mi sit amet nibh malesuada sodales. Maecenas dictum, nisl eget sodales luctus, purus nisi euismod nibh, id porttitor ex nulla id lacus.",
+    "image": {
+        "src": "uploads/basket-of-garlic.jpg",
+        "name": "",
+        "alt": ""
+    },
+    "permalink": "post.html?id=2",
+    "author": "Aliquam Tincidunt",
+    "views": 12,
+    "featured": false,
+    "nav": {
+        "previous": 3,
+        "next": 1
+    }
+}

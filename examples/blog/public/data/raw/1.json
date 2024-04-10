@@ -1,0 +1,17 @@
+{
+    "id": 1,
+    "category": "Naturale",
+    "date_created": "2023-09-30T18:01:14",
+    "title": "Curabitur volutpat",
+    "excerpt": "Gravida ligula accumsan cursus. Donec consequat nibh id diam accumsan, eu suscipit ipsum condimentum.",
+    "text": "Maecenas lacinia est hendrerit lobortis suscipit. Curabitur purus neque, dignissim vel lacinia eleifend, pellentesque imperdiet augue. Suspendisse vestibulum rutrum nibh, in facilisis urna pharetra at. Integer posuere nunc eu justo ultrices semper. Aliquam ut ullamcorper purus, et malesuada dui. Fusce nec lorem ultrices, malesuada ipsum a, feugiat dui. Donec tortor nulla, sagittis et erat a, finibus dapibus libero.",
+    "image": {
+        "src": "uploads/woman-tearing-mint-leaves.jpg",
+        "name": "",
+        "alt": ""
+    },
+    "permalink": "post.html?id=1",
+    "author": "Aliquam Tincidunt",
+    "views": 5,
+    "featured": true
+}

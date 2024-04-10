@@ -1,0 +1,52 @@
+<h3 class="pb-4 mb-4 fst-italic border-bottom">${(() => {
+
+    history.replaceState({}, "", task.event.target.href);
+
+    if ('category' in data) {
+        document.title = `Large - ${data.category}`;
+        return data.category;
+    }
+    if ('archive' in data) {
+        const dc = new Date(data.archive);
+        const title = dc.toLocaleString('en-us',{year:'numeric', month:'long'});
+        document.title = `Large - ${title}`;
+        return title;
+    }
+    return '';
+})()}</h3>
+${data.posts.map(record => `<article class="blog-post">
+    <h2 class="display-6 link-body-emphasis mb-1">${record.title}</h2>
+    <p class="blog-post-meta">${(() => {
+        const dc = new Date(record.date_created + 'Z');
+        return dc.toLocaleString('en-us',{year:'numeric', month:'short', day:'numeric'});
+    })()} by <a href="#">${record.author}</a></p>
+    <p>${record.excerpt}</p>
+    <a href="${record.permalink}"
+        data-bs-toggle="modal" data-bs-target="#post-modal"
+        data-tasks="show-post"
+        data-src-data="data/posts/${record.id}.json"
+        class="icon-link gap-1 icon-link-hover x-stretched-link">
+        Continue reading
+        <svg class="bi">
+            <use xlink:href="#chevron-right"></use>
+        </svg>
+    </a>
+</article>`).join("")}
+<nav class="blog-pagination" aria-label="Pagination">
+    <a href="?page=${data.nav.prev}&category-slug=${data.category_slug}" class="btn rounded-pill ${
+        data.nav.prev === 0 ?
+            'btn-outline-secondary disabled" aria-disabled="true"' :
+            `btn-outline-primary"
+                data-tasks="show-posts-list"
+                data-trigger="click"
+                data-src-data="data/categories/${data.category_slug}/${data.nav.prev}.json"`
+    }>Older</a>
+    <a href="?page=${data.nav.next}&category-slug=${data.category_slug}" class="btn rounded-pill ${
+        data.nav.next === 0 ?
+            'btn-outline-secondary disabled" aria-disabled="true"' :
+            `btn-outline-primary"
+                data-tasks="show-posts-list"
+                data-trigger="click"
+                data-src-data="data/categories/${data.category_slug}/${data.nav.next}.json"`
+    }>Newer</a>
+</nav>

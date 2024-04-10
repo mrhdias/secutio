@@ -1,0 +1,24 @@
+<style>
+    .featured-post {
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.0) ), url(${data.image.src});
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    ${data.light ? '.featured-post > div, .featured-post a { color: #fff!important; }' : ''}
+</style>
+<div id="featured-post"
+    class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary featured-post">
+    <div class="col-lg-6 px-0">
+        <h1 class="display-4 fst-italic">${data.title}</h1>
+        <p class="lead my-3">${data.excerpt}</p>
+        <p class="lead mb-0">
+            <a href="${data.permalink}"
+                data-bs-toggle="modal"
+                data-bs-target="#post-modal"
+                data-tasks="show-post"
+                data-src-data="data/posts/${data.id}.json" role="button"
+                class="text-body-emphasis fw-bold">Continue reading...</a>
+        </p>
+    </div>
+</div>

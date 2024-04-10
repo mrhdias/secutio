@@ -1,0 +1,33 @@
+${data.map(record => `<div class="col-md-6">
+    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="col p-4 d-flex flex-column position-static">
+            <strong class="d-inline-block mb-2 text-primary-emphasis">${record.category}</strong>
+            <h3 class="mb-0 display-7 text-truncate" style="max-width:290px;">${record.title}</h3>
+            <div class="mb-1 text-body-secondary">${(() => {
+                const dc = new Date(record.date_created + 'Z');
+                return dc.toLocaleString('en-us',{year:'numeric', month:'short', day:'numeric'});
+            })()}</div>
+            <p class="card-text mb-auto limit-max-text">${record.excerpt}</p>
+            <a href="${record.permalink}"
+                class="icon-link gap-1 icon-link-hover x-stretched-link"
+                data-bs-toggle="modal" data-bs-target="#post-modal"
+                data-tasks="show-post"
+                data-src-data="data/posts/${record.id}.json"
+                role="button">
+                Continue reading
+                <svg class="bi">
+                    <use xlink:href="#chevron-right"></use>
+                </svg>
+            </a>
+        </div>
+        <div class="col-auto d-none d-lg-block">
+            <img class="bd-placeholder-img"
+                width="200" height="250"
+                alt="${record.image.alt}"
+                src="${record.image.src}"
+                role="img"
+                preserveAspectRatio="xMidYMid slice"
+                focusable="false" loading="lazy">
+        </div>
+    </div>
+</div>`).join("")}

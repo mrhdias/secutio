@@ -1,0 +1,28 @@
+{
+    "nav": {
+        "prev": 0,
+        "next": 0
+    },
+    "category": "Mundos",
+    "category_slug": "mundos",
+    "posts": [
+        {
+            "id": 8,
+            "category": "Mundos",
+            "date_created": "2024-04-02T22:05:14",
+            "title": "Proin molestie auctor lacus",
+            "excerpt": "Proin scelerisque justo a lectus feugiat tristique. Proin molestie auctor lacus, vitae auctor libero ornare a.",
+            "permalink": "post.html?id=8",
+            "author": "Aliquam Tincidunt"
+        },
+        {
+            "id": 2,
+            "category": "Mundos",
+            "date_created": "2023-10-31T17:01:14",
+            "title": "Aliquam ultrices",
+            "excerpt": "Pharetra diam ac ultrices. Aenean mollis odio non nibh laoreet tincidunt. Vivamus rutrum tellus non dui imperdiet, quis venenatis purus blandit.",
+            "permalink": "post.html?id=2",
+            "author": "Aliquam Tincidunt"
+        }
+    ]
+}

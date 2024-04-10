@@ -1,0 +1,54 @@
+{
+    "add-topbar": {
+        "trigger": "init",
+        "template": "templates/top-bar.html",
+        "target": "#top-bar",
+        "swap": "inner"
+    },
+    "add-navbar": {
+        "trigger": "init",
+        "src-data": "data/navbar.json",
+        "template": "templates/nav-bar.html",
+        "target": "#large-nav-bar",
+        "swap": "inner"
+    },
+    "add-about": {
+        "trigger": "init",
+        "src-data": "data/about.txt",
+        "target": "#about",
+        "swap": "inner"
+    },
+    "add-recent-posts": {
+        "trigger": "init",
+        "src-data": "data/recent-posts.json",
+        "template": "templates/panel-posts.html",
+        "target": "#recent-posts",
+        "swap": "inner"
+    },
+    "add-elsewhere": {
+        "trigger": "init",
+        "src-data": "data/elsewhere.json",
+        "template": "templates/panel-elsewhere.html",
+        "target": "#elsewhere",
+        "swap": "inner"
+    },
+    "add-footer": {
+        "trigger": "init",
+        "template": "templates/footer.html",
+        "target": "footer",
+        "swap": "inner",
+        "before": "add-footer-classes",
+        "next": "add-btn-scroll-to-top"
+    },
+    "add-footer-classes": {
+        "selector": "footer",
+        "add": {
+          "class": "py-5 text-center text-body-secondary bg-body-tertiary"
+        }
+    },
+    "add-btn-scroll-to-top": {
+        "template": "templates/btn-scroll-to-top.html",
+        "target": "footer",
+        "swap": "after"
+    }
+}

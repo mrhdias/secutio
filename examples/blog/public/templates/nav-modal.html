@@ -1,0 +1,20 @@
+<a href="post.html?id=${data.nav.previous}"
+    class="icon-link gap-1 icon-link-hover"
+    data-tasks="set-nav-modal"
+    data-trigger="click"
+    data-src-data="data/posts/${data.nav.previous}.json"
+    ${document.getElementById('recent-posts') !== null ? 'x-data-next="show-post-content"' : ''}>
+    <svg class="bi">
+        <use xlink:href="#chevron-left"></use>
+    </svg>
+</a>
+<a href="post.html?id=${data.nav.next}"
+    class="icon-link gap-1 icon-link-hover"
+    data-tasks="set-nav-modal"
+    data-trigger="click"
+    data-src-data="data/posts/${data.nav.next}.json"
+    ${document.getElementById('recent-posts') !== null ? 'x-data-next="show-post-content"' : ''}>
+    <svg class="bi">
+        <use xlink:href="#chevron-right"></use>
+    </svg>
+</a>

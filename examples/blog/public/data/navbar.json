@@ -1,0 +1,32 @@
+[
+    {
+        "category": "Most Recent",
+        "category_slug": "all",
+        "page": 1
+    },
+    {
+        "category": "Imaginatio",
+        "category_slug": "imaginatio",
+        "page": 1
+    },
+    {
+        "category": "Mundos",
+        "category_slug": "mundos",
+        "page": 1
+    },
+    {
+        "category": "Naturale",
+        "category_slug": "naturale",
+        "page": 1
+    },
+    {
+        "category": "Suspicio",
+        "category_slug": "suspicio",
+        "page": 1
+    },
+    {
+        "category": "Vita",
+        "category_slug": "vita",
+        "page": 1
+    }
+]

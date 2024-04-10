@@ -1,0 +1,16 @@
+<ul class="navbar-nav nav-underline">${(() => {
+    if (!task.ok) {
+        return task.status === 404 ? `<strong>${data}</strong>` : 'an error happened!';
+    }
+
+    return data.map(record => `<li class="nav-item">
+        <a href="/?page=1&category-slug=${record.category_slug}#posts-list"
+            ${window.location.pathname !== '/post.html' ?
+                `data-tasks="show-posts-list"
+                data-trigger="click"
+                data-after="remove-active-menu add-active-menu scroll-into-posts-list"
+                data-src-data="data/categories/${record.category_slug}/1.json"` : ''}
+                class="nav-item nav-link ${window.location.pathname !== '/post.html' &&
+                    record.category_slug === 'all' ? 'active' : ''}">${record.category}</a>
+        </li>`).join("");
+})()}</ul>

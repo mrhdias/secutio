@@ -1,0 +1,19 @@
+{
+    "nav": {
+        "prev": 0,
+        "next": 0
+    },
+    "category": "Naturale",
+    "category_slug": "naturale",
+    "posts": [
+        {
+            "id": 1,
+            "category": "Naturale",
+            "date_created": "2023-09-30T18:01:14",
+            "title": "Curabitur volutpat",
+            "excerpt": "Gravida ligula accumsan cursus. Donec consequat nibh id diam accumsan, eu suscipit ipsum condimentum.",
+            "permalink": "post.html?id=1",
+            "author": "Aliquam Tincidunt"
+        }
+    ]
+}

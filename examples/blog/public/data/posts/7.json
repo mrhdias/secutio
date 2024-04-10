@@ -1,0 +1,21 @@
+{
+    "id": 7,
+    "category": "Suspicio",
+    "date_created": "2024-03-31T21:01:14",
+    "title": "Sed risus tellus.",
+    "excerpt": "Ut feugiat suscipit risus vitae euismod. Sed risus tellus, sodales sit amet orci quis, dictum placerat ante.",
+    "text": "Ut feugiat suscipit risus vitae euismod. Sed risus tellus, sodales sit amet orci quis, dictum placerat ante. Proin lorem neque, vulputate et tellus at, euismod posuere tellus. In et pellentesque mauris. Ut tincidunt, justo tempus blandit laoreet, leo elit vulputate nisl, vitae elementum libero lectus viverra risus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Vestibulum a nunc nisi. In quis fermentum leo, elementum laoreet enim. Morbi sed felis interdum, auctor ipsum vel, aliquet dolor. Nam sit amet bibendum sapien. Nullam finibus convallis nisi, vitae facilisis neque vehicula eu. Etiam faucibus finibus quam in convallis. Fusce commodo sed lacus non feugiat.",
+    "image": {
+        "src": "uploads/clear-drinking-glass-with-lemon-juice.jpg",
+        "name": "",
+        "alt": ""
+    },
+    "permalink": "post.html?id=7",
+    "author": "Phasellus Vel",
+    "views": 12,
+    "featured": false,
+    "nav": {
+        "previous": 8,
+        "next": 6
+    }
+}

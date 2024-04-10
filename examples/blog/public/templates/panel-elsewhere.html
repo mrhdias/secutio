@@ -1,0 +1,6 @@
+<h4 class="fst-italic">Elsewhere</h4>
+<ol class="list-unstyled">
+    ${data.map(record => `<li>
+        <a href="${record.permalink}">${record.name}</a>
+    </li>`).join("")}
+</ol>

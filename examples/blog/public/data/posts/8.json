@@ -1,0 +1,21 @@
+{
+    "id": 8,
+    "category": "Mundos",
+    "date_created": "2024-04-02T22:05:14",
+    "title": "Proin molestie auctor lacus",
+    "excerpt": "Proin scelerisque justo a lectus feugiat tristique. Proin molestie auctor lacus, vitae auctor libero ornare a.",
+    "text": "Proin scelerisque justo a lectus feugiat tristique. Proin molestie auctor lacus, vitae auctor libero ornare a. Curabitur consectetur aliquet purus quis blandit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec vehicula pharetra leo, ac viverra augue hendrerit vel. Sed semper tincidunt tempus. Nullam consectetur ligula vitae ligula aliquet iaculis. Nunc egestas odio turpis, eget ultricies justo auctor nec. Sed id fringilla risus. Maecenas at enim dolor. Etiam aliquam congue metus, quis bibendum quam pulvinar ac. Sed cursus velit a pellentesque hendrerit. Maecenas erat nisi, vestibulum a dictum eget, ultricies nec est. Maecenas hendrerit mollis elementum. Vestibulum dapibus, metus in viverra convallis, urna lectus accumsan lectus, sit amet tristique ligula ex ac justo. Maecenas sodales, justo posuere laoreet finibus, arcu ligula auctor nulla, sed feugiat arcu nisi vitae massa.",
+    "image": {
+        "src": "uploads/potted-plant-with-yellow-flowers-in-it.jpg",
+        "name": "",
+        "alt": ""
+    },
+    "permalink": "post.html?id=8",
+    "author": "Aliquam Tincidunt",
+    "views": 4,
+    "featured": false,
+    "nav": {
+        "previous": 9,
+        "next": 7
+    }
+}

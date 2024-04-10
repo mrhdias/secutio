@@ -1,0 +1,19 @@
+{
+    "nav": {
+        "prev": 0,
+        "next": 0
+    },
+    "category": "Vita",
+    "category_slug": "vita",
+    "posts": [
+        {
+            "id": 4,
+            "category": "Vita",
+            "date_created": "2023-12-31T19:01:14",
+            "title": "Lorem ipsum",
+            "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin imperdiet elit eu auctor posuere.",
+            "permalink": "post.html?id=4",
+            "author": "Aliquam Tincidunt"
+        }
+    ]
+}

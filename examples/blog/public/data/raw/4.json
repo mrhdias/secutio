@@ -1,0 +1,17 @@
+{
+    "id": 4,
+    "category": "Vita",
+    "date_created": "2023-12-31T19:01:14",
+    "title": "Lorem ipsum",
+    "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin imperdiet elit eu auctor posuere.",
+    "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin imperdiet elit eu auctor posuere. Nulla justo justo, sollicitudin in risus eu, aliquet malesuada est. Proin ex urna, faucibus et ipsum ac, faucibus mattis ipsum. Curabitur vel risus porta, congue lacus non, luctus ex. Integer mattis quis ipsum sit amet sodales. Praesent luctus metus id auctor egestas. Phasellus eu lectus sit amet nisl venenatis gravida.",
+    "image": {
+        "src": "uploads/fresh-basil-plant.jpg",
+        "name": "",
+        "alt": ""
+    },
+    "permalink": "post.html?id=4",
+    "author": "Aliquam Tincidunt",
+    "views": 6,
+    "featured": false
+}

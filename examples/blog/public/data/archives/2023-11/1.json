@@ -1,0 +1,18 @@
+{
+    "nav": {
+        "prev": 0,
+        "next": 0
+    },
+    "archive": "2023-11",
+    "posts": [
+        {
+            "id": 3,
+            "category": "Imaginatio",
+            "date_created": "2023-11-30T14:01:14",
+            "title": "Lacus consequat feugiat varius",
+            "excerpt": "Mauris bibendum lacus consequat feugiat varius. Pellentesque vitae nulla arcu.",
+            "permalink": "post.html?id=3",
+            "author": "Proin dictum"
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+    "title": "Most Read",
+    "posts": [
+        {
+            "id": 3,
+            "date_created": "2023-11-30T14:01:14",
+            "title": "Lacus consequat feugiat varius",
+            "image": {
+                "src": "uploads/rosemary-on-slate.jpg",
+                "name": "",
+                "alt": ""
+            },
+            "permalink": "post.html?id=3"
+        },
+        {
+            "id": 6,
+            "date_created": "2024-02-28T15:01:14",
+            "title": "Etiam eu condimentum dolor.",
+            "image": {
+                "src": "uploads/green-plant-on-brown-wooden-table.jpg",
+                "name": "",
+                "alt": ""
+            },
+            "permalink": "post.html?id=6"
+        },
+        {
+            "id": 7,
+            "date_created": "2024-03-31T21:01:14",
+            "title": "Sed risus tellus.",
+            "image": {
+                "src": "uploads/clear-drinking-glass-with-lemon-juice.jpg",
+                "name": "",
+                "alt": ""
+            },
+            "permalink": "post.html?id=7"
+        }
+    ]
+}

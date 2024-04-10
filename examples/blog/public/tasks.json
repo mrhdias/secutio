@@ -1,0 +1,139 @@
+{
+    "add-topbar": {
+        "trigger": "init",
+        "template": "templates/top-bar.html",
+        "target": "#top-bar",
+        "swap": "inner"
+    },
+    "add-navbar": {
+        "trigger": "init",
+        "src-data": "data/navbar.json",
+        "template": "templates/nav-bar.html",
+        "target": "#large-nav-bar",
+        "swap": "inner"
+    },
+    "add-featured-post": {
+        "trigger": "init",
+        "src-data": "data/featured-post.json",
+        "template": "templates/featured-post.html",
+        "target": "#main > div:first-child",
+        "swap": "outer"
+    },
+    "add-featured-posts": {
+        "trigger": "init",
+        "src-data": "data/featured-posts.json",
+        "template": "templates/featured-posts.html",
+        "target": "#featured-posts",
+        "swap": "inner"
+    },
+    "show-posts-list": {
+        "trigger": "init",
+        "attribute-trigger": "data-trigger",
+        "src-data": "data/categories/all/1.json",
+        "attribute-src-data": "data-src-data",
+        "template": "templates/list-posts.html",
+        "target": "#posts-list",
+        "swap": "inner",
+        "after": "scroll-into-posts-list",
+        "attribute-after": "data-after"
+    },
+    "remove-active-menu": {
+        "selector": ".navbar-nav a.active",
+        "remove": {
+            "class": "active"
+        }
+    },
+    "add-active-menu": {
+        "traverse": "target",
+        "add": {
+            "class": "active"
+        }
+    },
+    "scroll-into-posts-list": {
+        "selector": "#posts-list",
+        "scroll-into": {}
+    },
+    "get-joke": {
+        "trigger": "init",
+        "action": "https://v2.jokeapi.dev/joke/Any?format=txt&safe-mode",
+        "method": "get",
+        "target": "#joke-of-the-day",
+        "swap": "inner"
+    },
+    "add-most-read": {
+        "trigger": "init",
+        "src-data": "data/most-read.json",
+        "template": "templates/panel-posts.html",
+        "target": "#most-read",
+        "swap": "inner"
+    },
+    "add-archives": {
+        "trigger": "init",
+        "src-data": "data/archives.json",
+        "template": "templates/panel-archives.html",
+        "target": "#archives",
+        "swap": "inner"
+    },
+    "add-footer": {
+        "trigger": "init",
+        "template": "templates/footer.html",
+        "target": "footer",
+        "swap": "inner",
+        "before": "add-footer-classes",
+        "next": "add-btn-scroll-to-top"
+    },
+    "add-footer-classes": {
+        "selector": "footer",
+        "add": {
+          "class": "py-5 text-center text-body-secondary bg-body-tertiary"
+        }
+    },
+    "show-post": {
+        "trigger": "click",
+        "attribute-src-data": "data-src-data",
+        "template": "templates/modal-post.html",
+        "target": "#post-modal .modal-content",
+        "swap": "inner",
+        "next": "set-nav-modal"
+    },
+    "set-nav-modal": {
+        "attribute-trigger": "data-trigger",
+        "attribute-src-data": "data-src-data",
+        "template": "templates/nav-modal.html",
+        "target": "#modal-navigation",
+        "swap": "inner",
+        "next": "show-post-content"
+    },
+    "show-post-content": {
+        "comment": "this task use the previous src-data",
+        "x-attribute-trigger": "data-trigger",
+        "template": "templates/single-post.html",
+        "target": "#post-content",
+        "swap": "inner"
+    },
+    "add-about": {
+        "trigger": "init",
+        "src-data": "data/about.txt",
+        "target": "#about",
+        "swap": "inner"
+    },
+    "add-recent-posts": {
+        "trigger": "init",
+        "src-data": "data/recent-posts.json",
+        "template": "templates/panel-posts.html",
+        "target": "#recent-posts",
+        "swap": "inner"
+    },
+    "add-elsewhere": {
+        "trigger": "init",
+        "src-data": "data/elsewhere.json",
+        "template": "templates/panel-elsewhere.html",
+        "target": "#elsewhere",
+        "swap": "inner"
+    },
+    "add-btn-scroll-to-top": {
+        "template": "templates/btn-scroll-to-top.html",
+        "target": "footer",
+        "swap": "after"
+    }
+}

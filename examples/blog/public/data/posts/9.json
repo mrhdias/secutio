@@ -1,0 +1,21 @@
+{
+    "id": 9,
+    "category": "Suspicio",
+    "date_created": "2024-04-06T13:48:50",
+    "title": "Fusce ut velit tellus",
+    "excerpt": "Maecenas aliquam vel mauris ac efficitur. Fusce ut velit tellus. Nulla eget odio et mi tincidunt malesuada eu non lorem.",
+    "text": "Maecenas aliquam vel mauris ac efficitur. Fusce ut velit tellus. Nulla eget odio et mi tincidunt malesuada eu non lorem. Vivamus rhoncus metus nisl, nec mollis neque vestibulum ac. Sed placerat mi vitae enim suscipit sagittis. Cras accumsan, augue ut vulputate lobortis, ex dui euismod arcu, quis consequat ipsum metus id nunc.",
+    "image": {
+        "src": "uploads/yellow-and-purple-flowers-on-white-textile.jpg",
+        "name": "",
+        "alt": ""
+    },
+    "permalink": "post.html?id=9",
+    "author": "Phasellus Vel",
+    "views": 7,
+    "featured": false,
+    "nav": {
+        "previous": 1,
+        "next": 8
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "nav": {
+        "prev": 0,
+        "next": 0
+    },
+    "archive": "2023-10",
+    "posts": [
+        {
+            "id": 2,
+            "category": "Mundos",
+            "date_created": "2023-10-31T17:01:14",
+            "title": "Aliquam ultrices",
+            "excerpt": "Pharetra diam ac ultrices. Aenean mollis odio non nibh laoreet tincidunt. Vivamus rutrum tellus non dui imperdiet, quis venenatis purus blandit.",
+            "permalink": "post.html?id=2",
+            "author": "Aliquam Tincidunt"
+        }
+    ]
+}

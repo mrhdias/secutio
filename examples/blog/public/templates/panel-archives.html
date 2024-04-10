@@ -1,0 +1,16 @@
+<h4 class="fst-italic">Archives</h4>
+<ol class="list-unstyled mb-0"></ol>
+${(() => {
+    if (!task.ok) {
+        return task.status === 404 ? `<strong>${data}</strong>` : 'an error happened!';
+    }
+    return data.map(record => `<li><a href="/?page=${record.page}&archive=${record.archive}#posts-list"
+        ${document.getElementById('post-modal') !== null ?
+            `data-tasks="show-posts-list"
+            data-src-data="data/archives/${record.archive}/${record.page}.json"` : ''
+        } data-trigger="click">${(() => {
+            const dc = new Date(record.archive);
+            return dc.toLocaleString('en-us',{year:'numeric', month:'long'});
+        })()}</a></li>`).join("");
+})()}
+</ol>

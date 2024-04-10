@@ -1,0 +1,21 @@
+{
+    "id": 5,
+    "category": "Suspicio",
+    "date_created": "2024-01-31T23:01:14",
+    "title": "Pellentesque consequat suscipit.",
+    "excerpt": "Nullam mollis elementum diam eu porta. Pellentesque consequat suscipit ante, euismod aliquam mauris ultrices in. Aenean non neque mi.",
+    "text": "Nullam mollis elementum diam eu porta. Pellentesque consequat suscipit ante, euismod aliquam mauris ultrices in. Aenean non neque mi. Suspendisse condimentum eget ante at fermentum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Vivamus condimentum arcu quam, quis maximus tortor placerat eget. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque ac ex nisi.",
+    "image": {
+        "src": "uploads/floral-design.jpg",
+        "name": "",
+        "alt": ""
+    },
+    "permalink": "post.html?id=5",
+    "author": "Phasellus Vel",
+    "views": 10,
+    "featured": false,
+    "nav": {
+        "previous": 6,
+        "next": 4
+    }
+}

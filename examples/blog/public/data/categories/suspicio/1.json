@@ -1,0 +1,37 @@
+{
+    "nav": {
+        "prev": 0,
+        "next": 0
+    },
+    "category": "Suspicio",
+    "category_slug": "suspicio",
+    "posts": [
+        {
+            "id": 9,
+            "category": "Suspicio",
+            "date_created": "2024-04-06T13:48:50",
+            "title": "Fusce ut velit tellus",
+            "excerpt": "Maecenas aliquam vel mauris ac efficitur. Fusce ut velit tellus. Nulla eget odio et mi tincidunt malesuada eu non lorem.",
+            "permalink": "post.html?id=9",
+            "author": "Phasellus Vel"
+        },
+        {
+            "id": 7,
+            "category": "Suspicio",
+            "date_created": "2024-03-31T21:01:14",
+            "title": "Sed risus tellus.",
+            "excerpt": "Ut feugiat suscipit risus vitae euismod. Sed risus tellus, sodales sit amet orci quis, dictum placerat ante.",
+            "permalink": "post.html?id=7",
+            "author": "Phasellus Vel"
+        },
+        {
+            "id": 5,
+            "category": "Suspicio",
+            "date_created": "2024-01-31T23:01:14",
+            "title": "Pellentesque consequat suscipit.",
+            "excerpt": "Nullam mollis elementum diam eu porta. Pellentesque consequat suscipit ante, euismod aliquam mauris ultrices in. Aenean non neque mi.",
+            "permalink": "post.html?id=5",
+            "author": "Phasellus Vel"
+        }
+    ]
+}

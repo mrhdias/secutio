@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-09 18:28:10
+    Last Modification: 2024-04-09 19:03:48
     Attention: This is work in progress
 
     References:

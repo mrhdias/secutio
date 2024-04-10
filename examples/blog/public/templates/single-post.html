@@ -1,0 +1,26 @@
+${(() => {
+    if (!task.ok) {
+        // window.location.href = "/post.html?id=1";
+        return task.status === 404 ? `<strong>${data}</strong>` : 'an error happened!';
+    }
+
+    history.replaceState({}, "", data.permalink);
+
+    return `<h3 class="pb-4 mb-4 fst-italic border-bottom">From the ${data.category}</h3>
+        <article class="blog-post">
+        <h2 class="display-6 link-body-emphasis mb-1">${(() => {
+            document.title = 'Large - ' + data.title;
+            return data.title;
+        })()}</h2>
+        <p class="blog-post-meta">${(() => {
+            const dc = new Date(data.date_created + 'Z');
+            return dc.toLocaleString('en-us',{year:'numeric', month:'long', day:'numeric'});
+        })()} by <a href="#">${data.author}</a>
+        </p>
+        <p>
+            <img src="${data.image.src}" class="figure-img img-thumbnail rounded" alt="${data.image.alt}"
+                style="width: 50%;float: left;margin-right: 20px;">
+            ${data.text}
+        </p>
+    </article>`;
+})()}

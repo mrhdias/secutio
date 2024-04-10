@@ -1,0 +1,18 @@
+{
+    "nav": {
+        "prev": 0,
+        "next": 0
+    },
+    "archive": "2024-02",
+    "posts": [
+        {
+            "id": 6,
+            "category": "Imaginatio",
+            "date_created": "2024-02-28T15:01:14",
+            "title": "Etiam eu condimentum dolor.",
+            "excerpt": "Proin pretium neque ut ex porttitor, in commodo quam sagittis. Donec vel rhoncus mi.",
+            "permalink": "post.html?id=6",
+            "author": "Proin dictum"
+        }
+    ]
+}

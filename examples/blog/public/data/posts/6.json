@@ -1,0 +1,21 @@
+{
+    "id": 6,
+    "category": "Imaginatio",
+    "date_created": "2024-02-28T15:01:14",
+    "title": "Etiam eu condimentum dolor.",
+    "excerpt": "Proin pretium neque ut ex porttitor, in commodo quam sagittis. Donec vel rhoncus mi.",
+    "text": "Proin pretium neque ut ex porttitor, in commodo quam sagittis. Donec vel rhoncus mi. Etiam eu condimentum dolor. Aliquam erat volutpat. Nulla vitae egestas massa. Vestibulum quis ipsum ac mi vulputate fringilla a id purus. Mauris ac dignissim eros. Ut neque velit, euismod et eleifend vitae, suscipit non nisl. Morbi pretium vehicula efficitur.",
+    "image": {
+        "src": "uploads/green-plant-on-brown-wooden-table.jpg",
+        "name": "",
+        "alt": ""
+    },
+    "permalink": "post.html?id=6",
+    "author": "Proin dictum",
+    "views": 18,
+    "featured": false,
+    "nav": {
+        "previous": 7,
+        "next": 5
+    }
+}
