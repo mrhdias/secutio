@@ -50,13 +50,13 @@
             href="https://mdn.github.io/dom-examples/fetch/fetch-json/">MDN Example</a></small>
     <div id="food-list" data-tasks="get-food"></div>
 
-    <template id="food-list-tpl">
+    <script id="food-list-tpl" type="text/template">
         <ul>
             ${data['products'].map(record => `<li><strong>${record["Name"]}</strong>
                 can be found in ${record["Location"]}. Cost: <strong>${record["Price"]}€</strong>
             </li>`).join("")}
         </ul>
-    </template>
+    </script>
 
     <script data-tasktable type="application/json">
     {

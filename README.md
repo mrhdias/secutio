@@ -11,7 +11,7 @@ Makes the difficult parts easy. It's like htmx but different!
 ## Introduction
 The objective of this project is to simplify the development of web applications (single-page applications) by reducing the inherent complexity.
 
-This library facilitates the association of actions (referred to as tasks here) with any HTML element, much like the way we associate actions with form submissions. Templates, whether embedded in HTML (using the template element) or served from a directory, are also supported. The practical association of data with templates is achieved using [JavaScript Template Literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals).
+This library facilitates the association of actions (referred to as tasks here) with any HTML element, much like the way we associate actions with form submissions. Templates, whether embedded in HTML (using the script element with type="text/html") or served from a directory, are also supported. The practical association of data with templates is achieved using [JavaScript Template Literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals).
 
 This library also enables you to modify only the target HTML elements specified in the "tasks" without needing to reload the entire page.
 
@@ -71,10 +71,13 @@ Here is an example of a JSON file (tasks.json) containing the tasks mentioned be
 }
 ```
 ### Embedded Templates
-Embedded templates should have a unique id property, and their content must be enclosed within the tag "template".
+Embedded templates should have a unique id property, and their content must be enclosed within the tag "script" with type="text/template".
 ```html
-<template id="contacts-list-tpl">
+<script id="contacts-list-tpl" type="text/template">
   <!-- HTML Content -->
-</template>
+</script>
 ```
+Why opt for the "script" HTML element over "template" when embedding a template?
+
+When considering whether to utilize the "script" HTML element or the "template" element for embedding templates, the choice revolves around functionality. In some cases, the "template" element may disrupt the behavior of "[Template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)". For instance, using "table" HTML elements may result in the relocation of "Template literals" code outside the table. Furthermore, complications can arise when attempting to nest templates within elements. Opting for the "script" element ensures consistent functionality, akin to templates sourced from external files, thereby facilitating seamless integration.
 

@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-09 19:03:48
+    Last Modification: 2024-04-13 09:25:51
     Attention: This is work in progress
 
     References:
@@ -678,16 +678,28 @@
                     }
                     // console.log('Template Node Name:', template.content.children[0].nodeName);
 
+                    // If a template has a table with literal templates inside,
+                    // the code is removed from the table and placed outside and
+                    // the template does not work!
+                    // Fix use the "script" tag
+                    //
+                    /*
                     if (template.nodeName === 'TEMPLATE' &&
                         template.content.hasChildNodes() &&
-                        template.content.nodeType === Node.DOCUMENT_FRAGMENT_NODE &&
-                        template.content.hasChildNodes) {
+                        template.content.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
 
                         // decode the &lt; p&gt; strings back into real HTML
                         const textareaElem = document.createElement('textarea');
                         textareaElem.insertAdjacentHTML('afterbegin', template.innerHTML);
 
                         return textareaElem.value;
+                    }
+                    */
+
+                    if (template.nodeName === 'SCRIPT' &&
+                        template.type.toLowerCase() === 'text/template' &&
+                        template.hasChildNodes()) {
+                        return template.textContent;
                     }
 
                     throw new Error(`Invalid "${properties.template}" embedded template`);
@@ -747,20 +759,21 @@
                 properties.target != '') {
                 const helperFragment = await this.templateManager(taskEvent, properties);
                 await this.sequenceTasks(helperFragment, taskEvent, properties);
-            }
+            } else { // remember to watch this carefully
 
-            const target = (properties.target === 'this') ?
-                taskEvent.event.currentTarget : document.querySelector(properties.target);
-            if (target !== null) {
-                this.swapContent((() => {
-                    if (typeof taskEvent.result === 'string') {
-                        const helper = document.createElement('span');
-                        const txtNode = document.createTextNode(taskEvent.result);
-                        helper.append(txtNode);
-                        return helper;
-                    }
-                    return null;
-                })(), target, properties.hasOwnProperty('swap') ? properties.swap : 'inner');
+                const target = (properties.target === 'this') ?
+                    taskEvent.event.currentTarget : document.querySelector(properties.target);
+                if (target !== null) {
+                    this.swapContent((() => {
+                        if (typeof taskEvent.result === 'string') {
+                            const helper = document.createElement('span');
+                            const txtNode = document.createTextNode(taskEvent.result);
+                            helper.append(txtNode);
+                            return helper;
+                        }
+                        return null;
+                    })(), target, properties.hasOwnProperty('swap') ? properties.swap : 'inner');
+                }
             }
         }
 

@@ -36,7 +36,7 @@
         </div>
     </main>
 
-    <template id="login-dialog-message-tpl">
+    <script id="login-dialog-message-tpl" type="text/template">
         ${(() => {
             // console.log('Data from server:', task.ok, task.status);
             if (task.ok) {
@@ -54,9 +54,9 @@
             }
             return "";
         })()}
-    </template>
+    </script>
 
-    <template id="login-dialog-tpl">
+    <script id="login-dialog-tpl" type="text/template">
         <dialog id="login-dialog">
             <div>
                 <label for="new-user">Choose your favorite name</label>
@@ -67,9 +67,9 @@
         <script>
             document.getElementById("login-dialog").showModal();
         </script>
-    </template>
+    </script>
 
-    <template id="chat-thread-tpl">
+    <script id="chat-thread-tpl" type="text/template">
         <div class="chat-line">${(() => {
             // console.log('Data from server:', data);
             const record = JSON.parse(data);
@@ -77,7 +77,7 @@
             return `<span class="user${(mySelf === record['login']) ? ' self' : ' '}">${record['login']}</span>
                 <span>${record['data']}</span>`;
         })()}</div>
-    </template>
+    </script>
 
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/gh/mrhdias/secutio@master/dist/js/secutio.min.js"></script>

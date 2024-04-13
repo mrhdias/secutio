@@ -125,7 +125,7 @@ tasks.json
 The **attribute-action** replaces the "action" property with the specified attribute, which should be present on the element with the "data-tasks" attribute.
 This property overrides the default and allows actions to be unique.
 
-template
+Example
 ```html
 <div id="paradises"></div>
 <button data-tasks="load-paradises">List All</button>
@@ -187,12 +187,12 @@ There is a special variable that can be used in templates:
 
 ### Embedded
 
-Embedded templates should have a unique id property, and their content must be enclosed within the tag "template".
+Embedded templates should have a unique id property, and their content must be enclosed within the HTML tag "script" with type="text/template".
 
 ```html
-<template id="contacts-list-tpl">
+<script id="contacts-list-tpl" type="text/template">
   <!-- HTML Content -->
-</template>
+</script>
 ```
 
 ### Loaded
