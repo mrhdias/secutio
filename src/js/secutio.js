@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-15 11:32:15
+    Last Modification: 2024-04-15 23:45:15
     Attention: This is work in progress
 
     References:
@@ -367,7 +367,8 @@
                         'traverse',
                         'selector',
                         'remove',
-                        'add'
+                        'add',
+                        'toggle'
                     ].includes(property)) {
                         throw new Error(`The property "${property}" in subtask "${subtask}" ` +
                             `is not allowed with property "selector"!`);
@@ -461,6 +462,28 @@
                             // element.removeAttribute('style');
                             if (element.getAttribute('style') === '') {
                                 element.removeAttribute('style');
+                            }
+                        }
+                    }
+
+                    if (properties.hasOwnProperty('toggle')) {
+                        // toggle between adding and removing a value from an element attribute
+                        if (properties['toggle'].hasOwnProperty('attributes')) {
+                            if (Object.prototype.toString.call(properties['toggle']['attributes']) !== '[object Object]') {
+                                throw new Error(`The properties "toggle/attributes" of subtask "${subtask}" is not a object!`);
+                            }
+                            for (const [attribute, value] of Object.entries(properties['toggle']['attributes'])) {
+                                const attrValue = element.hasAttribute(attribute) ?
+                                    element.getAttribute(attribute) : ''
+                                element.setAttribute(attribute, attrValue === '' ? value : '');
+                            }
+                        }
+
+                        // toggle between adding and removing a class name from an element
+                        if (properties['toggle'].hasOwnProperty('class')) {
+                            const classes = properties['toggle']['class'].split(/ +/);
+                            for (const c of classes) {
+                                element.classList.toggle(c);
                             }
                         }
                     }

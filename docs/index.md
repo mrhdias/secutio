@@ -174,6 +174,9 @@ Description of each of the properties allowed in the subtasks:
   - <ins>attributes</ins>: Object with attributes in the form (attribute/value);
   - <ins>class</ins>: String with class names separated by space;
   - <ins>style</ins>: String in the form "property; value; property n; value;..."
+- **toggle**: Toggle between adding and removing an attribute value or a class name from an element's attribute.
+  - <ins>attribute</ins>: Object with attributes in the form (attribute/value);;
+  - <ins>class</ins>: String with class names separated by space.
 - **scroll-into**: Property utilized in conjunction with the 'selector' and/or 'transverse' properties to smoothly scroll the page to the element identified by the specified identifier. It allows for the configuration of an object with properties akin to those found in the JavaScript [scrollIntoView](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView) method.
 
 In the "class" and "style" properties, which are already attributes, the value is a string and in the attributes it is a list in "remove" and an "object" in "add".
