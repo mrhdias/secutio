@@ -1,7 +1,7 @@
 /*
     secutio.js
     Author: Henrique Dias
-    Last Modification: 2024-04-13 09:25:51
+    Last Modification: 2024-04-15 11:32:15
     Attention: This is work in progress
 
     References:
@@ -755,6 +755,7 @@
 
             // If the task has a template and target
             if (properties.hasOwnProperty('template') &&
+                properties.template != '' &&
                 properties.hasOwnProperty('target') &&
                 properties.target != '') {
                 const helperFragment = await this.templateManager(taskEvent, properties);
@@ -800,7 +801,8 @@
                 // console.log('json data from server...');
 
                 // with templates
-                if (properties.hasOwnProperty('template')) {
+                if (properties.hasOwnProperty('template') &&
+                    properties.template !== '') {
                     const helperFragment = await this.templateManager(taskEvent, properties);
                     return helperFragment;
                 }
@@ -813,7 +815,8 @@
                 // console.log('raw data from server...');
 
                 // with templates
-                if (properties.hasOwnProperty('template')) {
+                if (properties.hasOwnProperty('template') &&
+                    properties.template !== '') {
                     const helperFragment = await this.templateManager(taskEvent, properties);
                     return helperFragment;
                 }
